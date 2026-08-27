@@ -1,0 +1,40 @@
+# Sprint 2 — Retrospectiva
+
+## Datos del Sprint
+
+**Fecha:** 
+**Participantes:** 
+**Sprint:** 2 — Convocatorias
+
+## ¿Qué salió bien? 
+
+1. 
+2. 
+3. 
+
+## ¿Qué salió mal? 
+
+1. 
+2. 
+3. 
+
+## ¿Qué podemos mejorar? 
+
+1. 
+2. 
+3. 
+
+## Acciones de mejora
+
+| Acción | Responsable | Fecha límite |
+|--------|-------------|--------------|
+| | | |
+| | | |
+| | | |
+
+## Felicitaciones / Reconocimientos
+
+- 
+
+## Notas adicionales
+
