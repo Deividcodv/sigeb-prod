@@ -51,16 +51,22 @@ Las categorías son:
 ## [Sprint 1] — 2026-XX-XX
 
 ### Added
-- [ ] Estructura de módulos NestJS (`app.module.ts`, `main.ts`)
-- [ ] Registro de postulante con CUI único
-- [ ] Login con JWT (access + refresh tokens)
-- [ ] Endpoint de perfil autenticado
-- [ ] Common/: guards globales, decoradores, filtros de excepción
-- [ ] CRUD de roles con asignación de permisos
+- [x] Estructura de módulos NestJS (`app.module.ts`, `main.ts`)
+- [x] Registro de postulante con CUI único
+- [x] Login con JWT (access + refresh tokens)
+- [x] Endpoint de perfil autenticado
+- [x] Common/: guards globales, decoradores, filtros de excepción
+- [x] CRUD de roles con asignación de permisos
+
+### Fixed
+- Guard JWT global bloqueaba rutas públicas; se agregó decorador `@Public()` en `registro`, `login`, `refresh`
+- Infraestructura de lint del monorepo: `.eslintrc.json`, `eslint-config-prettier`, config ESLint por workspace
+- Script de test sin specs: `--passWithNoTests`
 
 ### Notas
 - Marcos como developer principal
 - David como reviewer
+- Smoke test manual aprobado (17 casos)
 
 ---
 
