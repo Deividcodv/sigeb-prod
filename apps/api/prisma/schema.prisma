@@ -64,7 +64,7 @@ model Usuario {
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
 
-  rol              Rol
+  rol              Rol              @relation(fields: [rolId], references: [id])
   solicitudes      Solicitud[]
   usuarioPermisos  UsuarioPermiso[]
   comiteMiembros   ComiteMiembro[]
@@ -222,7 +222,7 @@ model Convocatoria {
   createdAt       DateTime            @default(now())
   updatedAt       DateTime            @updatedAt
 
-  beca                 Beca
+  beca                 Beca                 @relation(fields: [becaId], references: [id])
   documentosRequeridos ConvocatoriaDocRequerido[]
   solicitudes          Solicitud[]
 
@@ -255,8 +255,8 @@ model Solicitud {
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
 
-  convocatoria    Convocatoria
-  usuario         Usuario
+  convocatoria    Convocatoria      @relation(fields: [convocatoriaId], references: [id])
+  usuario         Usuario           @relation(fields: [usuarioId], references: [id])
   perfilAcademico SolicitudPerfilAcademico?
   perfilFinanciero SolicitudPerfilFinanciero?
   documentos      SolicitudDocumento[]
@@ -414,7 +414,7 @@ model Sesion {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  comite     Comite
+  comite     Comite     @relation(fields: [comiteId], references: [id])
   votos      Voto[]
   decisiones Decision[]
 
@@ -422,13 +422,13 @@ model Sesion {
 }
 
 model Voto {
-  id          String   @id @default(uuid())
-  sesionId    String
-  solicitudId String
-  usuarioId   String
-  voto        String
+  id            String   @id @default(uuid())
+  sesionId      String
+  solicitudId   String
+  usuarioId     String
+  voto          String
   observaciones String?
-  createdAt   DateTime @default(now())
+  createdAt     DateTime @default(now())
 
   sesion    Sesion    @relation(fields: [sesionId], references: [id], onDelete: Cascade)
   solicitud Solicitud @relation(fields: [solicitudId], references: [id])
@@ -444,7 +444,7 @@ model Voto {
 
 model Decision {
   id            String   @id @default(uuid())
-  solicitudId   String
+  solicitudId   String   @unique
   sesionId      String
   resultado     String
   observaciones String?
