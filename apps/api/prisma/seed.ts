@@ -119,6 +119,44 @@ async function main() {
   console.log('✅ Permisos asignados a ADMIN');
 
   // ==========================================
+  // BECAS Y CRITERIOS (demo)
+  // ==========================================
+  const becas = await Promise.all([
+    prisma.beca.upsert({
+      where: { id: '00000000-0000-4000-8000-000000000001' },
+      update: {},
+      create: {
+        id: '00000000-0000-4000-8000-000000000001',
+        nombre: 'Beca de Excelencia Académica',
+        descripcion: 'Para estudiantes con alto rendimiento académico',
+      },
+    }),
+    prisma.beca.upsert({
+      where: { id: '00000000-0000-4000-8000-000000000002' },
+      update: {},
+      create: {
+        id: '00000000-0000-4000-8000-000000000002',
+        nombre: 'Beca de Permanencia Universitaria',
+        descripcion: 'Para estudiantes en riesgo de deserción',
+      },
+    }),
+  ]);
+  console.log('✅ Becas creadas');
+
+  const becaDemo = becas[0];
+  await prisma.criterioEvaluacion.upsert({
+    where: { id: '00000000-0000-4000-8000-000000000011' },
+    update: {},
+    create: {
+      id: '00000000-0000-4000-8000-000000000011',
+      becaId: becaDemo.id,
+      nombre: 'Rendimiento académico',
+      peso: 0.6,
+    },
+  });
+  console.log('✅ Criterios de evaluación creados (demo)');
+
+  // ==========================================
   // GÉNEROS
   // ==========================================
   const generos = ['Masculino', 'Femenino', 'Otro'];

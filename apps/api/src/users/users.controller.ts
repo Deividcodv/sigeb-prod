@@ -13,7 +13,7 @@ import { UsersService } from './users.service';
 import { CreateRolDto } from './dto/create-rol.dto';
 import { UpdateRolDto } from './dto/update-rol.dto';
 import { AssignPermisoDto } from './dto/assign-permiso.dto';
-import { Roles } from '../common/decorators/roles.decorator';
+import { Permisos } from '../common/decorators/permisos.decorator';
 
 @ApiTags('Seguridad')
 @Controller('seguridad')
@@ -21,7 +21,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('roles')
-  @Roles('ADMIN')
+  @Permisos('permiso:editar')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Listar todos los roles' })
   @ApiResponse({ status: 200, description: 'Lista de roles' })
@@ -30,7 +30,7 @@ export class UsersController {
   }
 
   @Get('roles/:id')
-  @Roles('ADMIN')
+  @Permisos('permiso:editar')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Obtener un rol por ID' })
   @ApiResponse({ status: 200, description: 'Rol encontrado' })
@@ -40,7 +40,7 @@ export class UsersController {
   }
 
   @Post('roles')
-  @Roles('ADMIN')
+  @Permisos('permiso:editar')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Crear un nuevo rol' })
   @ApiResponse({ status: 201, description: 'Rol creado' })
@@ -50,7 +50,7 @@ export class UsersController {
   }
 
   @Patch('roles/:id')
-  @Roles('ADMIN')
+  @Permisos('permiso:editar')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Actualizar un rol' })
   @ApiResponse({ status: 200, description: 'Rol actualizado' })
@@ -62,7 +62,7 @@ export class UsersController {
   }
 
   @Delete('roles/:id')
-  @Roles('ADMIN')
+  @Permisos('permiso:editar')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Eliminar un rol' })
   @ApiResponse({ status: 200, description: 'Rol eliminado' })
@@ -72,7 +72,7 @@ export class UsersController {
   }
 
   @Patch('roles/:id/permisos')
-  @Roles('ADMIN')
+  @Permisos('permiso:editar')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Asignar permisos a un rol' })
   @ApiResponse({ status: 200, description: 'Permisos asignados' })
@@ -84,7 +84,7 @@ export class UsersController {
   }
 
   @Get('permisos')
-  @Roles('ADMIN')
+  @Permisos('permiso:editar')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Listar todos los permisos disponibles' })
   @ApiResponse({ status: 200, description: 'Lista de permisos' })
