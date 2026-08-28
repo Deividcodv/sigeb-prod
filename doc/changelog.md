@@ -91,21 +91,28 @@ Las categorías son:
 
 ---
 
-## [Sprint 3] — 2026-XX-XX
+## [Sprint 3] — 2026-08-27
 
 ### Added
-- [ ] Crear solicitud en BORRADOR
-- [ ] Perfil académico con validación de catálogos
-- [ ] Perfil financiero
-- [ ] Upload de documentos con validación MIME
-- [ ] Quitar/reemplazar documentos antes de enviar
-- [ ] Checklist de documentos faltantes
-- [ ] Enviar solicitud con validación de completitud
-- [ ] Máquina de estados de solicitud
+- [x] Crear solicitud en BORRADOR (US-18)
+- [x] Perfil académico con validación de catálogos y opción "otro" (US-19/US-13)
+- [x] Perfil financiero (US-20)
+- [x] Upload de documentos con validación MIME/tamaño (PDF/JPG/PNG ≤ 5 MB) (US-21)
+- [x] Quitar/reemplazar documentos antes de enviar (US-22)
+- [x] Checklist de documentos faltantes (US-23)
+- [x] Enviar solicitud con validación de completitud (US-24)
+- [x] Máquina de estados de solicitud con historial y `correccionesCount` (US-25)
+- [x] CI en ramas `feature/*` y smoke test HTTP en CI
+
+### Fixed
+- `assertCatalogosExisten` trataba los campos libres (`*Otro`, institución, carrera) como IDs de catálogo; ahora solo valida propiedades `*Id`
+- Seed: el CUI `9876543210987` del postulante demo colisionaba con el usuario smoke de Sprint 2; se usó `9999999999999`
+- CI: `.gitignore` con `storage/` sin ancla omitía `apps/api/src/storage/` y rompía el build en Linux; anclado a `/storage/`
 
 ### Notas
 - José como developer principal
 - Héctor como soporte en documentos
+- Smoke test manual aireado por hito + smoke automatizado en CI (`.github/scripts/smoke-ci.sh`)
 
 ---
 
