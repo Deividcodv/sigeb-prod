@@ -17,11 +17,12 @@ describe('SolicitudesService', () => {
 
   beforeEach(() => {
     prisma = {
-      solicitud: { findUnique: jest.fn() },
+      solicitud: { findUnique: jest.fn(), update: jest.fn() },
       convocatoria: { findUnique: jest.fn() },
       documentoTipo: { findUnique: jest.fn() },
       solicitudDocumento: { findFirst: jest.fn(), create: jest.fn(), delete: jest.fn() },
       solicitudPerfilAcademico: { upsert: jest.fn() },
+      historialEstado: { create: jest.fn() },
       genero: { findUnique: jest.fn() },
     };
     storage = {
@@ -225,6 +226,123 @@ describe('SolicitudesService', () => {
       });
       expect(storage.delete).toHaveBeenCalledWith('solicitudes/s1/new.pdf');
       expect(result).toEqual({ eliminado: true });
+    });
+  });
+
+  describe('checklist y envio validado (US-23, US-24)', () => {
+    const solicitudBase = {
+      id: 's1',
+      usuarioId: 'u-postulante',
+      estado: 'BORRADOR',
+      convocatoria: {
+        documentosRequeridos: [
+          {
+            documentoTipoId: 't-cert',
+            obligatorio: true,
+            documentoTipo: { nombre: 'Certificado académico' },
+          },
+          {
+            documentoTipoId: 't-foto',
+            obligatorio: false,
+            documentoTipo: { nombre: 'Fotografía' },
+          },
+        ],
+      },
+    };
+
+    it('marca completitud de perfiles y documentos requeridos', async () => {
+      prisma.solicitud.findUnique.mockResolvedValue({
+        ...solicitudBase,
+        perfilAcademico: {
+          generoOtro: 'Otro',
+          nivelAcademicoId: 'n1',
+        },
+        perfilFinanciero: { ingresoFamiliar: 2500 },
+        documentos: [
+          { documentoTipoId: 't-cert', version: 1, estado: 'CARGADO', archivoUrl: '/storage/x.pdf' },
+          { documentoTipoId: 't-cert', version: 2, estado: 'CARGADO', archivoUrl: '/storage/y.pdf' },
+        ],
+      });
+
+      const result = await service.obtenerChecklist('s1', postulante);
+
+      expect(result.completo).toBe(true);
+      expect(result.perfilAcademico).toBe(true);
+      expect(result.perfilFinanciero).toBe(true);
+      const certificado = result.documentos.find(
+        (d: { documentoTipoId: string }) => d.documentoTipoId === 't-cert',
+      );
+      expect(certificado).toEqual(
+        expect.objectContaining({ cargado: true, archivoUrl: '/storage/y.pdf' }),
+      );
+    });
+
+    it('lista pendientes cuando falta perfil y documento obligatorio', async () => {
+      prisma.solicitud.findUnique.mockResolvedValue({
+        ...solicitudBase,
+        perfilAcademico: null,
+        perfilFinanciero: null,
+        documentos: [],
+      });
+
+      const result = await service.obtenerChecklist('s1', postulante);
+
+      expect(result.completo).toBe(false);
+      expect(result.pendientes).toEqual(
+        expect.arrayContaining([
+          'Perfil académico incompleto (género y nivel académico)',
+          'Perfil financiero incompleto (ingreso familiar requerido)',
+          'Documento "Certificado académico" pendiente',
+        ]),
+      );
+      // El opcional NO genera pendiente aunque no esté cargado.
+      expect(result.pendientes).not.toEqual(
+        expect.arrayContaining(['Documento "Fotografía" pendiente']),
+      );
+    });
+
+    it('rechaza enviar cuando la solicitud esta incompleta', async () => {
+      prisma.solicitud.findUnique.mockResolvedValue({
+        ...solicitudBase,
+        perfilAcademico: null,
+        perfilFinanciero: null,
+        documentos: [],
+      });
+
+      await expect(
+        service.transicion('s1', { accion: 'enviar' }, postulante),
+      ).rejects.toThrow(/no está completa/);
+      expect(prisma.solicitud.update).not.toHaveBeenCalled();
+    });
+
+    it('permite enviar cuando el checklist esta completo', async () => {
+      prisma.solicitud.findUnique.mockResolvedValue({
+        ...solicitudBase,
+        perfilAcademico: { generoId: 'g1', nivelAcademicoId: 'n1' },
+        perfilFinanciero: { ingresoFamiliar: 2500 },
+        documentos: [
+          { documentoTipoId: 't-cert', version: 2, estado: 'CARGADO', archivoUrl: '/storage/x.pdf' },
+        ],
+      });
+      prisma.solicitud.update.mockResolvedValue({
+        id: 's1',
+        estado: 'ENVIADA',
+      });
+      prisma.historialEstado.create.mockResolvedValue({});
+
+      const result = await service.transicion(
+        's1',
+        { accion: 'enviar', comentario: 'listo' },
+        postulante,
+      );
+
+      expect(result.estado).toBe('ENVIADA');
+      expect(prisma.solicitud.update).toHaveBeenCalled();
+      expect(prisma.historialEstado.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ estado: 'ENVIADA' }),
+        }),
+      );
     });
   });
 });

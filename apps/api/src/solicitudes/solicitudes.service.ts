@@ -133,6 +133,15 @@ export class SolicitudesService {
       );
     }
 
+    if (dto.accion === 'enviar') {
+      const checklist = await this.obtenerChecklist(id, usuario);
+      if (!checklist.completo) {
+        throw new BadRequestException(
+          `La solicitud no está completa: ${checklist.pendientes.join('; ')}`,
+        );
+      }
+    }
+
     const siguienteEstado = SolicitudStateMachine.next(
       solicitud.estado as SolicitudEstado,
       dto.accion,
@@ -305,6 +314,102 @@ export class SolicitudesService {
     }
 
     return { eliminado: true };
+  }
+
+  async obtenerChecklist(id: string, usuario: AuthenticatedUser) {
+    const solicitud = await this.prisma.solicitud.findUnique({
+      where: { id },
+      include: {
+        convocatoria: {
+          include: {
+            documentosRequeridos: { include: { documentoTipo: true } },
+          },
+        },
+        perfilAcademico: true,
+        perfilFinanciero: true,
+        documentos: { include: { documentoTipo: true } },
+      },
+    });
+
+    if (!solicitud) {
+      throw new NotFoundException(`Solicitud con id ${id} no encontrada`);
+    }
+
+    this.assertAcceso(solicitud, usuario);
+
+    const perfilAcademicoOk = this.esPerfilAcademicoCompleto(
+      solicitud.perfilAcademico,
+    );
+    const perfilFinancieroOk = this.esPerfilFinancieroCompleto(
+      solicitud.perfilFinanciero,
+    );
+
+    const ultimosPorTipo = new Map<string, (typeof solicitud.documentos)[number]>();
+    for (const doc of solicitud.documentos) {
+      const actual = ultimosPorTipo.get(doc.documentoTipoId);
+      if (!actual || doc.version > actual.version) {
+        ultimosPorTipo.set(doc.documentoTipoId, doc);
+      }
+    }
+
+    const documentos = solicitud.convocatoria.documentosRequeridos.map(
+      (dr) => {
+        const ultimo = ultimosPorTipo.get(dr.documentoTipoId);
+        const cargado = Boolean(ultimo && ultimo.estado === 'CARGADO');
+        return {
+          documentoTipoId: dr.documentoTipoId,
+          nombre: dr.documentoTipo.nombre,
+          obligatorio: dr.obligatorio,
+          cargado,
+          archivoUrl: cargado ? ultimo!.archivoUrl : null,
+        };
+      },
+    );
+
+    const pendientes: string[] = [];
+    if (!perfilAcademicoOk) {
+      pendientes.push('Perfil académico incompleto (género y nivel académico)');
+    }
+    if (!perfilFinancieroOk) {
+      pendientes.push('Perfil financiero incompleto (ingreso familiar requerido)');
+    }
+    for (const documento of documentos) {
+      if (documento.obligatorio && !documento.cargado) {
+        pendientes.push(`Documento "${documento.nombre}" pendiente`);
+      }
+    }
+
+    return {
+      solicitudId: id,
+      estado: solicitud.estado,
+      perfilAcademico: perfilAcademicoOk,
+      perfilFinanciero: perfilFinancieroOk,
+      documentos,
+      pendientes,
+      completo: pendientes.length === 0,
+    };
+  }
+
+  private esPerfilAcademicoCompleto(perfil?: {
+    generoId?: string | null;
+    generoOtro?: string | null;
+    nivelAcademicoId?: string | null;
+    nivelAcademicoOtro?: string | null;
+  } | null): boolean {
+    if (!perfil) {
+      return false;
+    }
+    const generoOk = Boolean(perfil.generoId || perfil.generoOtro);
+    const nivelOk = Boolean(
+      perfil.nivelAcademicoId || perfil.nivelAcademicoOtro,
+    );
+    return generoOk && nivelOk;
+  }
+
+  private esPerfilFinancieroCompleto(perfil?: {
+    ingresoFamiliar?: number | null;
+  } | null): boolean {
+    return Boolean(perfil && perfil.ingresoFamiliar != null);
   }
 
   private async obtainEditable(id: string, usuario: AuthenticatedUser) {

@@ -76,6 +76,16 @@ export class SolicitudesController {
     return this.solicitudesService.findAll(usuario);
   }
 
+  @Get(':id/checklist')
+  @Permisos('solicitud:ver')
+  @ApiOperation({ summary: 'Checklist de completitud (perfiles y documentos)' })
+  checklist(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() usuario: AuthenticatedUser,
+  ) {
+    return this.solicitudesService.obtenerChecklist(id, usuario);
+  }
+
   @Get(':id')
   @Permisos('solicitud:ver')
   @ApiOperation({ summary: 'Obtener solicitud por ID' })
