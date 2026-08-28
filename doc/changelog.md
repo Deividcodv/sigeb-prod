@@ -70,20 +70,24 @@ Las categorías son:
 
 ---
 
-## [Sprint 2] — 2026-XX-XX
+## [Sprint 2] — 2026-08-27
 
 ### Added
-- [ ] Guard de permisos con Chain of Responsibility
-- [ ] CRUD de catálogos (géneros, niveles, departamentos, municipios)
-- [ ] Opción "otro" en catálogos
-- [ ] CRUD de convocatorias
-- [ ] Máquina de estados de convocatoria
-- [ ] Configuración de documentos requeridos por convocatoria
-- [ ] DocumentStorage adapter (filesystem)
+- [x] Guard de permisos con Chain of Responsibility (`@Permisos`, `PermissionsGuard`)
+- [x] CRUD de catálogos (géneros, niveles, departamentos, municipios, tipos de documento) con endpoints públicos
+- [ ] Opción "otro" en catálogos (US-13, diferida a Sprint 3)
+- [x] CRUD de convocatorias (endpoints públicos + admin)
+- [x] Máquina de estados de convocatoria (BORRADOR → ABIERTA → CERRADA → EN_EVALUACION → RESUELTA → ARCHIVADA)
+- [x] Configuración de documentos requeridos por convocatoria
+- [x] DocumentStorage adapter (filesystem) con protección path-traversal
+
+### Fixed
+- Include Prisma inválido de `criteriosEvaluacion` en `Convocatoria` (la relación vive en `Beca`); corregido con include anidado
 
 ### Notas
 - Héctor como developer principal
 - Marcos como soporte en guard de permisos
+- Smoke test manual aprobado (catálogos, convocatorias, transiciones, documentos)
 
 ---
 
@@ -192,4 +196,4 @@ Las categorías son:
 
 ---
 
-*Última actualización: 2026-08-26*
+*Última actualización: 2026-08-27*

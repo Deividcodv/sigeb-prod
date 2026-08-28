@@ -4,6 +4,9 @@ import { PrismaModule } from './prisma/prisma.module';
 import { CommonModule } from './common/common.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { StorageModule } from './storage/storage.module';
+import { CatalogosModule } from './catalogos/catalogos.module';
+import { ConvocatoriasModule } from './convocatorias/convocatorias.module';
 
 @Module({
   imports: [
@@ -12,8 +15,11 @@ import { UsersModule } from './users/users.module';
     }),
     PrismaModule,
     CommonModule,
+    StorageModule,
     AuthModule,
     UsersModule,
+    CatalogosModule,
+    ConvocatoriasModule,
   ],
   controllers: [],
   providers: [],
