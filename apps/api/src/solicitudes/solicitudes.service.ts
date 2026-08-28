@@ -3,9 +3,14 @@ import {
   NotFoundException,
   BadRequestException,
   ForbiddenException,
+  Inject,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthenticatedUser } from '../common/interfaces/authenticated-user.interface';
+import {
+  DOCUMENT_STORAGE,
+  DocumentStorage,
+} from '../storage/storage.interface';
 import { CreateSolicitudDto, TransicionSolicitudDto } from './dto';
 import { PerfilAcademicoDto, PerfilFinancieroDto } from './dto';
 import {
@@ -15,7 +20,10 @@ import {
 
 @Injectable()
 export class SolicitudesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject(DOCUMENT_STORAGE) private readonly storage: DocumentStorage,
+  ) {}
 
   async create(usuarioId: string, dto: CreateSolicitudDto) {
     const convocatoria = await this.prisma.convocatoria.findUnique({
@@ -205,6 +213,98 @@ export class SolicitudesService {
       update: campos,
       create: { solicitudId: id, ...campos },
     });
+  }
+
+  async subirDocumento(
+    id: string,
+    tipoId: string,
+    file: Express.Multer.File,
+    usuario: AuthenticatedUser,
+  ) {
+    const solicitud = await this.obtainEditable(id, usuario);
+
+    const tipo = await this.prisma.documentoTipo.findUnique({
+      where: { id: tipoId },
+    });
+    if (!tipo) {
+      throw new NotFoundException(`Tipo de documento con id ${tipoId} no encontrado`);
+    }
+
+    const convocatoria = await this.prisma.convocatoria.findUnique({
+      where: { id: solicitud.convocatoriaId },
+      include: { documentosRequeridos: true },
+    });
+    if (!convocatoria) {
+      throw new NotFoundException(`Convocatoria no encontrada`);
+    }
+
+    const aplica = convocatoria.documentosRequeridos.some(
+      (dr) => dr.documentoTipoId === tipoId,
+    );
+    if (!aplica) {
+      throw new BadRequestException(
+        'El tipo de documento no aplica a esta convocatoria',
+      );
+    }
+
+    const anterior = await this.prisma.solicitudDocumento.findFirst({
+      where: { solicitudId: id, documentoTipoId: tipoId },
+      orderBy: { version: 'desc' },
+    });
+
+    const stored = await this.storage.save(file.buffer, {
+      folder: `solicitudes/${id}`,
+      name: file.originalname,
+      contentType: file.mimetype,
+    });
+
+    const nuevo = await this.prisma.solicitudDocumento.create({
+      data: {
+        solicitudId: id,
+        documentoTipoId: tipoId,
+        archivoUrl: stored.url,
+        estado: 'CARGADO',
+        version: (anterior?.version ?? 0) + 1,
+      },
+      include: { documentoTipo: true },
+    });
+
+    if (anterior) {
+      try {
+        await this.storage.delete(anterior.archivoUrl.replace('/storage/', ''));
+      } catch {
+        // El archivo anterior ya no existe; se ignora.
+      }
+    }
+
+    return nuevo;
+  }
+
+  async eliminarDocumento(
+    id: string,
+    tipoId: string,
+    usuario: AuthenticatedUser,
+  ) {
+    await this.obtainEditable(id, usuario);
+
+    const doc = await this.prisma.solicitudDocumento.findFirst({
+      where: { solicitudId: id, documentoTipoId: tipoId },
+      orderBy: { version: 'desc' },
+    });
+
+    if (!doc) {
+      throw new NotFoundException('No hay documento cargado para este tipo');
+    }
+
+    await this.prisma.solicitudDocumento.delete({ where: { id: doc.id } });
+
+    try {
+      await this.storage.delete(doc.archivoUrl.replace('/storage/', ''));
+    } catch {
+      // El archivo ya no existe; se ignora.
+    }
+
+    return { eliminado: true };
   }
 
   private async obtainEditable(id: string, usuario: AuthenticatedUser) {

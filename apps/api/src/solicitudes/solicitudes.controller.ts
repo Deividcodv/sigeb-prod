@@ -1,4 +1,18 @@
-import { Controller, Get, Post, Put, Body, Param, ParseUUIDPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  ParseUUIDPipe,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 import {
   ApiTags,
   ApiOperation,
@@ -15,6 +29,27 @@ import {
 import { Permisos } from '../common/decorators/permisos.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { AuthenticatedUser } from '../common/interfaces/authenticated-user.interface';
+
+export const DOCUMENTO_MAX_BYTES = 5 * 1024 * 1024;
+const DOCUMENTO_MIME_PERMITIDOS = ['application/pdf', 'image/jpeg', 'image/png'];
+
+export function documentoFileFilter(
+  _req: unknown,
+  file: Express.Multer.File,
+  cb: (error: BadRequestException | null, acceptFile: boolean) => void,
+) {
+  const extensionOk = /\.(pdf|jpe?g|png)$/i.test(file.originalname);
+  if (!extensionOk || !DOCUMENTO_MIME_PERMITIDOS.includes(file.mimetype)) {
+    cb(
+      new BadRequestException(
+        'Formato no permitido: solo PDF, JPG o PNG (máximo 5 MB)',
+      ),
+      false,
+    );
+    return;
+  }
+  cb(null, true);
+}
 
 @ApiTags('Solicitudes')
 @Controller('solicitudes')
@@ -84,5 +119,39 @@ export class SolicitudesController {
     @CurrentUser() usuario: AuthenticatedUser,
   ) {
     return this.solicitudesService.guardarPerfilFinanciero(id, dto, usuario);
+  }
+
+  @Post(':id/documentos/:tipoId')
+  @Permisos('documento:crear')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+      limits: { fileSize: DOCUMENTO_MAX_BYTES, files: 1 },
+      fileFilter: documentoFileFilter,
+    }),
+  )
+  @ApiOperation({ summary: 'Subir documento (PDF, JPG o PNG, máx 5 MB)' })
+  @ApiResponse({ status: 413, description: 'Archivo mayor a 5 MB' })
+  subirDocumento(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('tipoId', ParseUUIDPipe) tipoId: string,
+    @UploadedFile() file: Express.Multer.File,
+    @CurrentUser() usuario: AuthenticatedUser,
+  ) {
+    if (!file) {
+      throw new BadRequestException('Archivo requerido en el campo "file"');
+    }
+    return this.solicitudesService.subirDocumento(id, tipoId, file, usuario);
+  }
+
+  @Delete(':id/documentos/:tipoId')
+  @Permisos('documento:eliminar')
+  @ApiOperation({ summary: 'Eliminar documento por tipo' })
+  eliminarDocumento(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('tipoId', ParseUUIDPipe) tipoId: string,
+    @CurrentUser() usuario: AuthenticatedUser,
+  ) {
+    return this.solicitudesService.eliminarDocumento(id, tipoId, usuario);
   }
 }
