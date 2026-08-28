@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Body, Param, ParseUUIDPipe } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -6,7 +6,12 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { SolicitudesService } from './solicitudes.service';
-import { CreateSolicitudDto, TransicionSolicitudDto } from './dto';
+import {
+  CreateSolicitudDto,
+  TransicionSolicitudDto,
+  PerfilAcademicoDto,
+  PerfilFinancieroDto,
+} from './dto';
 import { Permisos } from '../common/decorators/permisos.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { AuthenticatedUser } from '../common/interfaces/authenticated-user.interface';
@@ -57,5 +62,27 @@ export class SolicitudesController {
     @CurrentUser() usuario: AuthenticatedUser,
   ) {
     return this.solicitudesService.transicion(id, dto, usuario);
+  }
+
+  @Put(':id/perfil-academico')
+  @Permisos('solicitud:editar')
+  @ApiOperation({ summary: 'Guardar perfil académico (con campos "otro")' })
+  perfilAcademico(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: PerfilAcademicoDto,
+    @CurrentUser() usuario: AuthenticatedUser,
+  ) {
+    return this.solicitudesService.guardarPerfilAcademico(id, dto, usuario);
+  }
+
+  @Put(':id/perfil-financiero')
+  @Permisos('solicitud:editar')
+  @ApiOperation({ summary: 'Guardar perfil financiero' })
+  perfilFinanciero(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: PerfilFinancieroDto,
+    @CurrentUser() usuario: AuthenticatedUser,
+  ) {
+    return this.solicitudesService.guardarPerfilFinanciero(id, dto, usuario);
   }
 }
