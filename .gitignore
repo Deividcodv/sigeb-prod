@@ -40,7 +40,7 @@ yarn-error.log*
 prisma/migrations/
 
 # Storage
-storage/
+/storage/
 apps/api/storage/
 
 # Testing
