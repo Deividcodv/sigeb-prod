@@ -118,6 +118,22 @@ async function main() {
   }
   console.log('✅ Permisos asignados a ADMIN');
 
+  // POSTULANTE tiene permisos de solicitudes y documentos
+  const postulanteRole = roles.find((r) => r.nombre === 'POSTULANTE');
+  const permisosPostulante = permisos.filter((p) =>
+    ['solicitud', 'documento'].includes(p.modulo),
+  );
+  for (const permiso of permisosPostulante) {
+    await prisma.rolPermiso.upsert({
+      where: {
+        rolId_permisoId: { rolId: postulanteRole!.id, permisoId: permiso.id },
+      },
+      update: {},
+      create: { rolId: postulanteRole!.id, permisoId: permiso.id },
+    });
+  }
+  console.log('✅ Permisos de solicitud/documento asignados a POSTULANTE');
+
   // ==========================================
   // BECAS Y CRITERIOS (demo)
   // ==========================================
@@ -261,6 +277,27 @@ async function main() {
     },
   });
   console.log('✅ Usuario admin creado (admin@sigeb.gov.gt / Admin123!)');
+
+  // ==========================================
+  // USUARIO POSTULANTE POR DEFECTO
+  // ==========================================
+  const postulanteRoleData = await prisma.rol.findUnique({
+    where: { nombre: 'POSTULANTE' },
+  });
+
+  await prisma.usuario.upsert({
+    where: { cui: '9999999999999' },
+    update: {},
+    create: {
+      cui: '9999999999999',
+      nombres: 'Postulante Demo',
+      email: 'postulante@demo.gt',
+      passwordHash: hashedPassword,
+      rolId: postulanteRoleData!.id,
+      estado: 'ACTIVO',
+    },
+  });
+  console.log('✅ Usuario postulante creado (postulante@demo.gt / Admin123!)');
 
   console.log('🎉 Seed completado exitosamente!');
 }
