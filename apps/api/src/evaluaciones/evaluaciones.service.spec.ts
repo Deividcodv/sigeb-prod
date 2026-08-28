@@ -239,4 +239,97 @@ describe('EvaluacionesService', () => {
       });
     });
   });
+
+  describe('scoreSolicitud (US-29: auto-score)', () => {
+    const evaluaciones = (solicitudId: string) => [
+      {
+        solicitudId,
+        evaluadorId: 'u-eval1',
+        completada: true,
+        puntaje: 80,
+        criterioEvaluacion: { id: 'c1', nombre: 'Situación socioeconómica', peso: 0.4 },
+        evaluador: { id: 'u-eval1', nombres: 'Evaluador 1' },
+      },
+      {
+        solicitudId,
+        evaluadorId: 'u-eval1',
+        completada: true,
+        puntaje: 90,
+        criterioEvaluacion: { id: 'c2', nombre: 'Trayectoria académica', peso: 0.6 },
+        evaluador: { id: 'u-eval1', nombres: 'Evaluador 1' },
+      },
+      {
+        solicitudId,
+        evaluadorId: 'u-eval2',
+        completada: true,
+        puntaje: 60,
+        criterioEvaluacion: { id: 'c1', nombre: 'Situación socioeconómica', peso: 0.4 },
+        evaluador: { id: 'u-eval2', nombres: 'Evaluador 2' },
+      },
+      {
+        solicitudId,
+        evaluadorId: 'u-eval2',
+        completada: true,
+        puntaje: 70,
+        criterioEvaluacion: { id: 'c2', nombre: 'Trayectoria académica', peso: 0.6 },
+        evaluador: { id: 'u-eval2', nombres: 'Evaluador 2' },
+      },
+    ];
+
+    it('rechaza solicitud inexistente', async () => {
+      prisma.solicitud.findUnique.mockResolvedValue(null);
+      await expect(service.scoreSolicitud('s1')).rejects.toThrow(NotFoundException);
+    });
+
+    it('devuelve score null si no hay evaluaciones completadas', async () => {
+      prisma.solicitud.findUnique.mockResolvedValue({ id: 's1', estado: 'EN_REVISION' });
+      prisma.evaluacion.findMany.mockResolvedValue([]);
+      const result = await service.scoreSolicitud('s1');
+      expect(result.score).toBeNull();
+      expect(result.completo).toBe(false);
+    });
+
+    it('calcula score ponderado por evaluador y promedio entre evaluadores', async () => {
+      prisma.solicitud.findUnique.mockResolvedValue({ id: 's1', estado: 'EN_REVISION' });
+      prisma.evaluacion.findMany.mockResolvedValue(evaluaciones('s1'));
+
+      const result = await service.scoreSolicitud('s1');
+
+      // eval1: 0.4*80 + 0.6*90 = 32 + 54 = 86
+      // eval2: 0.4*60 + 0.6*70 = 24 + 42 = 66
+      expect(result.evaluadores[0].score).toBe(86);
+      expect(result.evaluadores[1].score).toBe(66);
+      expect(result.score).toBe(76); // promedio 86 y 66
+      expect(result.completo).toBe(true);
+    });
+
+    it('solo promedia evaluadores completos', async () => {
+      prisma.solicitud.findUnique.mockResolvedValue({ id: 's1', estado: 'EN_REVISION' });
+      const parcial = evaluaciones('s1').slice(0, 2); // solo ev1, ambos criterios
+      parcial.push({
+        solicitudId: 's1',
+        evaluadorId: 'u-eval2',
+        completada: false,
+        puntaje: null,
+        criterioEvaluacion: { id: 'c1', nombre: 'Situación socioeconómica', peso: 0.4 },
+        evaluador: { id: 'u-eval2', nombres: 'Evaluador 2' },
+      });
+      parcial.push({
+        solicitudId: 's1',
+        evaluadorId: 'u-eval2',
+        completada: false,
+        puntaje: null,
+        criterioEvaluacion: { id: 'c2', nombre: 'Trayectoria académica', peso: 0.6 },
+        evaluador: { id: 'u-eval2', nombres: 'Evaluador 2' },
+      });
+      prisma.evaluacion.findMany.mockResolvedValue(parcial);
+
+      const result = await service.scoreSolicitud('s1');
+
+      expect(result.score).toBe(86);
+      expect(result.completo).toBe(false);
+      expect(result.evaluadores[0].completo).toBe(true);
+      expect(result.evaluadores[1].completo).toBe(false);
+    });
+  });
 });

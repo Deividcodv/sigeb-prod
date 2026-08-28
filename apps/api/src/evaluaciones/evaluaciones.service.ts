@@ -199,4 +199,79 @@ export class EvaluacionesService {
       throw new ForbiddenException('Solo los administradores pueden asignar evaluadores');
     }
   }
+
+  async scoreSolicitud(solicitudId: string) {
+    const solicitud = await this.prisma.solicitud.findUnique({
+      where: { id: solicitudId },
+    });
+
+    if (!solicitud) {
+      throw new NotFoundException(`Solicitud con id ${solicitudId} no encontrada`);
+    }
+
+    const evaluaciones = await this.prisma.evaluacion.findMany({
+      where: { solicitudId },
+      include: {
+        criterioEvaluacion: { select: { id: true, nombre: true, peso: true } },
+        evaluador: { select: { id: true, nombres: true } },
+      },
+    });
+
+    const porEvaluador = new Map<string, any>();
+    for (const ev of evaluaciones) {
+      const key = ev.evaluadorId;
+      const grupo = porEvaluador.get(key) ?? {
+        evaluador: { id: key, nombres: ev.evaluador.nombres },
+        criterios: [] as any[],
+        completados: 0,
+        total: 0,
+      };
+      grupo.total += 1;
+      if (ev.completada) {
+        grupo.completados += 1;
+        grupo.criterios.push({
+          id: ev.criterioEvaluacion.id,
+          nombre: ev.criterioEvaluacion.nombre,
+          peso: ev.criterioEvaluacion.peso,
+          puntaje: ev.puntaje,
+        });
+      }
+      porEvaluador.set(key, grupo);
+    }
+
+    const evaluadores = Array.from(porEvaluador.values()).map((g) => {
+      const sumPesos = g.criterios.reduce(
+        (acc: number, c: { peso: number }) => acc + c.peso,
+        0,
+      );
+      const sumPonderado = g.criterios.reduce(
+        (acc: number, c: { peso: number; puntaje: number }) =>
+          acc + c.peso * c.puntaje,
+        0,
+      );
+      const completo = g.completados === g.total && g.total > 0;
+      return {
+        evaluador: g.evaluador,
+        criterios: g.criterios,
+        completados: g.completados,
+        total: g.total,
+        completo,
+        score: completo && sumPesos > 0 ? sumPonderado / sumPesos : null,
+      };
+    });
+
+    const scores = evaluadores
+      .filter((e) => e.score !== null)
+      .map((e) => e.score as number);
+    const completo = evaluadores.length > 0 && evaluadores.every((e) => e.completo);
+
+    return {
+      solicitudId,
+      score: scores.length > 0
+        ? Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 100) / 100
+        : null,
+      completo,
+      evaluadores,
+    };
+  }
 }

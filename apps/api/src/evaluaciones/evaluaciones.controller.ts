@@ -24,6 +24,13 @@ export class EvaluacionesController {
     return this.evaluacionesService.misEvaluaciones(usuario);
   }
 
+  @Get('solicitudes/:id/score')
+  @Permisos('evaluacion:ver')
+  @ApiOperation({ summary: 'Score ponderado de una solicitud (auto-score)' })
+  scoreSolicitud(@Param('id', ParseUUIDPipe) id: string) {
+    return this.evaluacionesService.scoreSolicitud(id);
+  }
+
   @Post('solicitudes/:id/evaluadores')
   @Permisos('evaluacion:crear')
   @ApiOperation({ summary: 'Asignar evaluadores a una solicitud en EN_REVISION' })
