@@ -9,6 +9,7 @@ import { CatalogosModule } from './catalogos/catalogos.module';
 import { ConvocatoriasModule } from './convocatorias/convocatorias.module';
 import { SolicitudesModule } from './solicitudes/solicitudes.module';
 import { EvaluacionesModule } from './evaluaciones/evaluaciones.module';
+import { ComitesModule } from './comites/comites.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { EvaluacionesModule } from './evaluaciones/evaluaciones.module';
     ConvocatoriasModule,
     SolicitudesModule,
     EvaluacionesModule,
+    ComitesModule,
   ],
   controllers: [],
   providers: [],
