@@ -143,45 +143,48 @@ async function main() {
   }
   console.log('✅ Permisos de solicitud/documento asignados a POSTULANTE');
 
-  // EVALUADOR
-  const evaluadorRole = roles.find((r) => r.nombre === 'EVALUADOR');
-  for (const permiso of permisos.filter((p) =>
-    ['evaluacion', 'solicitud'].includes(p.modulo) &&
-    (p.accion === 'ver' || p.modulo === 'evaluacion'),
-  )) {
-    await prisma.rolPermiso.upsert({
-      where: { rolId_permisoId: { rolId: evaluadorRole!.id, permisoId: permiso.id } },
-      update: {},
-      create: { rolId: evaluadorRole!.id, permisoId: permiso.id },
-    });
-  }
-  console.log('✅ Permisos asignados a EVALUADOR');
+  // EVALUADOR: evaluacion completo + solicitud:ver
+  // COORDINADOR_COMITE: comite/sesion/decision/evaluacion/solicitud completo
+  // MIEMBRO_COMITE: voto:crear + ver de sesion/comite/solicitud
+  const permisosPorRol: Array<[string, (p: (typeof permisos)[number]) => boolean]> = [
+    [
+      'EVALUADOR',
+      (p) =>
+        p.modulo === 'evaluacion' ||
+        (p.modulo === 'solicitud' && p.accion === 'ver'),
+    ],
+    [
+      'COORDINADOR_COMITE',
+      (p) =>
+        ['comite', 'sesion', 'decision', 'evaluacion', 'solicitud'].includes(
+          p.modulo,
+        ),
+    ],
+    [
+      'MIEMBRO_COMITE',
+      (p) =>
+        p.modulo === 'voto' ||
+        (p.accion === 'ver' && ['sesion', 'comite', 'solicitud'].includes(p.modulo)),
+    ],
+  ];
 
-  // COORDINADOR_COMITE
-  const coordinadorRole = roles.find((r) => r.nombre === 'COORDINADOR_COMITE');
-  for (const permiso of permisos.filter((p) =>
-    ['comite', 'sesion', 'decision', 'evaluacion', 'solicitud'].includes(p.modulo),
-  )) {
-    await prisma.rolPermiso.upsert({
-      where: { rolId_permisoId: { rolId: coordinadorRole!.id, permisoId: permiso.id } },
-      update: {},
-      create: { rolId: coordinadorRole!.id, permisoId: permiso.id },
+  for (const [rolNombre, filtro] of permisosPorRol) {
+    const rol = roles.find((r) => r.nombre === rolNombre);
+    const permitidos = permisos.filter(filtro).map((p) => p.id);
+    await prisma.rolPermiso.deleteMany({
+      where: { rolId: rol!.id, permisoId: { notIn: permitidos } },
     });
+    for (const pid of permitidos) {
+      await prisma.rolPermiso.upsert({
+        where: {
+          rolId_permisoId: { rolId: rol!.id, permisoId: pid },
+        },
+        update: {},
+        create: { rolId: rol!.id, permisoId: pid },
+      });
+    }
+    console.log(`✅ Permisos asignados a ${rolNombre}`);
   }
-  console.log('✅ Permisos asignados a COORDINADOR_COMITE');
-
-  // MIEMBRO_COMITE
-  const miembroRole = roles.find((r) => r.nombre === 'MIEMBRO_COMITE');
-  for (const permiso of permisos.filter((p) =>
-    ['voto', 'sesion', 'comite', 'solicitud'].includes(p.modulo),
-  )) {
-    await prisma.rolPermiso.upsert({
-      where: { rolId_permisoId: { rolId: miembroRole!.id, permisoId: permiso.id } },
-      update: {},
-      create: { rolId: miembroRole!.id, permisoId: permiso.id },
-    });
-  }
-  console.log('✅ Permisos asignados a MIEMBRO_COMITE');
 
   // ==========================================
   // BECAS Y CRITERIOS (demo)
