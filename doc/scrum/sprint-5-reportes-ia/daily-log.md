@@ -23,12 +23,12 @@
 - M2 auditoría (US-36): `AuditService.log()` dirigido + `GET /audit` (permiso `auditoria:ver`, seed actualizado); integración en auth (login/refresh con IP desde `@Req`), convocatorias, solicitudes, evaluaciones, sesiones, comités y roles. Build/lint OK, 98 tests verdes; smoke local (login→audit, `GET /audit` admin, 403 postulante, 401 anónimo) OK.
 
 **¿Qué haré hoy?**
-- Commit de M2 (audit + smoke CI + docs) y push con CI verde.
-- M3: migración `tsvector`, seed de base de conocimiento (US-37) y `AsistenteIAProxy` con proveedor fallback por reglas/KB + `POST /asistente/preguntar`.
+- M2: commit `16f724d` (audit + smoke CI + docs) con CI verde `33237704482`; 98 tests verdes.
+- M3: migración `tsvector` aplicada (GIN funcional con `to_tsvector('spanish', titulo || ' ' || contenido)`), seed de base de conocimiento (33 entradas, US-37/US-39), `AsistenteIAProxy` + `FallbackProveedor` + `POST /asistente/preguntar` público. Build/lint OK, 100 tests verdes; smoke local OK (requisitos/beca/sin-match/400 con fuentes).
 
 **Bloqueos:**
 - Sin credenciales para IA: el proveedor LLM quedó opcional vía `AI_API_KEY`; por defecto fallback por reglas/KB (también para el CI smoke).
-- Igual que S3/S4: `prisma migrate dev` EPERM con la API corriendo; detener antes de la migración de `tsvector`. 
+- PG16: `concat_ws` y `array_to_string` son STABLE, así que `tags` (text[]) no se puede incluir en el índice funcional ni en su expresión; el índice usa solo `||` inmutables. Los tags se filtran por coincidencia exacta en la app. 
 
 ---
 

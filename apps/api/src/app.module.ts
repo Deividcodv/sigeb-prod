@@ -13,6 +13,7 @@ import { ComitesModule } from './comites/comites.module';
 import { SesionesModule } from './sesiones/sesiones.module';
 import { ReportesModule } from './reportes/reportes.module';
 import { AuditModule } from './audit/audit.module';
+import { AsistenteModule } from './asistente/asistente.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { AuditModule } from './audit/audit.module';
     SesionesModule,
     ReportesModule,
     AuditModule,
+    AsistenteModule,
   ],
   controllers: [],
   providers: [],

@@ -211,4 +211,15 @@ CODE=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/audit" -H "Authorization: B
 CODE=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/audit")
 [ "$CODE" = "401" ] || { echo "Auditoria anonima esperaba 401, obtuve $CODE"; exit 1; }
 
-echo "SMOKE CI OK (S3 solicitudes + S4 evaluaciones/sesiones/rechazo docs + S5 reportes/CSV + auditoria)"
+# ---- Sprint 5: asistente IA sobre base de conocimiento (US-37/US-39) ----
+S5_AI=$(curl -sf -X POST "$BASE/asistente/preguntar" -H 'Content-Type: application/json' \
+  -d '{"pregunta":"¿cuáles son los requisitos para postular?"}')
+[ "$(echo "$S5_AI" | jq -r '.data.respuesta | contains("Requisitos")')" = "true" ] || { echo "Asistente no respondio con info de requisitos"; exit 1; }
+S5_AI_FUENTES=$(echo "$S5_AI" | jq -r '.data.fuentes | length')
+[ "$S5_AI_FUENTES" -gt 0 ] || { echo "Asistente respondio sin fuentes"; exit 1; }
+
+CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE/asistente/preguntar" \
+  -H 'Content-Type: application/json' -d '{"pregunta":""}')
+[ "$CODE" = "400" ] || { echo "Pregunta vacia esperaba 400, obtuve $CODE"; exit 1; }
+
+echo "SMOKE CI OK (S3 solicitudes + S4 evaluaciones/sesiones/rechazo docs + S5 reportes/CSV + auditoria + asistente)"

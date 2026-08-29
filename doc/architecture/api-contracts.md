@@ -374,7 +374,9 @@ Acciones auditadas: `login`, `refresh` (auth), `transicion`, `configurar-documen
 ## Asistente (`/asistente`)
 
 ### POST `/asistente/preguntar`
-**Público** (respuesta acotada) / autenticado (respuesta ampliada)
+**Público** (respuesta acotada).
+
+El endpoint responde preguntas sobre becas, postulaciones, documentos, convocatorias y evaluación. La respuesta se genera a partir de la base de conocimiento de SIGEB (tabla `asistente_base_conocimiento`) con búsqueda de texto completo en español (PostgreSQL `tsvector`), y cada pregunta se persiste como conversación anónima o vinculada al usuario (token JWT) para trazabilidad.
 
 Request:
 ```json
@@ -383,13 +385,21 @@ Request:
 }
 ```
 
-Response 200:
+Validación: `pregunta` requerida, string, máx. 500 caracteres.
+
+Response `201`:
 ```json
 {
-  "respuesta": "Para la beca de excelencia académica...",
-  "fuentes": ["convocatoria-1", "convocatoria-2"]
+  "respuesta": "Aquí tienes lo que sé: 1. Beca de excelencia académica: ...",
+  "fuentes": ["Beca de excelencia académica"]
 }
 ```
+
+Errores: `400` (pregunta vacía o muy larga).
+
+Diseño IA (US-37/38/39): `AsistenteIAProxy` enruta la pregunta al proveedor activo.
+- **Por defecto** (sin `AI_API_KEY`): `FallbackProveedor` responde desde la KB (reglas), con `websearch_to_tsquery` OR + `ts_rank` para ordenar, top-3 fuentes. Indexación GIN funcional sobre `to_tsvector('spanish', titulo || ' ' || contenido)` (solo operadores inmutables en PG16).
+- **Opcional** (`AI_API_KEY`/`AI_BASE_URL`): proveedor LLM configurado en runtime; las credenciales nunca se versionan.
 
 ---
 
