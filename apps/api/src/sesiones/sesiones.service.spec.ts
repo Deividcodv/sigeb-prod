@@ -22,7 +22,7 @@ describe('SesionesService', () => {
     prisma = {
       comite: { findUnique: jest.fn() },
       comiteMiembro: { findFirst: jest.fn() },
-      solicitud: { findMany: jest.fn() },
+      solicitud: { findMany: jest.fn(), update: jest.fn(), count: jest.fn() },
       sesion: {
         findUnique: jest.fn(),
         findMany: jest.fn(),
@@ -30,7 +30,9 @@ describe('SesionesService', () => {
         update: jest.fn(),
       },
       voto: { findFirst: jest.fn(), create: jest.fn() },
-      decision: { createMany: jest.fn() },
+      decision: { create: jest.fn() },
+      historialEstado: { create: jest.fn() },
+      convocatoria: { findUnique: jest.fn(), update: jest.fn() },
     };
     service = new SesionesService(prisma);
   });
@@ -191,6 +193,107 @@ describe('SesionesService', () => {
           observaciones: 'Perfil sólido',
         },
       });
+    });
+  });
+
+  describe('finalizarSesion (US-33)', () => {
+    const sesionBase = {
+      id: 'ses1',
+      estado: 'EN_CURSO',
+      quorumMinimo: 2,
+      comite: { id: 'c1' },
+      agenda: [
+        {
+          solicitud: { id: 's1', estado: 'EVALUADA', convocatoriaId: 'conv1' },
+        },
+        {
+          solicitud: { id: 's2', estado: 'EVALUADA', convocatoriaId: 'conv1' },
+        },
+      ],
+      votos: [
+        { solicitudId: 's1', usuarioId: 'u-m1', voto: 'APROBAR' },
+        { solicitudId: 's1', usuarioId: 'u-m2', voto: 'RECHAZAR' },
+        { solicitudId: 's2', usuarioId: 'u-m1', voto: 'APROBAR' },
+        { solicitudId: 's2', usuarioId: 'u-m2', voto: 'APROBAR' },
+      ],
+    };
+
+    const mockResto = () => {
+      prisma.solicitud.update.mockResolvedValue({});
+      prisma.historialEstado.create.mockResolvedValue({});
+      prisma.sesion.update.mockResolvedValue({ id: 'ses1', estado: 'FINALIZADA' });
+    };
+
+    it('rechaza sesión inexistente', async () => {
+      prisma.sesion.findUnique.mockResolvedValue(null);
+      await expect(service.finalizarSesion('ses1', miembro)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('rechaza sesión ya finalizada', async () => {
+      prisma.sesion.findUnique.mockResolvedValue({ ...sesionBase, estado: 'FINALIZADA' });
+      await expect(service.finalizarSesion('ses1', miembro)).rejects.toThrow(
+        'ya fue finalizada',
+      );
+    });
+
+    it('rechaza con quórum insuficiente', async () => {
+      prisma.sesion.findUnique.mockResolvedValue({
+        ...sesionBase,
+        quorumMinimo: 3,
+      });
+      await expect(service.finalizarSesion('ses1', miembro)).rejects.toThrow(
+        'Quórum insuficiente',
+      );
+    });
+
+    it('rechaza si hay solicitudes que no están en EVALUADA', async () => {
+      prisma.sesion.findUnique.mockResolvedValue({
+        ...sesionBase,
+        agenda: [
+          { solicitud: { id: 's1', estado: 'APROBADA', convocatoriaId: 'conv1' } },
+        ],
+      });
+      await expect(service.finalizarSesion('ses1', miembro)).rejects.toThrow(
+        'no están en EVALUADA',
+      );
+    });
+
+    it('genera decisiones por mayoría, transiciona solicitudes y cierra la sesión', async () => {
+      prisma.sesion.findUnique.mockResolvedValue(sesionBase);
+      mockResto();
+      prisma.decision.create.mockResolvedValue({
+        solicitudId: 's1',
+        sesionId: 'ses1',
+        resultado: 'RECHAZADA',
+      });
+      prisma.solicitud.count.mockResolvedValue(0);
+      prisma.convocatoria.findUnique.mockResolvedValue({ estado: 'EN_EVALUACION' });
+      prisma.convocatoria.update.mockResolvedValue({ estado: 'RESUELTA' });
+
+      const result = await service.finalizarSesion('ses1', miembro);
+
+      expect(prisma.decision.create).toHaveBeenCalledTimes(2);
+      expect(prisma.solicitud.update).toHaveBeenCalledWith({
+        where: { id: 's1' },
+        data: { estado: 'RECHAZADA' },
+      });
+      expect(prisma.solicitud.update).toHaveBeenCalledWith({
+        where: { id: 's2' },
+        data: { estado: 'APROBADA' },
+      });
+      expect(prisma.historialEstado.create).toHaveBeenCalledTimes(2);
+      expect(prisma.convocatoria.update).toHaveBeenCalledWith({
+        where: { id: 'conv1' },
+        data: { estado: 'RESUELTA' },
+      });
+      expect(prisma.sesion.update).toHaveBeenCalledWith({
+        where: { id: 'ses1' },
+        data: { estado: 'FINALIZADA' },
+        include: expect.anything(),
+      });
+      expect(result.id).toBe('ses1');
     });
   });
 });

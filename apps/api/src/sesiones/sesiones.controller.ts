@@ -50,4 +50,16 @@ export class SesionesController {
   ) {
     return this.sesionesService.registrarVoto(id, dto, usuario);
   }
+
+  @Post(':id/finalizar')
+  @Permisos('sesion:editar')
+  @ApiOperation({
+    summary: 'Finalizar sesión validando quórum y generando decisiones',
+  })
+  finalizarSesion(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() usuario: AuthenticatedUser,
+  ) {
+    return this.sesionesService.finalizarSesion(id, usuario);
+  }
 }

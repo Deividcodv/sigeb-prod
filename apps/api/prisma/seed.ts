@@ -76,6 +76,7 @@ async function main() {
     // Documentos
     { modulo: 'documento', accion: 'crear' },
     { modulo: 'documento', accion: 'ver' },
+    { modulo: 'documento', accion: 'editar' },
     { modulo: 'documento', accion: 'eliminar' },
     // Evaluaciones
     { modulo: 'evaluacion', accion: 'crear' },
@@ -156,7 +157,7 @@ async function main() {
     [
       'COORDINADOR_COMITE',
       (p) =>
-        ['comite', 'sesion', 'decision', 'evaluacion', 'solicitud'].includes(
+        ['comite', 'sesion', 'decision', 'evaluacion', 'solicitud', 'documento'].includes(
           p.modulo,
         ),
     ],

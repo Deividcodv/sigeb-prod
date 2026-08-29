@@ -316,6 +316,43 @@ export class SolicitudesService {
     return { eliminado: true };
   }
 
+  async marcarEstadoDocumento(
+    id: string,
+    tipoId: string,
+    estado: 'RECHAZADO',
+    usuario: AuthenticatedUser,
+  ) {
+    const esRevisor =
+      this.esAdmin(usuario) || usuario.rol?.nombre === 'COORDINADOR_COMITE';
+    if (!esRevisor) {
+      throw new ForbiddenException(
+        'Solo administradores o el coordinador del comité pueden rechazar documentos',
+      );
+    }
+
+    const solicitud = await this.prisma.solicitud.findUnique({
+      where: { id },
+    });
+    if (!solicitud) {
+      throw new NotFoundException(`Solicitud con id ${id} no encontrada`);
+    }
+
+    const doc = await this.prisma.solicitudDocumento.findFirst({
+      where: { solicitudId: id, documentoTipoId: tipoId },
+      orderBy: { version: 'desc' },
+    });
+
+    if (!doc) {
+      throw new NotFoundException('No hay documento cargado para este tipo');
+    }
+
+    return this.prisma.solicitudDocumento.update({
+      where: { id: doc.id },
+      data: { estado },
+      include: { documentoTipo: true },
+    });
+  }
+
   async obtenerChecklist(id: string, usuario: AuthenticatedUser) {
     const solicitud = await this.prisma.solicitud.findUnique({
       where: { id },

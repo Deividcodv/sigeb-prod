@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Put,
+  Patch,
   Delete,
   Body,
   Param,
@@ -25,6 +26,7 @@ import {
   TransicionSolicitudDto,
   PerfilAcademicoDto,
   PerfilFinancieroDto,
+  MarcarEstadoDocumentoDto,
 } from './dto';
 import { Permisos } from '../common/decorators/permisos.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
@@ -163,5 +165,22 @@ export class SolicitudesController {
     @CurrentUser() usuario: AuthenticatedUser,
   ) {
     return this.solicitudesService.eliminarDocumento(id, tipoId, usuario);
+  }
+
+  @Patch(':id/documentos/:tipoId/estado')
+  @Permisos('documento:editar')
+  @ApiOperation({ summary: 'Marcar documento como RECHAZADO (retro S3)' })
+  marcarEstadoDocumento(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('tipoId', ParseUUIDPipe) tipoId: string,
+    @Body() dto: MarcarEstadoDocumentoDto,
+    @CurrentUser() usuario: AuthenticatedUser,
+  ) {
+    return this.solicitudesService.marcarEstadoDocumento(
+      id,
+      tipoId,
+      dto.estado,
+      usuario,
+    );
   }
 }
