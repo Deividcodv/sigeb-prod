@@ -141,7 +141,7 @@ Las categorías son:
 
 ---
 
-## [Sprint 5] — 2026-XX-XX
+## [Sprint 5] — 2026-08-29
 
 ### Added
 - [x] Reportes de resumen (solicitudes por estado, convocatorias, evaluaciones)
@@ -151,12 +151,11 @@ Las categorías son:
 - [x] `AsistenteIAProxy` con contexto por sesión/rol y `OpenAIProveedor` opcional vía `AI_API_KEY`/`AI_BASE_URL` (timeouts + degradación a fallback)
 - [x] Base de conocimiento indexada con tsvector (GIN funcional, `to_tsvector('spanish', titulo || ' ' || contenido)`)
 - [x] Layout base + Design System + Tailwind + paleta en `apps/web` (Header/Footer, `Container`/`Button`/`Card`/`Badge`, home con convocatorias reales vía SWR y proxy `/api` en `next.config`)
-- [ ] Layout base + Design System + Tailwind
 
 ### Notas
-- José en reportes
-- Hamilton en asistente IA
-- Yemerson en Layout base
+- Entregado por hitos M1–M5 con CI verde en cada uno: `00c1d21` (M1 reportes), `16f724d` (M2 auditoría), `0a05250` (M3 asistente/KB), `dab4fcd` (M4 proxy LLM opcional), `bbbcc7c` (M5 frontend base).
+- 100+ tests de API verdes (13 suites) + build/lint de API y web; smoke CI "Sprints 3-5" cubre s3/s4/s5 (reportes, CSV, auditoría, asistente).
+- José en reportes, Hamilton en asistente IA, Yemerson en Layout base.
 
 ---
 

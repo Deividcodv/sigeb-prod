@@ -6,13 +6,13 @@ Estimaciones alineadas al product-backlog. Total: **29 puntos** (S4 medía 44 �
 
 | ID | Historia | Prioridad | Puntos | Asignado | Hito | Estado |
 |----|----------|-----------|--------|----------|------|--------|
-| US-34 | Como admin, quiero generar reportes de resumen (solicitudes por estado, convocatorias, evaluaciones) para tener visibilidad | Should | 5 | José | M1 | Pendiente |
-| US-35 | Como admin, quiero exportar reportes a CSV para analizar en Excel | Should | 3 | José | M1 | Pendiente |
-| US-36 | Como admin, quiero un AuditLog de acciones sensibles para trazabilidad | Must | 3 | José | M2 | Pendiente |
-| US-37 | Como visitante, quiero preguntar al asistente IA y recibir respuestas acotadas para obtener información sin cuenta | Should | 5 | Hamilton | M3 | Pendiente |
-| US-38 | Como dev, quiero un `AsistenteIAProxy` que resuelva contexto según sesión y rol para controlar qué ve la IA | Should | 5 | Hamilton | M4 | Pendiente |
-| US-39 | Como dev, quiero una base de conocimiento indexada con `tsvector` para que el asistente busque respuestas | Should | 3 | Hamilton | M3 | Pendiente |
-| US-40 | Como dev, quiero el Layout base + Design System + Tailwind + paleta de colores para empezar el frontend | Must | 5 | Yemerson | M5 | Pendiente |
+| US-34 | Como admin, quiero generar reportes de resumen (solicitudes por estado, convocatorias, evaluaciones) para tener visibilidad | Should | 5 | José | M1 | Completo |
+| US-35 | Como admin, quiero exportar reportes a CSV para analizar en Excel | Should | 3 | José | M1 | Completo |
+| US-36 | Como admin, quiero un AuditLog de acciones sensibles para trazabilidad | Must | 3 | José | M2 | Completo |
+| US-37 | Como visitante, quiero preguntar al asistente IA y recibir respuestas acotadas para obtener información sin cuenta | Should | 5 | Hamilton | M3 | Completo |
+| US-38 | Como dev, quiero un `AsistenteIAProxy` que resuelva contexto según sesión y rol para controlar qué ve la IA | Should | 5 | Hamilton | M4 | Completo |
+| US-39 | Como dev, quiero una base de conocimiento indexada con `tsvector` para que el asistente busque respuestas | Should | 3 | Hamilton | M3 | Completo |
+| US-40 | Como dev, quiero el Layout base + Design System + Tailwind + paleta de colores para empezar el frontend | Must | 5 | Yemerson | M5 | Completo |
 
 **Total de puntos:** 29
 

@@ -19,12 +19,12 @@
 
 ## Criterios de Aceptación
 
-- [ ] Reportes generan datos agregados (solicitudes por estado, convocatorias, evaluaciones + evaluaciones pendientes)
-- [ ] CSV se exporta correctamente (UTF-8 con BOM para Excel)
-- [ ] Audit log registra acciones importantes
-- [ ] Asistente IA responde preguntas sobre becas (acotado al dominio)
-- [ ] Proxy IA protege credenciales y degrada a fallback sin key
-- [ ] Layout base del frontend funciona y consume la API
+- [x] Reportes generan datos agregados (solicitudes por estado, convocatorias, evaluaciones + evaluaciones pendientes)
+- [x] CSV se exporta correctamente (UTF-8 con BOM para Excel)
+- [x] Audit log registra acciones importantes
+- [x] Asistente IA responde preguntas sobre becas (acotado al dominio)
+- [x] Proxy IA protege credenciales y degrada a fallback sin key
+- [x] Layout base del frontend funciona y consume la API
 
 ## Participantes
 
