@@ -5,7 +5,16 @@ const nextConfig = {
     domains: ['localhost'],
   },
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api',
+    // Mismo-origen: el proxy de abajo reenvía /api a la API de SIGEB en dev.
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || '/api',
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${process.env.NEXT_PUBLIC_API_PROXY || 'http://localhost:3000/api'}/:path*`,
+      },
+    ];
   },
 };
 

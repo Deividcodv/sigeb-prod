@@ -16,6 +16,7 @@ const miembro: AuthenticatedUser = {
 
 describe('SesionesService', () => {
   let prisma: any;
+  let audit: any;
   let service: SesionesService;
 
   beforeEach(() => {
@@ -34,7 +35,8 @@ describe('SesionesService', () => {
       historialEstado: { create: jest.fn() },
       convocatoria: { findUnique: jest.fn(), update: jest.fn() },
     };
-    service = new SesionesService(prisma);
+    audit = { log: jest.fn() };
+    service = new SesionesService(prisma, audit);
   });
 
   describe('crearSesion (US-31)', () => {
@@ -48,7 +50,7 @@ describe('SesionesService', () => {
 
     it('rechaza comité inexistente', async () => {
       prisma.comite.findUnique.mockResolvedValue(null);
-      await expect(service.crearSesion(dto)).rejects.toThrow(NotFoundException);
+      await expect(service.crearSesion(dto, miembro)).rejects.toThrow(NotFoundException);
     });
 
     it('rechaza solicitudes inexistentes', async () => {
@@ -57,7 +59,7 @@ describe('SesionesService', () => {
         { id: 's1', estado: 'EVALUADA', convocatoriaId: 'conv1' },
       ]);
       await expect(
-        service.crearSesion({ ...dto, solicitudesIds: ['s1', 's2'] }),
+        service.crearSesion({ ...dto, solicitudesIds: ['s1', 's2'] }, miembro),
       ).rejects.toThrow(NotFoundException);
     });
 
@@ -67,7 +69,7 @@ describe('SesionesService', () => {
         { id: 's1', estado: 'BORRADOR', convocatoriaId: 'conv1' },
       ]);
       await expect(
-        service.crearSesion({ ...dto, solicitudesIds: ['s1'] }),
+        service.crearSesion({ ...dto, solicitudesIds: ['s1'] }, miembro),
       ).rejects.toThrow('solo admite solicitudes EVALUADA');
     });
 
@@ -77,7 +79,7 @@ describe('SesionesService', () => {
         { id: 's1', estado: 'EVALUADA', convocatoriaId: 'conv1' },
         { id: 's2', estado: 'EVALUADA', convocatoriaId: 'conv2' },
       ]);
-      await expect(service.crearSesion(dto)).rejects.toThrow(
+      await expect(service.crearSesion(dto, miembro)).rejects.toThrow(
         'misma convocatoria',
       );
     });
@@ -90,7 +92,7 @@ describe('SesionesService', () => {
       ]);
       prisma.sesion.create.mockResolvedValue({ id: 'ses1' });
 
-      const result = await service.crearSesion(dto);
+      const result = await service.crearSesion(dto, miembro);
 
       expect(result.id).toBe('ses1');
       expect(prisma.sesion.create).toHaveBeenCalledWith({
@@ -221,7 +223,11 @@ describe('SesionesService', () => {
     const mockResto = () => {
       prisma.solicitud.update.mockResolvedValue({});
       prisma.historialEstado.create.mockResolvedValue({});
-      prisma.sesion.update.mockResolvedValue({ id: 'ses1', estado: 'FINALIZADA' });
+      prisma.sesion.update.mockResolvedValue({
+      id: 'ses1',
+      estado: 'FINALIZADA',
+      decisiones: [],
+    });
     };
 
     it('rechaza sesión inexistente', async () => {

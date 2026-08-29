@@ -14,6 +14,8 @@ import { CreateRolDto } from './dto/create-rol.dto';
 import { UpdateRolDto } from './dto/update-rol.dto';
 import { AssignPermisoDto } from './dto/assign-permiso.dto';
 import { Permisos } from '../common/decorators/permisos.decorator';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { AuthenticatedUser } from '../common/interfaces/authenticated-user.interface';
 
 @ApiTags('Seguridad')
 @Controller('seguridad')
@@ -45,8 +47,8 @@ export class UsersController {
   @ApiOperation({ summary: 'Crear un nuevo rol' })
   @ApiResponse({ status: 201, description: 'Rol creado' })
   @ApiResponse({ status: 409, description: 'Rol ya existe' })
-  async createRol(@Body() dto: CreateRolDto) {
-    return this.usersService.createRol(dto);
+  async createRol(@Body() dto: CreateRolDto, @CurrentUser() usuario: AuthenticatedUser) {
+    return this.usersService.createRol(dto, usuario);
   }
 
   @Patch('roles/:id')
@@ -57,8 +59,9 @@ export class UsersController {
   async updateRol(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateRolDto,
+    @CurrentUser() usuario: AuthenticatedUser,
   ) {
-    return this.usersService.updateRol(id, dto);
+    return this.usersService.updateRol(id, dto, usuario);
   }
 
   @Delete('roles/:id')
@@ -67,8 +70,11 @@ export class UsersController {
   @ApiOperation({ summary: 'Eliminar un rol' })
   @ApiResponse({ status: 200, description: 'Rol eliminado' })
   @ApiResponse({ status: 409, description: 'Rol tiene usuarios asignados' })
-  async deleteRol(@Param('id', ParseUUIDPipe) id: string) {
-    return this.usersService.deleteRol(id);
+  async deleteRol(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() usuario: AuthenticatedUser,
+  ) {
+    return this.usersService.deleteRol(id, usuario);
   }
 
   @Patch('roles/:id/permisos')
@@ -79,8 +85,9 @@ export class UsersController {
   async assignPermisoToRol(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: AssignPermisoDto,
+    @CurrentUser() usuario: AuthenticatedUser,
   ) {
-    return this.usersService.assignPermisoToRol(id, dto);
+    return this.usersService.assignPermisoToRol(id, dto, usuario);
   }
 
   @Get('permisos')

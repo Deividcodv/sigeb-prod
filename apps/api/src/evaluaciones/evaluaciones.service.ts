@@ -5,6 +5,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { AuditService } from '../audit/audit.service';
 import { AuthenticatedUser } from '../common/interfaces/authenticated-user.interface';
 import {
   AsignarEvaluadoresDto,
@@ -13,7 +14,10 @@ import {
 
 @Injectable()
 export class EvaluacionesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly audit: AuditService,
+  ) {}
 
   async misEvaluaciones(usuario: AuthenticatedUser) {
     const evaluaciones = await this.prisma.evaluacion.findMany({
@@ -141,6 +145,16 @@ export class EvaluacionesService {
           });
         }
       }
+    }
+
+    if (dto.evaluadorIds.length > 0) {
+      await this.audit.log({
+        usuarioId: usuario.id,
+        accion: 'asignar-evaluadores',
+        entidad: 'solicitud',
+        entidadId: solicitudId,
+        detalle: { evaluadorIds: dto.evaluadorIds },
+      });
     }
 
     return {

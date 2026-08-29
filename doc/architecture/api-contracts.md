@@ -278,11 +278,7 @@ Request:
 ### PATCH `/seguridad/roles/:id/permisos`
 **Permiso:** `permiso:editar`
 
-### PATCH `/seguridad/usuarios/:id/permisos`
-**Permiso:** `permiso:editar`
-
-### GET `/seguridad/auditoria`
-**Permiso:** `permiso:editar`
+El log de auditoría se consulta vía `/audit` (sección Auditoría abajo).
 
 ---
 
@@ -304,18 +300,83 @@ Request:
 
 ## Reportes (`/reportes`)
 
-### GET `/reportes/resumen`
+> Solo ADMIN. Permiso `reporte:ver`. Disponible el blueprint actual en `src/reportes`.
+
+### GET `/reportes/solicitudes-por-estado?convocatoriaId=`
 **Permiso:** `reporte:ver`
 
-### GET `/reportes/solicitudes.csv`
+Response 200:
+```json
+{
+  "data": {
+    "total": 3,
+    "porEstado": [{ "estado": "APROBADA", "cantidad": 1 }],
+    "porConvocatoria": [{ "id": "uuid", "nombre": "Beca CI", "beca": "...", "total": 3, "porEstado": [] }]
+  }
+}
+```
+
+### GET `/reportes/convocatorias`
 **Permiso:** `reporte:ver`
+
+Response 200 con `total`, `activas`, `resueltas`, `porEstado` y `detalle` (una fila por convocatoria con `solicitudes`).
+
+### GET `/reportes/evaluaciones`
+**Permiso:** `reporte:ver`
+
+Response 200 con `totalConvocatorias`, `totalSolicitudesEvaluadas` y `porConvocatoria` (score promedio, criterios completos, decisiones `aprobadas`/`rechazadas` y `pendientes`).
+
+### GET `/reportes/:tipo/csv`
+**Permiso:** `reporte:ver`
+**tipo:** `solicitudes-por-estado | convocatorias | evaluaciones`
+
+Descarga `text/csv; charset=utf-8` con `Content-Disposition: attachment` y BOM UTF-8 (abre directo en Excel). `tipo` inválido → 400.
+
+---
+
+## Auditoría (`/audit`)
+
+> Permiso `auditoria:ver`. Log de acciones sensibles (`AuditService.log`) con IP, usuario, entidad y detalle. Persistido en la tabla `audit_log`.
+
+### GET `/audit`
+**Permiso:** `auditoria:ver`
+
+Query params (todos opcionales): `entidad`, `accion`, `usuarioId`, `desde`, `hasta` (ISO), `page` (default 1), `limit` (default 50, máx 200).
+
+Response 200:
+```json
+{
+  "data": {
+    "total": 14,
+    "page": 1,
+    "limit": 50,
+    "items": [
+      {
+        "id": "uuid",
+        "usuarioId": "uuid",
+        "accion": "login",
+        "entidad": "usuario",
+        "entidadId": "uuid",
+        "detalle": null,
+        "ip": "127.0.0.1",
+        "createdAt": "2026-08-29T03:00:00.000Z",
+        "usuario": { "nombres": "Administrador SIGEB", "email": "admin@sigeb.gov.gt", "rol": { "nombre": "ADMIN" } }
+      }
+    ]
+  }
+}
+```
+
+Acciones auditadas: `login`, `refresh` (auth), `transicion`, `configurar-documentos` (convocatorias/solicitudes), `cambiar-estado-documento`, `asignar-evaluadores`, `crear`/`editar`/`eliminar`/`agregar-miembro`/`eliminar-miembro` (comités), `crear`/`votar`/`finalizar` (sesiones), `crear`/`editar`/`eliminar`/`asignar-permisos` (roles).
 
 ---
 
 ## Asistente (`/asistente`)
 
 ### POST `/asistente/preguntar`
-**Público** (respuesta acotada) / autenticado (respuesta ampliada)
+**Público** (respuesta acotada).
+
+El endpoint responde preguntas sobre becas, postulaciones, documentos, convocatorias y evaluación. La respuesta se genera a partir de la base de conocimiento de SIGEB (tabla `asistente_base_conocimiento`) con búsqueda de texto completo en español (PostgreSQL `tsvector`), y cada pregunta se persiste como conversación anónima o vinculada al usuario (token JWT) para trazabilidad.
 
 Request:
 ```json
@@ -324,14 +385,22 @@ Request:
 }
 ```
 
-Response 200:
+Validación: `pregunta` requerida, string, máx. 500 caracteres.
+
+Response `201`:
 ```json
 {
-  "respuesta": "Para la beca de excelencia académica...",
-  "fuentes": ["convocatoria-1", "convocatoria-2"]
+  "respuesta": "Aquí tienes lo que sé: 1. Beca de excelencia académica: ...",
+  "fuentes": ["Beca de excelencia académica"]
 }
 ```
 
+Errores: `400` (pregunta vacía o muy larga).
+
+Diseño IA (US-37/38/39): `AsistenteIAProxy` enruta la pregunta al proveedor activo.
+- **Por defecto** (sin `AI_API_KEY`): `FallbackProveedor` responde desde la KB (reglas), con `websearch_to_tsquery` OR + `ts_rank` para ordenar, top-3 fuentes. Indexación GIN funcional sobre `to_tsvector('spanish', titulo || ' ' || contenido)` (solo operadores inmutables en PG16).
+- **Opcional** (`AI_API_KEY`/`AI_BASE_URL`/`AI_MODEL`/`AI_TIMEOUT_MS`): `OpenAIProveedor` (API compatible OpenAI) con timeout por `AbortController`. Si el LLM falla o expira, el proxy **degradación a fallback** automáticamente (US-38). Contexto por rol: el system prompt acota la respuesta — sin sesión solo información general; autenticado añade el rol sin exponer datos de terceros ni decisiones de comités. Las credenciales nunca se versionan.
+
 ---
 
-*Última actualización: 2026-08-26*
+*Última actualización: 2026-08-29*
