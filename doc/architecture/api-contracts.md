@@ -304,11 +304,37 @@ Request:
 
 ## Reportes (`/reportes`)
 
-### GET `/reportes/resumen`
+> Solo ADMIN. Permiso `reporte:ver`. Disponible el blueprint actual en `src/reportes`.
+
+### GET `/reportes/solicitudes-por-estado?convocatoriaId=`
 **Permiso:** `reporte:ver`
 
-### GET `/reportes/solicitudes.csv`
+Response 200:
+```json
+{
+  "data": {
+    "total": 3,
+    "porEstado": [{ "estado": "APROBADA", "cantidad": 1 }],
+    "porConvocatoria": [{ "id": "uuid", "nombre": "Beca CI", "beca": "...", "total": 3, "porEstado": [] }]
+  }
+}
+```
+
+### GET `/reportes/convocatorias`
 **Permiso:** `reporte:ver`
+
+Response 200 con `total`, `activas`, `resueltas`, `porEstado` y `detalle` (una fila por convocatoria con `solicitudes`).
+
+### GET `/reportes/evaluaciones`
+**Permiso:** `reporte:ver`
+
+Response 200 con `totalConvocatorias`, `totalSolicitudesEvaluadas` y `porConvocatoria` (score promedio, criterios completos, decisiones `aprobadas`/`rechazadas` y `pendientes`).
+
+### GET `/reportes/:tipo/csv`
+**Permiso:** `reporte:ver`
+**tipo:** `solicitudes-por-estado | convocatorias | evaluaciones`
+
+Descarga `text/csv; charset=utf-8` con `Content-Disposition: attachment` y BOM UTF-8 (abre directo en Excel). `tipo` inválido → 400.
 
 ---
 

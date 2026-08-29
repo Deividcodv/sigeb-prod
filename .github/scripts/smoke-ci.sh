@@ -169,4 +169,29 @@ SOL_EST=$(curl -sf "$BASE/solicitudes/$SOL_ID" -H "Authorization: Bearer $TOKEN_
 CONV_FINAL=$(curl -sf "$BASE/convocatorias/$PUBLICADA_ID" -H "Authorization: Bearer $TOKEN_ADMIN" | jq -r '.data.estado')
 [ "$CONV_FINAL" = "RESUELTA" ] || { echo "convocatoria esperaba RESUELTA, obtuve $CONV_FINAL"; exit 1; }
 
-echo "SMOKE CI OK (S3 solicitudes + S4 evaluaciones/sesiones + rechazo de docs)"
+# ---- Sprint 5: reportes y CSV (US-34, US-35) ----
+for ENDPOINT in solicitudes-por-estado convocatorias evaluaciones; do
+  CODE=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/reportes/$ENDPOINT" -H "Authorization: Bearer $TOKEN_ADMIN")
+  [ "$CODE" = "200" ] || { echo "Reporte $ENDPOINT esperaba 200, obtuve $CODE"; exit 1; }
+done
+
+S5_TOTAL=$(curl -sf "$BASE/reportes/solicitudes-por-estado" -H "Authorization: Bearer $TOKEN_ADMIN" | jq -r '.data.porEstado | length')
+[ "$S5_TOTAL" -gt 0 ] || { echo "Reporte solicitudes-por-estado vacio"; exit 1; }
+
+S5_DEC=$(curl -sf "$BASE/reportes/evaluaciones" -H "Authorization: Bearer $TOKEN_ADMIN" \
+  | jq -r '[.data.porConvocatoria[] | select(.aprobadas > 0 or .rechazadas > 0)] | length')
+[ "$S5_DEC" -gt 0 ] || { echo "Reporte evaluaciones no refleja decisiones del smoke S4"; exit 1; }
+
+CODE=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/reportes/evaluaciones" -H "Authorization: Bearer $TOKEN_POST")
+[ "$CODE" = "403" ] || { echo "Reporte con postulante esperaba 403, obtuve $CODE"; exit 1; }
+
+CSV_HEAD=$(curl -s -D - -o /dev/null "$BASE/reportes/convocatorias/csv" -H "Authorization: Bearer $TOKEN_ADMIN")
+echo "$CSV_HEAD" | grep -qi 'text/csv' || { echo "CSV sin Content-Type text/csv"; exit 1; }
+echo "$CSV_HEAD" | grep -qi 'attachment' || { echo "CSV sin Content-Disposition attachment"; exit 1; }
+CODE=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/reportes/convocatorias/csv" -H "Authorization: Bearer $TOKEN_ADMIN")
+[ "$CODE" = "200" ] || { echo "CSV esperaba 200, obtuve $CODE"; exit 1; }
+
+CODE=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/reportes/xyz/csv" -H "Authorization: Bearer $TOKEN_ADMIN")
+[ "$CODE" = "400" ] || { echo "CSV tipo invalido esperaba 400, obtuve $CODE"; exit 1; }
+
+echo "SMOKE CI OK (S3 solicitudes + S4 evaluaciones/sesiones/rechazo docs + S5 reportes/CSV)"
