@@ -20,7 +20,7 @@ describe('SolicitudesService', () => {
       solicitud: { findUnique: jest.fn(), update: jest.fn() },
       convocatoria: { findUnique: jest.fn() },
       documentoTipo: { findUnique: jest.fn() },
-      solicitudDocumento: { findFirst: jest.fn(), create: jest.fn(), delete: jest.fn() },
+      solicitudDocumento: { findFirst: jest.fn(), create: jest.fn(), delete: jest.fn(), update: jest.fn() },
       solicitudPerfilAcademico: { upsert: jest.fn() },
       historialEstado: { create: jest.fn() },
       genero: { findUnique: jest.fn() },
@@ -343,6 +343,108 @@ describe('SolicitudesService', () => {
           data: expect.objectContaining({ estado: 'ENVIADA' }),
         }),
       );
+    });
+  });
+
+  describe('rechazo de documentos (retro S3)', () => {
+    const admin: AuthenticatedUser = {
+      id: 'u-admin',
+      cui: '1234567890123',
+      nombres: 'Admin',
+      email: 'admin@sigeb.gov.gt',
+      rol: { id: 'r-admin', nombre: 'ADMIN', descripcion: null },
+    };
+    const coordinador: AuthenticatedUser = {
+      id: 'u-coord',
+      cui: '7777777777777',
+      nombres: 'Coordinador',
+      email: 'coordinador@demo.gt',
+      rol: { id: 'r-coord', nombre: 'COORDINADOR_COMITE', descripcion: null },
+    };
+    const base = {
+      id: 's1',
+      usuarioId: 'u-postulante',
+      estado: 'BORRADOR',
+      convocatoria: {
+        documentosRequeridos: [
+          {
+            documentoTipoId: 't-cert',
+            obligatorio: true,
+            documentoTipo: { nombre: 'Certificado académico' },
+          },
+        ],
+      },
+    };
+
+    it('postulante no puede rechazar documentos', async () => {
+      await expect(
+        service.marcarEstadoDocumento('s1', 't-cert', 'RECHAZADO', postulante),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it('rechaza solicitud inexistente', async () => {
+      prisma.solicitud.findUnique.mockResolvedValue(null);
+      await expect(
+        service.marcarEstadoDocumento('s1', 't-cert', 'RECHAZADO', admin),
+      ).rejects.toThrow('no encontrada');
+    });
+
+    it('rechaza si no hay documento cargado para el tipo', async () => {
+      prisma.solicitud.findUnique.mockResolvedValue({ id: 's1', estado: 'EN_REVISION' });
+      prisma.solicitudDocumento.findFirst.mockResolvedValue(null);
+      await expect(
+        service.marcarEstadoDocumento('s1', 't-cert', 'RECHAZADO', admin),
+      ).rejects.toThrow('No hay documento cargado');
+    });
+
+    it('coordinador registra el RECHAZADO del documento más reciente', async () => {
+      prisma.solicitud.findUnique.mockResolvedValue({ id: 's1', estado: 'EN_REVISION' });
+      prisma.solicitudDocumento.findFirst.mockResolvedValue({ id: 'd1' });
+      prisma.solicitudDocumento.update.mockResolvedValue({
+        id: 'd1',
+        estado: 'RECHAZADO',
+        documentoTipo: { nombre: 'Certificado académico' },
+      });
+
+      const result = await service.marcarEstadoDocumento(
+        's1',
+        't-cert',
+        'RECHAZADO',
+        coordinador,
+      );
+
+      expect(result.estado).toBe('RECHAZADO');
+      expect(prisma.solicitudDocumento.update).toHaveBeenCalledWith({
+        where: { id: 'd1' },
+        data: { estado: 'RECHAZADO' },
+        include: { documentoTipo: true },
+      });
+      expect(prisma.solicitudDocumento.findFirst).toHaveBeenCalledWith({
+        where: { solicitudId: 's1', documentoTipoId: 't-cert' },
+        orderBy: { version: 'desc' },
+      });
+    });
+
+    it('el checklist trata un documento RECHAZADO como pendiente', async () => {
+      prisma.solicitud.findUnique.mockResolvedValue({
+        ...base,
+        perfilAcademico: { generoId: 'g1', nivelAcademicoId: 'n1' },
+        perfilFinanciero: { ingresoFamiliar: 2500 },
+        documentos: [
+          {
+            documentoTipoId: 't-cert',
+            version: 2,
+            estado: 'RECHAZADO',
+            archivoUrl: '/storage/x.pdf',
+          },
+        ],
+      });
+
+      const result = await service.obtenerChecklist('s1', postulante);
+      expect(result.pendientes).toEqual(
+        expect.arrayContaining(['Documento "Certificado académico" pendiente']),
+      );
+      expect(result.completo).toBe(false);
     });
   });
 });

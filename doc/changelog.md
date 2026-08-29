@@ -116,21 +116,28 @@ Las categorías son:
 
 ---
 
-## [Sprint 4] — 2026-XX-XX
+## [Sprint 4] — 2026-08-28
 
 ### Added
-- [ ] Evaluaciones asignadas para evaluador
-- [ ] Asignación de evaluadores a solicitud
-- [ ] Puntajes por criterio con pesos
-- [ ] Auto-cálculo de score ponderado
-- [ ] CRUD de comités y miembros
-- [ ] Creación de sesiones con agenda
-- [ ] Votos (uno por miembro por solicitud)
-- [ ] Finalización de sesión con validación de quórum
+- [x] Evaluaciones asignadas para evaluador (`GET /evaluaciones/mias`)
+- [x] Asignación de evaluadores a solicitud solo admin y en `EN_REVISION` (`POST /solicitudes/:id/evaluadores`)
+- [x] Puntajes por criterio con pesos (0–100; `PUT /solicitudes/:id/criterios/:criterioId`)
+- [x] Auto-cálculo de score ponderado en vuelo (`GET /solicitudes/:id/score`)
+- [x] CRUD de comités y miembros (listado con `_count`)
+- [x] Creación de sesiones con agenda (solo `EVALUADA` de una misma convocatoria)
+- [x] Votos (uno por miembro por solicitud, miembros activos del comité)
+- [x] Finalización de sesión con validación de quórum, decisión por mayoría y convocatoria → `RESUELTA` (`POST /sesiones/:id/finalizar`)
+- [x] Rechazo de documentos por admin/coordinador con efecto en el checklist (US-34, retro Sprint 3): `PATCH /solicitudes/:id/documentos/:tipoId/estado`
+- [x] Seed autocorregible de permisos por rol (prune `notIn`) + usuarios demo evaluador/coordinador/miembro y criterios de la beca 2
+
+### Fixed
+- Seed: `MIEMBRO_COMITE` recibía `sesion:crear` (sobre-grant); corregido con poda `notIn` de permisos por rol
+- Checklist: al incorporar US-34, `RECHAZADO` se cuenta como documento pendiente y bloquea `enviar`
 
 ### Notas
 - José como developer principal
 - David como reviewer
+- Automatizado por hitos M1–M5 en `feature/evaluaciones` (commits `706e7a1`, `adf88fc`, `82d94f5`, `82e75fd` + M5) con smoke HTTP por hito; 90 tests verdes (9 suites)
 
 ---
 
@@ -203,4 +210,4 @@ Las categorías son:
 
 ---
 
-*Última actualización: 2026-08-27*
+*Última actualización: 2026-08-28*

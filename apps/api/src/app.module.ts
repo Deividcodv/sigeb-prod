@@ -8,6 +8,9 @@ import { StorageModule } from './storage/storage.module';
 import { CatalogosModule } from './catalogos/catalogos.module';
 import { ConvocatoriasModule } from './convocatorias/convocatorias.module';
 import { SolicitudesModule } from './solicitudes/solicitudes.module';
+import { EvaluacionesModule } from './evaluaciones/evaluaciones.module';
+import { ComitesModule } from './comites/comites.module';
+import { SesionesModule } from './sesiones/sesiones.module';
 
 @Module({
   imports: [
@@ -22,6 +25,9 @@ import { SolicitudesModule } from './solicitudes/solicitudes.module';
     CatalogosModule,
     ConvocatoriasModule,
     SolicitudesModule,
+    EvaluacionesModule,
+    ComitesModule,
+    SesionesModule,
   ],
   controllers: [],
   providers: [],

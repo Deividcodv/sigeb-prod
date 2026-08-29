@@ -105,6 +105,12 @@ export class PerfilAcademicoDto {
   promedio?: number;
 }
 
+export class MarcarEstadoDocumentoDto {
+  @ApiProperty({ description: 'Estado a asignar al documento más reciente del tipo (retro S3)' })
+  @IsIn(['RECHAZADO'])
+  estado!: 'RECHAZADO';
+}
+
 export class PerfilFinancieroDto {
   @ApiPropertyOptional({ description: 'Ingreso familiar mensual' })
   @IsOptional()

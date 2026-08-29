@@ -4,9 +4,9 @@
 
 **Objetivo:** Implementar evaluaciones, comités y decisiones
 
-**Fecha de inicio:** 
-**Fecha de fin:** 
-**Duración:** 2 semanas
+**Fecha de inicio:** 2026-08-27
+**Fecha de fin:** 2026-08-28
+**Duración:** 2 semanas (acotado a 2 días para integrarse al plan de entregas)
 
 ## Resultado Esperado
 
@@ -19,12 +19,12 @@
 
 ## Criterios de Aceptación
 
-- [ ] Evaluador ve solicitudes asignadas
-- [ ] Admin puede asignar evaluadores a solicitudes
-- [ ] Puntajes se registran y calculan automáticamente
-- [ ] Comités se crean y gestionan
-- [ ] Sesiones permiten votos y finalización
-- [ ] Decisión final se registra correctamente
+- [x] Evaluador ve solicitudes asignadas
+- [x] Admin puede asignar evaluadores a solicitudes
+- [x] Puntajes se registran y calculan automáticamente
+- [x] Comités se crean y gestionan
+- [x] Sesiones permiten votos y finalización
+- [x] Decisión final se registra correctamente
 
 ## Participantes
 
@@ -37,3 +37,7 @@
 
 ## Notas
 
+- Sprint ejecutado por hitos (M1–M5) en la rama `feature/evaluaciones`, un commit+push+CI por hito.
+- Auto-score implementado **en vuelo** (sin migración de datos persistida), según decisión del equipo.
+- Se incorporó como add-on (retro del Sprint 3) el **rechazo de documentos** por el comité con refuerzo del checklist.
+- Estimación: 44 puntos (backlog propio).
