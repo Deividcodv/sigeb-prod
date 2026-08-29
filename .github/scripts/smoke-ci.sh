@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-BASE="http://127.0.0.1:3000/api"
+BASE="${BASE_URL:-http://127.0.0.1:3000/api}"
 
 for i in $(seq 1 30); do
   if curl -sf "$BASE/catalogos/generos" > /dev/null; then
@@ -67,16 +67,7 @@ printf '%%PDF-sigeb-ci' > /tmp/doc-ci.pdf
 curl -sf -X POST "$BASE/solicitudes/$SOL_ID/documentos/$TIPO_ID" \
   -H "Authorization: Bearer $TOKEN_POST" -F "file=@/tmp/doc-ci.pdf;type=application/pdf" > /dev/null
 
-COMPLETO=$(curl -sf "$BASE/solicitudes/$SOL_ID/checklist" \
-  -H "Authorization: Bearer $TOKEN_POST" | jq -r '.data.completo')
-[ "$COMPLETO" = "true" ] || { echo "El checklist deberia estar completo (obtuve: $COMPLETO)"; exit 1; }
-
-ESTADO=$(curl -sf -X POST "$BASE/solicitudes/$SOL_ID/transicion" \
-  -H "Authorization: Bearer $TOKEN_POST" -H 'Content-Type: application/json' \
-  -d '{"accion":"enviar"}' | jq -r '.data.estado')
-[ "$ESTADO" = "ENVIADA" ] || { echo "Esperaba ENVIADA, obtuve $ESTADO"; exit 1; }
-
-# ---- AD-4.1: rechazo de documentos ----
+# ---- AD-4.1: rechazo de documentos (en BORRADOR, antes de enviar) ----
 CODE=$(curl -s -o /dev/null -w '%{http_code}' -X PATCH "$BASE/solicitudes/$SOL_ID/documentos/$TIPO_ID/estado" \
   -H "Authorization: Bearer $TOKEN_POST" -H 'Content-Type: application/json' -d '{"estado":"RECHAZADO"}')
 [ "$CODE" = "403" ] || { echo "Postulante rechazando esperaba 403, obtuve $CODE"; exit 1; }
@@ -89,6 +80,10 @@ COMPLETO=$(curl -sf "$BASE/solicitudes/$SOL_ID/checklist" \
   -H "Authorization: Bearer $TOKEN_POST" | jq -r '.data.completo')
 [ "$COMPLETO" = "false" ] || { echo "Checklist con doc rechazado deberia estar incompleto (obtuve: $COMPLETO)"; exit 1; }
 
+CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE/solicitudes/$SOL_ID/transicion" \
+  -H "Authorization: Bearer $TOKEN_POST" -H 'Content-Type: application/json' -d '{"accion":"enviar"}')
+[ "$CODE" = "400" ] || { echo "Enviar con doc rechazado esperaba 400, obtuve $CODE"; exit 1; }
+
 CODE=$(curl -s -o /dev/null -w '%{http_code}' -X PATCH "$BASE/solicitudes/$SOL_ID/documentos/$TIPO_ID/estado" \
   -H "Authorization: Bearer $TOKEN_COORD" -H 'Content-Type: application/json' -d '{"estado":"INVALIDO"}')
 [ "$CODE" = "400" ] || { echo "Estado invalido esperaba 400, obtuve $CODE"; exit 1; }
@@ -98,6 +93,12 @@ curl -sf -X POST "$BASE/solicitudes/$SOL_ID/documentos/$TIPO_ID" \
 COMPLETO=$(curl -sf "$BASE/solicitudes/$SOL_ID/checklist" \
   -H "Authorization: Bearer $TOKEN_POST" | jq -r '.data.completo')
 [ "$COMPLETO" = "true" ] || { echo "Checklist tras re-subir deberia estar completo (obtuve: $COMPLETO)"; exit 1; }
+
+# ---- Sprint 3: envio validado ----
+ESTADO=$(curl -sf -X POST "$BASE/solicitudes/$SOL_ID/transicion" \
+  -H "Authorization: Bearer $TOKEN_POST" -H 'Content-Type: application/json' \
+  -d '{"accion":"enviar"}' | jq -r '.data.estado')
+[ "$ESTADO" = "ENVIADA" ] || { echo "Esperaba ENVIADA, obtuve $ESTADO"; exit 1; }
 
 # ---- Sprint 4: iniciar revision y evaluacion ----
 ESTADO=$(curl -sf -X POST "$BASE/solicitudes/$SOL_ID/transicion" -H "Authorization: Bearer $TOKEN_ADMIN" \
