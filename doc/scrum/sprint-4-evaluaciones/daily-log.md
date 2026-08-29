@@ -52,3 +52,13 @@
 - Bloqueo inicial de smoke: duplicados por creador "una solicitud por usuario por convocatoria"; se corrigió reutilizando solicitudes `EVALUADA` existentes y llevando la convocatoria a `EN_EVALUACION` antes de finalizar.
 
 ---
+
+### Día 2 (cierre) — 2026-08-29
+
+**SMOKE CI Roto** · run `33225017714` (job `99026815717`, paso 11) en `feature/evaluaciones` falló **después** de pushear `d0326a3`.
+- Diagnóstico: los logs del job requieren admin (403) y el HTML del run no trae logs → se **reprodujó localmente** montando una BD fresca (`sigeb_test`) con la API en el puerto 3001 (`sigeb-postgres`).
+- **Causa raíz**: en `smoke-ci.sh` el bloque AD-4.1 (rechazo/re-subir) corría **después** de `enviar`; como `subirDocumento` solo permite editar en `BORRADOR` (`obtainEditable`), el re-subir daba 400 y el checklist quedaba incompleto → smoke en rojo. No era bug de la app: sobre BD fresca se validó de punta a punta (rechazo → checklist pendiente → enviar 400 → re-subir → checklist completo → enviar → ENVIADA → evaluación → sesión → decisión APROBADA → conv `RESUELTA`).
+- Fix: `a545849` reordena AD-4.1 **antes** de `enviar` (con assert `enviar`→400 tras el rechazo) y parametriza `BASE_URL` en `smoke-ci.sh`. CI verde (`33226288439`).
+- Integración: merge `--no-ff` a `develop` (`41285d4`) con CI verde (`33226405596`). **Sprint 4 completado y desplegado en `develop`.**
+
+---
