@@ -399,7 +399,7 @@ Errores: `400` (pregunta vacía o muy larga).
 
 Diseño IA (US-37/38/39): `AsistenteIAProxy` enruta la pregunta al proveedor activo.
 - **Por defecto** (sin `AI_API_KEY`): `FallbackProveedor` responde desde la KB (reglas), con `websearch_to_tsquery` OR + `ts_rank` para ordenar, top-3 fuentes. Indexación GIN funcional sobre `to_tsvector('spanish', titulo || ' ' || contenido)` (solo operadores inmutables en PG16).
-- **Opcional** (`AI_API_KEY`/`AI_BASE_URL`): proveedor LLM configurado en runtime; las credenciales nunca se versionan.
+- **Opcional** (`AI_API_KEY`/`AI_BASE_URL`/`AI_MODEL`/`AI_TIMEOUT_MS`): `OpenAIProveedor` (API compatible OpenAI) con timeout por `AbortController`. Si el LLM falla o expira, el proxy **degradación a fallback** automáticamente (US-38). Contexto por rol: el system prompt acota la respuesta — sin sesión solo información general; autenticado añade el rol sin exponer datos de terceros ni decisiones de comités. Las credenciales nunca se versionan.
 
 ---
 

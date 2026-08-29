@@ -148,7 +148,7 @@ Las categorías son:
 - [x] Exportación de reportes a CSV
 - [x] AuditLog dirigido (`AuditService.log`) con `GET /audit` paginado y filtros (permiso `auditoria:ver`)
 - [x] Asistente IA con respuestas acotadas (fallback por base de conocimiento)
-- [ ] AsistenteIAProxy con contexto por sesión/rol (M4: proveedor LLM opcional)
+- [x] `AsistenteIAProxy` con contexto por sesión/rol y `OpenAIProveedor` opcional vía `AI_API_KEY`/`AI_BASE_URL` (timeouts + degradación a fallback)
 - [x] Base de conocimiento indexada con tsvector (GIN funcional, `to_tsvector('spanish', titulo || ' ' || contenido)`)
 - [ ] Layout base + Design System + Tailwind
 
