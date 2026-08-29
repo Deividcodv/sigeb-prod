@@ -150,6 +150,7 @@ Las categorías son:
 - [x] Asistente IA con respuestas acotadas (fallback por base de conocimiento)
 - [x] `AsistenteIAProxy` con contexto por sesión/rol y `OpenAIProveedor` opcional vía `AI_API_KEY`/`AI_BASE_URL` (timeouts + degradación a fallback)
 - [x] Base de conocimiento indexada con tsvector (GIN funcional, `to_tsvector('spanish', titulo || ' ' || contenido)`)
+- [x] Layout base + Design System + Tailwind + paleta en `apps/web` (Header/Footer, `Container`/`Button`/`Card`/`Badge`, home con convocatorias reales vía SWR y proxy `/api` en `next.config`)
 - [ ] Layout base + Design System + Tailwind
 
 ### Notas

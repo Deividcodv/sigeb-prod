@@ -26,6 +26,7 @@
 - M2: commit `16f724d` (audit + smoke CI + docs) con CI verde `33237704482`; 98 tests verdes.
 - M3: migración `tsvector` aplicada (GIN funcional con `to_tsvector('spanish', titulo || ' ' || contenido)`), seed de base de conocimiento (33 entradas, US-37/US-39), `AsistenteIAProxy` + `FallbackProveedor` + `POST /asistente/preguntar` público. Build/lint OK, 100 tests verdes; smoke local OK (requisitos/beca/sin-match/400 con fuentes); commit M3 `0a05250` con CI verde.
 - M4 (US-38): `OpenAIProveedor` opcional (API compatible OpenAI) con timeout y degradación automática a fallback en el proxy; contexto por rol en el system prompt; `AI_*` documentados en `.env.example` (nunca versionados). Build/lint OK, 103 tests verdes; smoke local OK (sin key → sigue respondiendo desde KB).
+- M5 (US-40): en `apps/web`, Design System (Header/Footer en layout, primitivos `Container`/`Button`/`Card`/`Badge`), paleta SIGEB existente en Tailwind, home con sección "Convocatorias abiertas" reales vía SWR (cliente) y proxy `/api` en `next.config`; corregida la codificación (mojibake) de `layout.tsx`/`page.tsx`. Build + lint OK; smoke local: `/` devuelve HTML y `/api/convocatorias` se proxya a la API (18 abiertas).
 
 **Bloqueos:**
 - Sin credenciales para IA: el proveedor LLM quedó opcional vía `AI_API_KEY`; por defecto fallback por reglas/KB (también para el CI smoke).
