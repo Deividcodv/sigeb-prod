@@ -144,9 +144,9 @@ Las categorías son:
 ## [Sprint 5] — 2026-XX-XX
 
 ### Added
-- [ ] Reportes de resumen (solicitudes por estado, convocatorias, evaluaciones)
-- [ ] Exportación de reportes a CSV
-- [ ] Interceptor de AuditLog
+- [x] Reportes de resumen (solicitudes por estado, convocatorias, evaluaciones)
+- [x] Exportación de reportes a CSV
+- [x] AuditLog dirigido (`AuditService.log`) con `GET /audit` paginado y filtros (permiso `auditoria:ver`)
 - [ ] Asistente IA con respuestas acotadas
 - [ ] AsistenteIAProxy con contexto por sesión/rol
 - [ ] Base de conocimiento indexada con tsvector
@@ -210,4 +210,4 @@ Las categorías son:
 
 ---
 
-*Última actualización: 2026-08-28*
+*Última actualización: 2026-08-29*

@@ -5,6 +5,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { AuditService } from '../audit/audit.service';
 import { CrearSesionDto, RegistrarVotoDto } from './sesiones.dto';
 import { AuthenticatedUser } from '../common/interfaces/authenticated-user.interface';
 import { SolicitudStateMachine } from '../solicitudes/solicitud-state-machine';
@@ -12,9 +13,12 @@ import { ConvocatoriaStateMachine } from '../convocatorias/convocatoria-state-ma
 
 @Injectable()
 export class SesionesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly audit: AuditService,
+  ) {}
 
-  async crearSesion(dto: CrearSesionDto) {
+  async crearSesion(dto: CrearSesionDto, usuario: AuthenticatedUser) {
     const comite = await this.prisma.comite.findUnique({
       where: { id: dto.comiteId },
     });
@@ -51,7 +55,7 @@ export class SesionesService {
       );
     }
 
-    return this.prisma.sesion.create({
+    const sesion = await this.prisma.sesion.create({
       data: {
         comiteId: dto.comiteId,
         fecha: new Date(dto.fecha),
@@ -66,6 +70,16 @@ export class SesionesService {
         agenda: { select: { solicitudId: true } },
       },
     });
+
+    await this.audit.log({
+      usuarioId: usuario.id,
+      accion: 'crear',
+      entidad: 'sesion',
+      entidadId: sesion.id,
+      detalle: { comiteId: dto.comiteId, solicitudes: dto.solicitudesIds },
+    });
+
+    return sesion;
   }
 
   async listarSesiones() {
@@ -162,7 +176,7 @@ export class SesionesService {
       );
     }
 
-    return this.prisma.voto.create({
+    const voto = await this.prisma.voto.create({
       data: {
         sesionId,
         solicitudId: dto.solicitudId,
@@ -171,6 +185,16 @@ export class SesionesService {
         observaciones: dto.observaciones,
       },
     });
+
+    await this.audit.log({
+      usuarioId: usuario.id,
+      accion: 'votar',
+      entidad: 'voto',
+      entidadId: voto.id,
+      detalle: { sesionId, solicitudId: dto.solicitudId, voto: dto.voto },
+    });
+
+    return voto;
   }
 
   async finalizarSesion(sesionId: string, usuario: AuthenticatedUser) {
@@ -274,7 +298,7 @@ export class SesionesService {
       }
     }
 
-    return this.prisma.sesion.update({
+    const sesionFinal = await this.prisma.sesion.update({
       where: { id: sesionId },
       data: { estado: 'FINALIZADA' },
       include: {
@@ -283,5 +307,20 @@ export class SesionesService {
         decisiones: true,
       },
     });
+
+    await this.audit.log({
+      usuarioId: usuario.id,
+      accion: 'finalizar',
+      entidad: 'sesion',
+      entidadId: sesionId,
+      detalle: {
+        decisiones: sesionFinal.decisiones.map((d: { solicitudId: string; resultado: string }) => ({
+          solicitudId: d.solicitudId,
+          resultado: d.resultado,
+        })),
+      },
+    });
+
+    return sesionFinal;
   }
 }

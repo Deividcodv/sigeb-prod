@@ -24,6 +24,7 @@ const evaluador: AuthenticatedUser = {
 
 describe('EvaluacionesService', () => {
   let prisma: any;
+  let audit: any;
   let service: EvaluacionesService;
 
   beforeEach(() => {
@@ -37,7 +38,8 @@ describe('EvaluacionesService', () => {
       solicitud: { findUnique: jest.fn() },
       usuario: { findUnique: jest.fn() },
     };
-    service = new EvaluacionesService(prisma);
+    audit = { log: jest.fn() };
+    service = new EvaluacionesService(prisma, audit);
   });
 
   describe('misEvaluaciones (US-26)', () => {

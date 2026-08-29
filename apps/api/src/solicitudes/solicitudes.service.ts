@@ -6,6 +6,7 @@ import {
   Inject,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { AuditService } from '../audit/audit.service';
 import { AuthenticatedUser } from '../common/interfaces/authenticated-user.interface';
 import {
   DOCUMENT_STORAGE,
@@ -23,6 +24,7 @@ export class SolicitudesService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(DOCUMENT_STORAGE) private readonly storage: DocumentStorage,
+    private readonly audit: AuditService,
   ) {}
 
   async create(usuarioId: string, dto: CreateSolicitudDto) {
@@ -164,6 +166,14 @@ export class SolicitudesService {
         comentario: dto.comentario ?? null,
         usuarioId: usuario.id,
       },
+    });
+
+    await this.audit.log({
+      usuarioId: usuario.id,
+      accion: 'transicion',
+      entidad: 'solicitud',
+      entidadId: id,
+      detalle: { accion: dto.accion, estado: siguienteEstado },
     });
 
     return actualizada;
@@ -346,11 +356,21 @@ export class SolicitudesService {
       throw new NotFoundException('No hay documento cargado para este tipo');
     }
 
-    return this.prisma.solicitudDocumento.update({
+    const actualizado = await this.prisma.solicitudDocumento.update({
       where: { id: doc.id },
       data: { estado },
       include: { documentoTipo: true },
     });
+
+    await this.audit.log({
+      usuarioId: usuario.id,
+      accion: 'cambiar-estado-documento',
+      entidad: 'documento',
+      entidadId: id,
+      detalle: { tipoId, estado, version: doc.version },
+    });
+
+    return actualizado;
   }
 
   async obtenerChecklist(id: string, usuario: AuthenticatedUser) {

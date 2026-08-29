@@ -13,6 +13,7 @@ const postulante: AuthenticatedUser = {
 describe('SolicitudesService', () => {
   let prisma: any;
   let storage: any;
+  let audit: any;
   let service: SolicitudesService;
 
   beforeEach(() => {
@@ -31,7 +32,8 @@ describe('SolicitudesService', () => {
       read: jest.fn(),
       exists: jest.fn(),
     };
-    service = new SolicitudesService(prisma, storage);
+    audit = { log: jest.fn() };
+    service = new SolicitudesService(prisma, storage, audit);
   });
 
   describe('guardarPerfilAcademico (US-13: opcion otro)', () => {

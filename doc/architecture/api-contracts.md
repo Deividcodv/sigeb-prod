@@ -278,11 +278,7 @@ Request:
 ### PATCH `/seguridad/roles/:id/permisos`
 **Permiso:** `permiso:editar`
 
-### PATCH `/seguridad/usuarios/:id/permisos`
-**Permiso:** `permiso:editar`
-
-### GET `/seguridad/auditoria`
-**Permiso:** `permiso:editar`
+El log de auditoría se consulta vía `/audit` (sección Auditoría abajo).
 
 ---
 
@@ -338,6 +334,43 @@ Descarga `text/csv; charset=utf-8` con `Content-Disposition: attachment` y BOM U
 
 ---
 
+## Auditoría (`/audit`)
+
+> Permiso `auditoria:ver`. Log de acciones sensibles (`AuditService.log`) con IP, usuario, entidad y detalle. Persistido en la tabla `audit_log`.
+
+### GET `/audit`
+**Permiso:** `auditoria:ver`
+
+Query params (todos opcionales): `entidad`, `accion`, `usuarioId`, `desde`, `hasta` (ISO), `page` (default 1), `limit` (default 50, máx 200).
+
+Response 200:
+```json
+{
+  "data": {
+    "total": 14,
+    "page": 1,
+    "limit": 50,
+    "items": [
+      {
+        "id": "uuid",
+        "usuarioId": "uuid",
+        "accion": "login",
+        "entidad": "usuario",
+        "entidadId": "uuid",
+        "detalle": null,
+        "ip": "127.0.0.1",
+        "createdAt": "2026-08-29T03:00:00.000Z",
+        "usuario": { "nombres": "Administrador SIGEB", "email": "admin@sigeb.gov.gt", "rol": { "nombre": "ADMIN" } }
+      }
+    ]
+  }
+}
+```
+
+Acciones auditadas: `login`, `refresh` (auth), `transicion`, `configurar-documentos` (convocatorias/solicitudes), `cambiar-estado-documento`, `asignar-evaluadores`, `crear`/`editar`/`eliminar`/`agregar-miembro`/`eliminar-miembro` (comités), `crear`/`votar`/`finalizar` (sesiones), `crear`/`editar`/`eliminar`/`asignar-permisos` (roles).
+
+---
+
 ## Asistente (`/asistente`)
 
 ### POST `/asistente/preguntar`
@@ -360,4 +393,4 @@ Response 200:
 
 ---
 
-*Última actualización: 2026-08-26*
+*Última actualización: 2026-08-29*

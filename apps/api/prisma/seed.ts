@@ -97,6 +97,8 @@ async function main() {
     { modulo: 'decision', accion: 'ver' },
     // Reportes
     { modulo: 'reporte', accion: 'ver' },
+    // Auditoría
+    { modulo: 'auditoria', accion: 'ver' },
     // Seguridad
     { modulo: 'permiso', accion: 'editar' },
   ];

@@ -3,9 +3,19 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ComitesService } from './comites.service';
+import { AuthenticatedUser } from '../common/interfaces/authenticated-user.interface';
+
+const usuario: AuthenticatedUser = {
+  id: 'u-admin',
+  cui: '1234567890123',
+  nombres: 'Admin',
+  email: 'admin@sigeb.gov.gt',
+  rol: { id: 'r-admin', nombre: 'ADMIN', descripcion: null },
+};
 
 describe('ComitesService', () => {
   let prisma: any;
+  let audit: any;
   let service: ComitesService;
 
   beforeEach(() => {
@@ -24,7 +34,8 @@ describe('ComitesService', () => {
       },
       usuario: { findUnique: jest.fn() },
     };
-    service = new ComitesService(prisma);
+    audit = { log: jest.fn() };
+    service = new ComitesService(prisma, audit);
   });
 
   describe('crearComite (US-30)', () => {
@@ -34,10 +45,13 @@ describe('ComitesService', () => {
         nombre: 'Comité Beca 2',
         descripcion: 'Evaluación Permanencia',
       });
-      const result = await service.crearComite({
-        nombre: 'Comité Beca 2',
-        descripcion: 'Evaluación Permanencia',
-      });
+      const result = await service.crearComite(
+        {
+          nombre: 'Comité Beca 2',
+          descripcion: 'Evaluación Permanencia',
+        },
+        usuario,
+      );
       expect(result.nombre).toBe('Comité Beca 2');
       expect(prisma.comite.create).toHaveBeenCalledWith({
         data: {
@@ -72,7 +86,7 @@ describe('ComitesService', () => {
     it('lanezar NotFound si el comité no existe', async () => {
       prisma.comite.findUnique.mockResolvedValue(null);
       await expect(
-        service.agregarMiembro('c1', { usuarioId: 'u1', rol: 'VOCAL' }),
+        service.agregarMiembro('c1', { usuarioId: 'u1', rol: 'VOCAL' }, usuario),
       ).rejects.toThrow(NotFoundException);
     });
 
@@ -80,7 +94,7 @@ describe('ComitesService', () => {
       prisma.comite.findUnique.mockResolvedValue({ id: 'c1' });
       prisma.usuario.findUnique.mockResolvedValue(null);
       await expect(
-        service.agregarMiembro('c1', { usuarioId: 'u-x', rol: 'VOCAL' }),
+        service.agregarMiembro('c1', { usuarioId: 'u-x', rol: 'VOCAL' }, usuario),
       ).rejects.toThrow(NotFoundException);
     });
 
@@ -89,7 +103,7 @@ describe('ComitesService', () => {
       prisma.usuario.findUnique.mockResolvedValue({ id: 'u1' });
       prisma.comiteMiembro.findFirst.mockResolvedValue({ id: 'm1' });
       await expect(
-        service.agregarMiembro('c1', { usuarioId: 'u1', rol: 'VOCAL' }),
+        service.agregarMiembro('c1', { usuarioId: 'u1', rol: 'VOCAL' }, usuario),
       ).rejects.toThrow(BadRequestException);
     });
 
@@ -98,10 +112,14 @@ describe('ComitesService', () => {
       prisma.usuario.findUnique.mockResolvedValue({ id: 'u1' });
       prisma.comiteMiembro.findFirst.mockResolvedValue(null);
       prisma.comiteMiembro.create.mockResolvedValue({ id: 'm1', rol: 'VOCAL' });
-      const result = await service.agregarMiembro('c1', {
-        usuarioId: 'u1',
-        rol: 'VOCAL',
-      });
+      const result = await service.agregarMiembro(
+        'c1',
+        {
+          usuarioId: 'u1',
+          rol: 'VOCAL',
+        },
+        usuario,
+      );
       expect(result.id).toBe('m1');
       expect(prisma.comiteMiembro.create).toHaveBeenCalledWith({
         data: { comiteId: 'c1', usuarioId: 'u1', rol: 'VOCAL' },
@@ -114,14 +132,14 @@ describe('ComitesService', () => {
     it('rechaza si el miembro no existe en el comité', async () => {
       prisma.comiteMiembro.findFirst.mockResolvedValue(null);
       await expect(
-        service.eliminarMiembro('c1', 'u1'),
+        service.eliminarMiembro('c1', 'u1', usuario),
       ).rejects.toThrow(NotFoundException);
     });
 
     it('elimina al miembro activo', async () => {
       prisma.comiteMiembro.findFirst.mockResolvedValue({ id: 'm1' });
       prisma.comiteMiembro.delete.mockResolvedValue({ id: 'm1' });
-      await expect(service.eliminarMiembro('c1', 'u1')).resolves.toEqual({
+      await expect(service.eliminarMiembro('c1', 'u1', usuario)).resolves.toEqual({
         eliminado: true,
       });
       expect(prisma.comiteMiembro.delete).toHaveBeenCalledWith({
@@ -134,21 +152,21 @@ describe('ComitesService', () => {
     it('actualiza un comité existente', async () => {
       prisma.comite.findUnique.mockResolvedValue({ id: 'c1' });
       prisma.comite.update.mockResolvedValue({ id: 'c1', nombre: 'Nuevo' });
-      const result = await service.actualizarComite('c1', { nombre: 'Nuevo' });
+      const result = await service.actualizarComite('c1', { nombre: 'Nuevo' }, usuario);
       expect(result.nombre).toBe('Nuevo');
     });
 
     it('rechaza actualizar comité inexistente', async () => {
       prisma.comite.findUnique.mockResolvedValue(null);
       await expect(
-        service.actualizarComite('c1', { nombre: 'Nuevo' }),
+        service.actualizarComite('c1', { nombre: 'Nuevo' }, usuario),
       ).rejects.toThrow(NotFoundException);
     });
 
     it('elimina un comité existente', async () => {
       prisma.comite.findUnique.mockResolvedValue({ id: 'c1' });
       prisma.comite.delete.mockResolvedValue({ id: 'c1' });
-      await expect(service.eliminarComite('c1')).resolves.toEqual({
+      await expect(service.eliminarComite('c1', usuario)).resolves.toEqual({
         eliminado: true,
       });
     });

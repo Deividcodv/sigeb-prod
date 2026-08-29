@@ -194,4 +194,21 @@ CODE=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/reportes/convocatorias/csv"
 CODE=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/reportes/xyz/csv" -H "Authorization: Bearer $TOKEN_ADMIN")
 [ "$CODE" = "400" ] || { echo "CSV tipo invalido esperaba 400, obtuve $CODE"; exit 1; }
 
-echo "SMOKE CI OK (S3 solicitudes + S4 evaluaciones/sesiones/rechazo docs + S5 reportes/CSV)"
+# ---- Sprint 5: auditoria (US-36) ----
+AUDIT_TOTAL=$(curl -sf "$BASE/audit" -H "Authorization: Bearer $TOKEN_ADMIN" | jq -r '.data.total')
+[ -n "$AUDIT_TOTAL" ] && [ "$AUDIT_TOTAL" -gt 0 ] || { echo "Sin entradas de auditoria"; exit 1; }
+
+AUDIT_LOGINS=$(curl -sf "$BASE/audit?accion=login" -H "Authorization: Bearer $TOKEN_ADMIN" | jq -r '.data.items | length')
+[ "$AUDIT_LOGINS" -ge 5 ] || { echo "Esperaba >=5 logins auditados, obtuve $AUDIT_LOGINS"; exit 1; }
+
+AUDIT_ACCIONES=$(curl -sf "$BASE/audit?limit=200" -H "Authorization: Bearer $TOKEN_ADMIN" |
+  jq -r '[.data.items[].accion] | index("transicion") != null')
+[ "$AUDIT_ACCIONES" = "true" ] || { echo "No hay transiciones auditadas en el rastro"; exit 1; }
+
+CODE=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/audit" -H "Authorization: Bearer $TOKEN_POST")
+[ "$CODE" = "403" ] || { echo "Auditoria con postulante esperaba 403, obtuve $CODE"; exit 1; }
+
+CODE=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/audit")
+[ "$CODE" = "401" ] || { echo "Auditoria anonima esperaba 401, obtuve $CODE"; exit 1; }
+
+echo "SMOKE CI OK (S3 solicitudes + S4 evaluaciones/sesiones/rechazo docs + S5 reportes/CSV + auditoria)"
