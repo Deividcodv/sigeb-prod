@@ -159,21 +159,30 @@ Las categorías son:
 
 ---
 
-## [Sprint 6] — 2026-XX-XX
+## [Sprint 6] — 2026-08-31
 
 ### Added
-- [ ] Hero con "Oportunidades que transforman vidas"
-- [ ] Sección "Sobre SIGEB"
-- [ ] "Cómo funciona" con 6 pasos
-- [ ] Convocatorias públicas con filtros
-- [ ] Página individual de convocatoria
-- [ ] Consulta de estado de beca (público)
-- [ ] Página "Nosotros" con contacto
-- [ ] Footer institucional
+- [x] Hero con "Oportunidades que transforman vidas" (parte del home, completado)
+- [x] Sección "Sobre SIGEB"
+- [x] "Cómo funciona" con 6 pasos
+- [x] Página `/convocatorias` con filtros (búsqueda de texto + tipo de beca)
+- [x] Página individual de convocatoria `/convocatorias/[id]` (documentos requeridos y criterios)
+- [x] Consulta de estado de beca por código (`/consulta`) con endpoint público `GET /solicitudes/consulta/:codigo`
+- [x] Página "Nosotros" con misión, visión, objetivos, programas y contacto
+- [x] Footer institucional con navegación SPA (migrado a `Link`)
+- [x] Filtro de búsqueda en `GET /convocatorias?busqueda=`
+- [x] Design System extendido: `Input`, `Select`, `Spinner`, `EmptyState`
+- [x] Menú hamburguesa responsive (`MobileMenu`) y componente `ConvocatoriaCard`
+
+### Fixed
+- Footer usaba `<a>` (recarga completa); migrado a `<Link>` de Next.js
+- `Button` ahora soporta `disabled`
 
 ### Notas
 - Yemerson como developer principal
 - Hamilton como soporte
+- 105 tests de API verdes (2 nuevos para consulta pública) + build/lint de API y web
+- Smoke test HTTP diferido por indisponibilidad de Docker Desktop (Postgres local)
 
 ---
 
@@ -210,4 +219,4 @@ Las categorías son:
 
 ---
 
-*Última actualización: 2026-08-29*
+*Última actualización: 2026-08-31*

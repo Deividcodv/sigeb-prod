@@ -5,9 +5,10 @@ import {
   Patch,
   Body,
   Param,
+  Query,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { ConvocatoriasService } from './convocatorias.service';
 import {
   CreateConvocatoriaDto,
@@ -29,8 +30,11 @@ export class ConvocatoriasController {
   @Public()
   @ApiOperation({ summary: 'Listar convocatorias abiertas (público)' })
   @ApiResponse({ status: 200, description: 'Lista de convocatorias ABIERTA' })
-  findAllPublic() {
-    return this.convocatoriasService.findAllPublic();
+  @ApiQuery({ name: 'busqueda', required: false, description: 'Buscar por nombre de convocatoria o beca' })
+  findAllPublic(
+    @Query('busqueda') busqueda?: string,
+  ) {
+    return this.convocatoriasService.findAllPublic({ busqueda });
   }
 
   @Get('todas')

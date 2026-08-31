@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Container } from '@/components/ui/Container';
 
 const columnas = [
@@ -50,9 +51,9 @@ export function Footer() {
               <ul className="space-y-2 text-sm text-sigeb-light">
                 {columna.enlaces.map((enlace) => (
                   <li key={enlace.href}>
-                    <a href={enlace.href} className="hover:text-white">
+                    <Link href={enlace.href} className="hover:text-white">
                       {enlace.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>

@@ -39,9 +39,19 @@ export class ConvocatoriasService {
     });
   }
 
-  async findAllPublic() {
+  async findAllPublic(filtros?: { busqueda?: string }) {
+    const where: any = { estado: 'ABIERTA' };
+
+    if (filtros?.busqueda) {
+      where.OR = [
+        { nombre: { contains: filtros.busqueda, mode: 'insensitive' } },
+        { descripcion: { contains: filtros.busqueda, mode: 'insensitive' } },
+        { beca: { nombre: { contains: filtros.busqueda, mode: 'insensitive' } } },
+      ];
+    }
+
     return this.prisma.convocatoria.findMany({
-      where: { estado: 'ABIERTA' },
+      where,
       orderBy: { createdAt: 'desc' },
       include: { beca: true },
     });

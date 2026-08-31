@@ -111,6 +111,37 @@ export class SolicitudesService {
     return solicitud;
   }
 
+  async consultaPublica(codigo: string) {
+    const solicitud = await this.prisma.solicitud.findUnique({
+      where: { id: codigo },
+      include: {
+        convocatoria: { include: { beca: true } },
+        historial: { orderBy: { createdAt: 'asc' } },
+      },
+    });
+
+    if (!solicitud) {
+      throw new NotFoundException(
+        'No se encontró ninguna solicitud con ese código',
+      );
+    }
+
+    const convocatoria = solicitud.convocatoria as any;
+    return {
+      codigo: solicitud.id,
+      estado: solicitud.estado,
+      beca: convocatoria?.beca?.nombre ?? null,
+      convocatoria: convocatoria?.nombre ?? null,
+      fechaCreacion: solicitud.createdAt,
+      fechaActualizacion: solicitud.updatedAt,
+      historial: solicitud.historial.map((h) => ({
+        estado: h.estado,
+        comentario: h.comentario,
+        fecha: h.createdAt,
+      })),
+    };
+  }
+
   async transicion(
     id: string,
     dto: TransicionSolicitudDto,

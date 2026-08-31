@@ -1,10 +1,12 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
+import { MobileMenu } from '@/components/layout/MobileMenu';
 
 const enlaces = [
   { href: '/', label: 'Inicio' },
   { href: '/convocatorias', label: 'Convocatorias' },
+  { href: '/nosotros', label: 'Nosotros' },
   { href: '/consulta', label: 'Consultar solicitud' },
 ];
 
@@ -44,6 +46,8 @@ export function Header() {
           </Button>
           <Button href="/registro">Registrarse</Button>
         </div>
+
+        <MobileMenu />
       </Container>
     </header>
   );
