@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Spinner } from '@/components/ui/Spinner';
+import { InternalPageHeader } from '@/components/ui/InternalPageHeader';
 import { formatearFecha, type Beca, type Convocatoria } from '@/lib/api';
 
 export default function AdminPage() {
@@ -27,14 +28,10 @@ function AdminContent() {
 
   return (
     <>
-      <section className="bg-sigeb-blue py-10 text-white">
-        <Container>
-          <h1 className="text-2xl font-bold md:text-3xl">Panel de administración</h1>
-          <p className="mt-1 text-sigeb-white/90">
-            Gestiona convocatorias, usuarios y roles del sistema.
-          </p>
-        </Container>
-      </section>
+      <InternalPageHeader
+        title="Panel de administración"
+        subtitle="Gestiona convocatorias, usuarios y roles del sistema."
+      />
 
       <Container className="py-8">
         <div className="mb-6 flex gap-2">

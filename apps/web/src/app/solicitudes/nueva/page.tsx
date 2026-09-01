@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/Input';
 import { Spinner } from '@/components/ui/Spinner';
 import { Stepper } from '@/components/ui/Stepper';
 import { CatalogoOtro } from '@/components/solicitud/CatalogoOtro';
+import { InternalPageHeader } from '@/components/ui/InternalPageHeader';
 import {
   fetcher,
   formatearFecha,
@@ -57,14 +58,10 @@ function NuevaSolicitudContent() {
 
   return (
     <>
-      <section className="bg-sigeb-blue py-10 text-white">
-        <Container>
-          <h1 className="text-2xl font-bold md:text-3xl">Nueva solicitud</h1>
-          <p className="mt-1 text-sigeb-white/90">
-            Completa los pasos para postularte a una convocatoria.
-          </p>
-        </Container>
-      </section>
+      <InternalPageHeader
+        title="Nueva solicitud"
+        subtitle="Completa los pasos para postularte a una convocatoria."
+      />
 
       <Container className="py-8">
         <div className="mb-8">

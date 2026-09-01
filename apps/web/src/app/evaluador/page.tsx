@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
 import { Input } from '@/components/ui/Input';
+import { InternalPageHeader } from '@/components/ui/InternalPageHeader';
 
 interface Criterio {
   id: string;
@@ -101,14 +102,10 @@ function EvaluadorContent() {
 
   return (
     <>
-      <section className="bg-sigeb-blue py-10 text-white">
-        <Container>
-          <h1 className="text-2xl font-bold md:text-3xl">Panel del evaluador</h1>
-          <p className="mt-1 text-sigeb-white/90">
-            Revisa y puntúa las solicitudes asignadas.
-          </p>
-        </Container>
-      </section>
+      <InternalPageHeader
+        title="Panel del evaluador"
+        subtitle="Revisa y puntúa las solicitudes asignadas."
+      />
 
       <Container className="py-8">
         {error && (

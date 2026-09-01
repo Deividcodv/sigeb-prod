@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Spinner } from '@/components/ui/Spinner';
+import { InternalPageHeader } from '@/components/ui/InternalPageHeader';
 import { formatearFecha, type Solicitud } from '@/lib/api';
 
 const ordenEstados = [
@@ -59,16 +60,10 @@ function DashboardContent() {
 
   return (
     <>
-      <section className="bg-sigeb-blue py-12 text-white">
-        <Container>
-          <h1 className="text-3xl font-bold md:text-4xl">
-            Hola, {usuario?.nombres}
-          </h1>
-          <p className="mt-2 text-sigeb-white/90">
-            Aquí puedes dar seguimiento a tus solicitudes de beca.
-          </p>
-        </Container>
-      </section>
+      <InternalPageHeader
+        title={`Hola, ${usuario?.nombres}`}
+        subtitle="Aquí puedes dar seguimiento a tus solicitudes de beca."
+      />
 
       <Container className="py-10">
         {error && (

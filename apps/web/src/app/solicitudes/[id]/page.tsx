@@ -133,7 +133,7 @@ function SolicitudDetalleContent() {
 
   return (
     <>
-      <section className="bg-sigeb-blue py-10 text-white">
+      <section className="border-b-4 border-sigeb-gold bg-sigeb-blue-dark py-10 text-white">
         <Container>
           <button
             onClick={() => router.replace('/dashboard')}
@@ -141,6 +141,9 @@ function SolicitudDetalleContent() {
           >
             ← Volver al dashboard
           </button>
+          <p className="mb-2 inline-block rounded-full bg-sigeb-gold px-3 py-1 text-xs font-bold uppercase tracking-wide text-sigeb-blue-dark">
+            Sistema interno
+          </p>
           <div className="flex flex-wrap items-center gap-3">
             <Badge estado={solicitud.estado} />
             <span className="text-sm font-medium text-sigeb-light">
