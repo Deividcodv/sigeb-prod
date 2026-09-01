@@ -17,7 +17,9 @@
     "test:api": "turbo run test --filter=api",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
-    "clean": "turbo run clean && rm -rf node_modules"
+    "clean": "turbo run clean && rm -rf node_modules",
+    "up": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/dev-up.ps1",
+    "up:stop": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/dev-up.ps1 -Stop"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
