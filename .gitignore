@@ -52,3 +52,4 @@ coverage/
 # Misc
 *.tgz
 .cache
+.sigeb-dev/

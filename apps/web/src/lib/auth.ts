@@ -1,4 +1,4 @@
-import { http } from '@/lib/api';
+import { httpData } from '@/lib/api';
 
 const ACCESS_KEY = 'sigeb_access_token';
 const REFRESH_KEY = 'sigeb_refresh_token';
@@ -38,7 +38,7 @@ export function clearTokens() {
 }
 
 export async function login(email: string, password: string): Promise<LoginResponse> {
-  const data = await http<LoginResponse>('/auth/login', {
+  const data = await httpData<LoginResponse>('/auth/login', {
     method: 'POST',
     body: { email, password },
   });
@@ -52,14 +52,14 @@ export async function registrar(datos: {
   email: string;
   password: string;
 }): Promise<void> {
-  await http('/auth/registro', { method: 'POST', body: datos });
+  await httpData('/auth/registro', { method: 'POST', body: datos });
 }
 
 export async function refreshAccessToken(): Promise<string | null> {
   const refreshToken = getRefreshToken();
   if (!refreshToken) return null;
   try {
-    const data = await http<{ accessToken: string }>('/auth/refresh', {
+    const data = await httpData<{ accessToken: string }>('/auth/refresh', {
       method: 'POST',
       body: { refreshToken },
     });

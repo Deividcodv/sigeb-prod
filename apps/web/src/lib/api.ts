@@ -126,6 +126,19 @@ export async function http<T>(
   return (await res.json()) as T;
 }
 
+export async function httpData<T>(
+  path: string,
+  options: {
+    method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
+    body?: unknown;
+    isFormData?: boolean;
+    token?: string | null;
+  } = {},
+): Promise<T> {
+  const res = await http<{ data: T }>(path, options);
+  return res.data;
+}
+
 export function formatearFecha(fecha: string) {
   const d = new Date(fecha);
   if (Number.isNaN(d.getTime())) return fecha;

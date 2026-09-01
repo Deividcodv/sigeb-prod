@@ -9,7 +9,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { http } from '@/lib/api';
+import { httpData } from '@/lib/api';
 import {
   getAccessToken,
   getRefreshToken,
@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUsuario(null);
         return;
       }
-      const perfil = await http<{ id: string; cui: string; nombres: string; email: string; rol: { nombre: string } }>(
+      const perfil = await httpData<{ id: string; cui: string; nombres: string; email: string; rol: { nombre: string } }>(
         '/auth/perfil',
         { token },
       );

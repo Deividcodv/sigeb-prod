@@ -46,7 +46,8 @@ export async function fetchConToken<T>(
     throw new Error(Array.isArray(mensaje) ? mensaje.join(', ') : mensaje);
   }
 
-  return (await res.json()) as T;
+  const json = (await res.json()) as { data: T };
+  return json.data;
 
   function getToken(): string | null {
     if (typeof window === 'undefined') return null;
