@@ -11,6 +11,9 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Spinner } from '@/components/ui/Spinner';
 import { InternalPageHeader } from '@/components/ui/InternalPageHeader';
+import { PanelSolicitudes } from '@/components/admin/PanelSolicitudes';
+import { PanelComites } from '@/components/admin/PanelComites';
+import { PanelSesiones } from '@/components/admin/PanelSesiones';
 import { formatearFecha, type Beca, type Convocatoria } from '@/lib/api';
 
 export default function AdminPage() {
@@ -22,24 +25,46 @@ export default function AdminPage() {
 }
 
 function AdminContent() {
-  const [pestana, setPestana] = useState<'convocatorias' | 'seguridad'>(
-    'convocatorias',
-  );
+  const [pestana, setPestana] = useState<
+    | 'convocatorias'
+    | 'solicitudes'
+    | 'comites'
+    | 'sesiones'
+    | 'seguridad'
+  >('convocatorias');
 
   return (
     <>
       <InternalPageHeader
         title="Panel de administración"
-        subtitle="Gestiona convocatorias, usuarios y roles del sistema."
+        subtitle="Gestiona convocatorias, evaluaciones, comités, sesiones y usuarios del sistema."
       />
 
       <Container className="py-8">
-        <div className="mb-6 flex gap-2">
+        <div className="mb-6 flex flex-wrap gap-2">
           <Button
             variant={pestana === 'convocatorias' ? 'primary' : 'ghost'}
             onClick={() => setPestana('convocatorias')}
           >
             Convocatorias
+          </Button>
+          <Button
+            variant={pestana === 'solicitudes' ? 'primary' : 'ghost'}
+            onClick={() => setPestana('solicitudes')}
+          >
+            Solicitudes
+          </Button>
+          <Button
+            variant={pestana === 'comites' ? 'primary' : 'ghost'}
+            onClick={() => setPestana('comites')}
+          >
+            Comités
+          </Button>
+          <Button
+            variant={pestana === 'sesiones' ? 'primary' : 'ghost'}
+            onClick={() => setPestana('sesiones')}
+          >
+            Sesiones
           </Button>
           <Button
             variant={pestana === 'seguridad' ? 'primary' : 'ghost'}
@@ -49,11 +74,11 @@ function AdminContent() {
           </Button>
         </div>
 
-        {pestana === 'convocatorias' ? (
-          <PanelConvocatorias />
-        ) : (
-          <PanelSeguridad />
-        )}
+        {pestana === 'convocatorias' && <PanelConvocatorias />}
+        {pestana === 'solicitudes' && <PanelSolicitudes />}
+        {pestana === 'comites' && <PanelComites />}
+        {pestana === 'sesiones' && <PanelSesiones />}
+        {pestana === 'seguridad' && <PanelSeguridad />}
       </Container>
     </>
   );

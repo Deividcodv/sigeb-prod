@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   ParseUUIDPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
@@ -97,5 +98,14 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'Lista de permisos' })
   async findAllPermisos() {
     return this.usersService.findAllPermisos();
+  }
+
+  @Get('usuarios')
+  @Permisos('permiso:editar')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Listar usuarios, opcionalmente filtrados por rol' })
+  @ApiResponse({ status: 200, description: 'Lista de usuarios' })
+  findAllUsuarios(@Query('rol') rol?: string) {
+    return this.usersService.findAllUsuarios(rol);
   }
 }

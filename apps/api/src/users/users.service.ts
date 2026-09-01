@@ -159,4 +159,19 @@ export class UsersService {
   async findAllPermisos() {
     return this.prisma.permiso.findMany();
   }
+
+  async findAllUsuarios(rol?: string) {
+    return this.prisma.usuario.findMany({
+      where: rol ? { rol: { nombre: rol } } : undefined,
+      select: {
+        id: true,
+        cui: true,
+        nombres: true,
+        email: true,
+        estado: true,
+        rol: { select: { nombre: true } },
+      },
+      orderBy: { nombres: 'asc' },
+    });
+  }
 }
