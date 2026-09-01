@@ -67,6 +67,13 @@ export class CatalogosController {
     return this.catalogosService.findAllDocumentos();
   }
 
+  @Get('becas')
+  @Public()
+  @ApiOperation({ summary: 'Listar becas activas' })
+  findAllBecas() {
+    return this.catalogosService.findAllBecas();
+  }
+
   // ============ GENEROS (ADMIN) ============
   @Post('generos')
   @Permisos('permiso:editar')

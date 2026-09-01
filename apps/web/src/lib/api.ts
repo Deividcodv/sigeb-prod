@@ -13,6 +13,7 @@ export interface Convocatoria {
   fechaApertura: string;
   fechaCierre: string;
   beca: Beca;
+  _count?: { solicitudes?: number };
 }
 
 export interface DocumentoTipo {
