@@ -7,51 +7,53 @@ export const metadata: Metadata = {
     'Conoce al Ministerio de Educación de Guatemala, su misión, visión y los programas de becas gestionados a través de SIGEB.',
 };
 
+const bloques = [
+  {
+    titulo: 'Misión',
+    texto:
+      'Garantizar el acceso a una educación de calidad para todas las personas, creando oportunidades que transforman vidas a través de programas de becas que apoyan la formación académica en Guatemala.',
+  },
+  {
+    titulo: 'Visión',
+    texto:
+      'Ser el sistema referente de gestión de becas en la región, reconocido por su transparencia, eficiencia e impacto en la reducción de la deserción escolar y el acceso equitativo a la educación superior.',
+  },
+];
+
 export default function NosotrosPage() {
   return (
     <main>
-      <section className="bg-sigeb-blue py-12 text-white">
+      <section className="brut-cinta border-b-[3px] border-brutal-tinta bg-sigeb-blue-dark py-12 text-brutal-papel">
         <Container>
-          <h1 className="text-3xl font-bold md:text-4xl">Nosotros</h1>
-          <p className="mt-2 max-w-2xl text-sigeb-light">
+          <p className="brut-label text-xs font-bold text-brutal-gold">// Nosotros</p>
+          <h1 className="text-mega text-3xl font-black md:text-5xl">Nosotros</h1>
+          <p className="mt-2 max-w-2xl font-mono text-sm text-brutal-papel/80">
             Conoce al Ministerio de Educación y el sistema que hace posible la
             gestión de becas en Guatemala.
           </p>
         </Container>
       </section>
 
-      <section className="bg-sigeb-gray py-12">
+      <section className="bg-brutal-papel py-12">
         <Container>
           <div className="mx-auto max-w-4xl space-y-8">
-            <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
-              <h2 className="mb-3 text-2xl font-bold text-sigeb-blue-dark">
-                Misión
-              </h2>
-              <p className="text-gray-700">
-                Garantizar el acceso a una educación de calidad para todas las
-                personas, creando oportunidades que transforman vidas a través
-                de programas de becas que apoyan la formación académica en
-                Guatemala.
-              </p>
-            </div>
+            {bloques.map((bloque) => (
+              <div
+                key={bloque.titulo}
+                className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco p-8 shadow-brutal-sm"
+              >
+                <h2 className="mb-3 font-brut text-2xl font-black uppercase tracking-wide text-sigeb-blue">
+                  {bloque.titulo}
+                </h2>
+                <p className="text-brutal-tinta/80">{bloque.texto}</p>
+              </div>
+            ))}
 
-            <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
-              <h2 className="mb-3 text-2xl font-bold text-sigeb-blue-dark">
-                Visión
-              </h2>
-              <p className="text-gray-700">
-                Ser el sistema referente de gestión de becas en la región,
-                reconocido por su transparencia, eficiencia e impacto en la
-                reducción de la deserción escolar y el acceso equitativo a la
-                educación superior.
-              </p>
-            </div>
-
-            <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
-              <h2 className="mb-3 text-2xl font-bold text-sigeb-blue-dark">
+            <div className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco p-8 shadow-brutal-sm">
+              <h2 className="mb-3 font-brut text-2xl font-black uppercase tracking-wide text-sigeb-blue">
                 Objetivos
               </h2>
-              <ul className="list-disc space-y-2 pl-5 text-gray-700">
+              <ul className="space-y-2 pl-5 text-brutal-tinta/80 marker:text-brutal-gold">
                 <li>Ampliar el acceso a becas de excelencia académica.</li>
                 <li>Garantizar un proceso de postulación transparente y justo.</li>
                 <li>Facilitar el seguimiento de solicitudes en tiempo real.</li>
@@ -59,38 +61,36 @@ export default function NosotrosPage() {
               </ul>
             </div>
 
-            <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
-              <h2 className="mb-3 text-2xl font-bold text-sigeb-blue-dark">
+            <div className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco p-8 shadow-brutal-sm">
+              <h2 className="mb-3 font-brut text-2xl font-black uppercase tracking-wide text-sigeb-blue">
                 Programas de becas
               </h2>
-              <ul className="list-disc space-y-2 pl-5 text-gray-700">
+              <ul className="space-y-2 pl-5 text-brutal-tinta/80 marker:text-brutal-gold">
                 <li>Beca de Excelencia Académica</li>
                 <li>Beca de Inspiración Cívica</li>
                 <li>Programas de apoyo a la formación técnica y profesional</li>
               </ul>
             </div>
 
-            <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
-              <h2 className="mb-3 text-2xl font-bold text-sigeb-blue-dark">
+            <div className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco p-8 shadow-brutal-sm">
+              <h2 className="mb-3 font-brut text-2xl font-black uppercase tracking-wide text-sigeb-blue">
                 Transparencia
               </h2>
-              <p className="text-gray-700">
+              <p className="text-brutal-tinta/80">
                 SIGEB publica los resultados de cada convocatoria y mantiene un
                 registro auditable de todas las acciones del proceso, asegurando
                 que cada decisión sea documentada y verificable.
               </p>
             </div>
 
-            <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
-              <h2 className="mb-3 text-2xl font-bold text-sigeb-blue-dark">
+            <div className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco p-8 shadow-brutal-sm">
+              <h2 className="mb-3 font-brut text-2xl font-black uppercase tracking-wide text-sigeb-blue">
                 Contacto
               </h2>
-              <p className="text-gray-700">
-                Ministerio de Educación de Guatemala
-              </p>
-              <p className="text-gray-700">
+              <p className="text-brutal-tinta/80">Ministerio de Educación de Guatemala</p>
+              <p className="text-brutal-tinta/80">
                 Para consultas sobre becas, contáctanos a través de nuestro{' '}
-                <a href="/consulta" className="text-sigeb-blue underline">
+                <a href="/consulta" className="font-brut font-bold text-sigeb-blue hover:bg-brutal-cyan">
                   consulta de solicitudes
                 </a>{' '}
                 o el centro de ayuda.

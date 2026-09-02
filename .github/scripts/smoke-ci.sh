@@ -169,6 +169,18 @@ SOL_EST=$(curl -sf "$BASE/solicitudes/$SOL_ID" -H "Authorization: Bearer $TOKEN_
 CONV_FINAL=$(curl -sf "$BASE/convocatorias/$PUBLICADA_ID" -H "Authorization: Bearer $TOKEN_ADMIN" | jq -r '.data.estado')
 [ "$CONV_FINAL" = "RESUELTA" ] || { echo "convocatoria esperaba RESUELTA, obtuve $CONV_FINAL"; exit 1; }
 
+# ---- US-F7: constancia en PDF (solo solicitudes APROBADAS) ----
+PDF_HEAD=$(curl -s -D - -o /tmp/constancia.pdf "$BASE/solicitudes/$SOL_ID/constancia" -H "Authorization: Bearer $TOKEN_ADMIN")
+echo "$PDF_HEAD" | grep -qi 'application/pdf' || { echo "Constancia sin Content-Type application/pdf"; exit 1; }
+echo "$PDF_HEAD" | grep -qi 'attachment' || { echo "Constancia sin Content-Disposition attachment"; exit 1; }
+[ -s /tmp/constancia.pdf ] && head -c 4 /tmp/constancia.pdf | grep -q '%PDF' || { echo "Constancia no es un PDF valido"; exit 1; }
+
+CODE=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/solicitudes/$SOL_ID/constancia" -H "Authorization: Bearer $TOKEN_POST")
+[ "$CODE" = "200" ] || { echo "Postulante dueno descargando constancia esperaba 200, obtuve $CODE"; exit 1; }
+
+CODE=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/solicitudes/$SOL_ID/constancia" -H "Authorization: Bearer $TOKEN_EVAL")
+[ "$CODE" = "403" ] || { echo "Evaluador descargando constancia esperaba 403, obtuve $CODE"; exit 1; }
+
 # ---- Sprint 5: reportes y CSV (US-34, US-35) ----
 for ENDPOINT in solicitudes-por-estado convocatorias evaluaciones; do
   CODE=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/reportes/$ENDPOINT" -H "Authorization: Bearer $TOKEN_ADMIN")
@@ -222,4 +234,68 @@ CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE/asistente/preguntar
   -H 'Content-Type: application/json' -d '{"pregunta":""}')
 [ "$CODE" = "400" ] || { echo "Pregunta vacia esperaba 400, obtuve $CODE"; exit 1; }
 
-echo "SMOKE CI OK (S3 solicitudes + S4 evaluaciones/sesiones/rechazo docs + S5 reportes/CSV + auditoria + asistente)"
+# ---- Sprint 8: matriz de seguridad (alta + excepciones por usuario + estados) ----
+CUI_SMOKE="$(date +%s%N | cut -c1-13)"
+EMAIL_SMOKE="smoke-$(date +%s)@demo.gt"
+U_CREADO=$(curl -sf -X POST "$BASE/seguridad/usuarios" -H "Authorization: Bearer $TOKEN_ADMIN" \
+  -H 'Content-Type: application/json' \
+  -d "{\"cui\":\"$CUI_SMOKE\",\"nombres\":\"Smoke Matriz\",\"email\":\"$EMAIL_SMOKE\",\"password\":\"Smoke123!\",\"rolId\":\"$(curl -sf "$BASE/seguridad/roles" -H "Authorization: Bearer $TOKEN_ADMIN" | jq -r '.data[] | select(.nombre=="POSTULANTE") | .id')\"}")
+[ -z "$U_CREADO" ] && { echo "Fallo crear usuario en matriz"; exit 1; }
+U_ID=$(echo "$U_CREADO" | jq -r '.data.id')
+USUARIO_SIN_HASH=$(echo "$U_CREADO" | jq -r '.data | has("passwordHash")')
+[ "$USUARIO_SIN_HASH" = "false" ] || { echo "El alta de usuario filtro passwordHash"; exit 1; }
+[ "$(echo "$U_CREADO" | jq -r '.data.rol.nombre')" = "POSTULANTE" ] || { echo "Alta sin rol POSTULANTE"; exit 1; }
+
+TOKEN_NUEVO=$(curl -sf -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
+  -d "{\"email\":\"$EMAIL_SMOKE\",\"password\":\"Smoke123!\"}" | jq -r '.data.accessToken')
+[ -z "$TOKEN_NUEVO" ] && { echo "Login del usuario creado fallo"; exit 1; }
+
+LISTA_SIN_HASH=$(curl -sf "$BASE/seguridad/usuarios" -H "Authorization: Bearer $TOKEN_ADMIN" | jq -r '[.data[] | has("passwordHash")] | any')
+[ "$LISTA_SIN_HASH" = "false" ] || { echo "El listado de usuarios filtro passwordHash"; exit 1; }
+
+PERM_REP=$(curl -sf "$BASE/seguridad/permisos" -H "Authorization: Bearer $TOKEN_ADMIN" \
+  | jq -r '.data[] | select(.modulo=="reporte" and .accion=="ver") | .id')
+[ -n "$PERM_REP" ] || { echo "Permiso reporte:ver no encontrado"; exit 1; }
+
+CODE=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/reportes/solicitudes-por-estado" -H "Authorization: Bearer $TOKEN_NUEVO")
+[ "$CODE" = "403" ] || { echo "POSTULANTE sin excepcion esperaba 403 en reporte, obtuve $CODE"; exit 1; }
+
+curl -sf -X PATCH "$BASE/seguridad/usuarios/$U_ID/permisos" -H "Authorization: Bearer $TOKEN_ADMIN" \
+  -H 'Content-Type: application/json' \
+  -d "{\"permisos\":[{\"permisoId\":\"$PERM_REP\",\"efecto\":\"PERMITIR\"}]}" > /dev/null
+
+CODE=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/reportes/solicitudes-por-estado" -H "Authorization: Bearer $TOKEN_NUEVO")
+[ "$CODE" = "200" ] || { echo "PERMITIR individual esperaba 200 en reporte, obtuve $CODE"; exit 1; }
+
+CROSS_POST=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/reportes/solicitudes-por-estado" -H "Authorization: Bearer $TOKEN_POST")
+[ "$CROSS_POST" = "403" ] || { echo "Otro POSTULANTE sin excepcion esperaba 403, obtuve $CROSS_POST"; exit 1; }
+
+EXCEPCIONES=$(curl -sf "$BASE/seguridad/usuarios/$U_ID" -H "Authorization: Bearer $TOKEN_ADMIN" \
+  | jq -r "[.data.usuarioPermisos[] | select(.permiso.id==\"$PERM_REP\") | .efecto][0]")
+[ "$EXCEPCIONES" = "PERMITIR" ] || { echo "La excepcion PERMITIR no persistio en el usuario, obtuve $EXCEPCIONES"; exit 1; }
+
+curl -sf -X PATCH "$BASE/seguridad/usuarios/$U_ID/permisos" -H "Authorization: Bearer $TOKEN_ADMIN" \
+  -H 'Content-Type: application/json' \
+  -d "{\"permisos\":[{\"permisoId\":\"$PERM_REP\",\"efecto\":\"DENEGAR\"}]}" > /dev/null
+
+CODE=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/reportes/solicitudes-por-estado" -H "Authorization: Bearer $TOKEN_NUEVO")
+[ "$CODE" = "403" ] || { echo "DENEGAR individual esperaba 403 en reporte, obtuve $CODE"; exit 1; }
+
+CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE/seguridad/usuarios" -H "Authorization: Bearer $TOKEN_POST" \
+  -H 'Content-Type: application/json' \
+  -d '{"cui":"1111111111111","nombres":"No","email":"no@demo.gt","password":"Nopass123","rolId":"x"}')
+[ "$CODE" = "403" ] || { echo "POSTULANTE creando usuarios esperaba 403, obtuve $CODE"; exit 1; }
+
+CODE=$(curl -s -o /dev/null -w '%{http_code}' -X PATCH "$BASE/seguridad/usuarios/$ADMIN_ID" \
+  -H "Authorization: Bearer $TOKEN_ADMIN" -H 'Content-Type: application/json' -d '{"estado":"INACTIVO"}')
+[ "$CODE" = "400" ] || { echo "Auto-inactivacion del admin esperaba 400, obtuve $CODE"; exit 1; }
+
+curl -sf -X PATCH "$BASE/seguridad/usuarios/$U_ID" -H "Authorization: Bearer $TOKEN_ADMIN" \
+  -H 'Content-Type: application/json' -d '{"estado":"INACTIVO"}' > /dev/null
+CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
+  -d "{\"email\":\"$EMAIL_SMOKE\",\"password\":\"Smoke123!\"}")
+[ "$CODE" = "401" ] || { echo "Login de usuario inactivo esperaba 401, obtuve $CODE"; exit 1; }
+curl -sf -X PATCH "$BASE/seguridad/usuarios/$U_ID" -H "Authorization: Bearer $TOKEN_ADMIN" \
+  -H 'Content-Type: application/json' -d '{"estado":"ACTIVO"}' > /dev/null
+
+echo "SMOKE CI OK (S3 solicitudes + S4 evaluaciones/sesiones/rechazo docs + S5 reportes/CSV + auditoria + asistente + F7 constancia PDF + S8 matriz de seguridad)"

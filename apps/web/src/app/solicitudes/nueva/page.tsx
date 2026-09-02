@@ -69,7 +69,7 @@ function NuevaSolicitudContent() {
         </div>
 
         {error && (
-          <p className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          <p className="mb-6 rounded-brutal border-[3px] border-brutal-rojo bg-red-50 p-4 text-sm font-bold text-brutal-rojo">
             {error}
           </p>
         )}
@@ -166,15 +166,15 @@ function PasoConvocatoria({
   return (
     <div>
       {error && (
-        <p className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+        <p className="mb-4 rounded-brutal border-[3px] border-brutal-rojo bg-red-50 p-3 text-sm font-bold text-brutal-rojo">
           {error}
         </p>
       )}
-      <h2 className="mb-4 text-xl font-bold text-sigeb-blue-dark">
+      <h2 className="mb-4 font-brut text-xl font-black uppercase tracking-wide text-brutal-tinta">
         Elige una convocatoria abierta
       </h2>
       {convocatorias.length === 0 ? (
-        <p className="text-gray-600">
+        <p className="font-mono text-sm text-brutal-tinta/60">
           No hay convocatorias abiertas en este momento.
         </p>
       ) : (
@@ -191,8 +191,8 @@ function PasoConvocatoria({
                   </h3>
                   <Badge estado={convocatoria.estado} />
                 </div>
-                <p className="mt-1 text-sm text-gray-600">{convocatoria.nombre}</p>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-brutal-tinta/70">{convocatoria.nombre}</p>
+                <p className="mt-1 text-sm text-brutal-tinta/70">
                   Cierre: {formatearFecha(convocatoria.fechaCierre)}
                 </p>
               </div>
@@ -454,22 +454,23 @@ function PasoPerfilFinanciero({
           }
         />
       </div>
-      <label className="mt-4 flex items-center gap-2 text-sm text-gray-700">
+      <label className="mt-4 flex cursor-pointer items-center gap-2 font-mono text-sm text-brutal-tinta">
         <input
           type="checkbox"
           checked={form.becasAnteriores}
           onChange={(e) =>
             setForm((f) => ({ ...f, becasAnteriores: e.target.checked }))
           }
+          className="h-4 w-4 accent-brutal-tinta"
         />
         He recibido becas anteriormente
       </label>
       <div className="mt-4">
-        <label className="mb-1 block text-sm font-medium text-sigeb-blue-dark">
+        <label className="mb-1 block font-brut text-xs font-bold uppercase tracking-wide text-brutal-tinta">
           Describe tu situación socioeconómica
         </label>
         <textarea
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-colors focus:border-sigeb-blue focus:outline-none focus:ring-2 focus:ring-sigeb-blue/20"
+          className="w-full rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco px-3 py-2 font-mono text-sm text-brutal-tinta focus:bg-brutal-cyan/10 focus:outline-none"
           rows={4}
           value={form.descripcionSituacion}
           onChange={(e) =>
@@ -560,7 +561,7 @@ function PasoDocumentos({
       <h2 className="mb-2 text-xl font-bold text-sigeb-blue-dark">
         Documentos requeridos
       </h2>
-      <p className="mb-5 text-sm text-gray-600">
+      <p className="mb-5 text-sm text-brutal-tinta/70">
         Sube cada documento requerido (PDF, JPG o PNG, máx. 5 MB).
       </p>
       <div className="space-y-3">
@@ -568,7 +569,7 @@ function PasoDocumentos({
           <Card key={doc.documentoTipoId} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="font-semibold text-sigeb-blue-dark">{doc.nombre}</p>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-brutal-tinta/70">
                 {doc.obligatorio ? 'Obligatorio' : 'Opcional'}
               </p>
             </div>
@@ -587,7 +588,7 @@ function PasoDocumentos({
                   </Button>
                 </>
               ) : (
-                <label className="cursor-pointer rounded-lg border-2 border-sigeb-blue px-4 py-2 text-sm font-semibold text-sigeb-blue transition-colors hover:bg-sigeb-blue hover:text-white">
+                <label className="cursor-pointer rounded-brutal border-[3px] border-brutal-tinta bg-brutal-cyan px-4 py-2 font-brut text-sm font-bold uppercase tracking-wide text-brutal-tinta shadow-brutal-sm transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none">
                   {subiendo === doc.documentoTipoId ? 'Subiendo...' : 'Subir archivo'}
                   <input
                     type="file"
@@ -664,7 +665,7 @@ function PasoEnviar({
         Revisa y envía
       </h2>
       <Card className="mb-6">
-        <ul className="space-y-2 text-sm text-gray-700">
+        <ul className="space-y-2 text-sm text-brutal-tinta/80">
           <li className="flex justify-between">
             <span>Perfil académico</span>
             <span className={checklist.perfilAcademico ? 'font-semibold text-green-700' : 'font-semibold text-red-600'}>
@@ -687,7 +688,7 @@ function PasoEnviar({
       </Card>
 
       {checklist.pendientes.length > 0 && (
-        <p className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+        <p className="mb-4 rounded-brutal border-[3px] border-brutal-naranja bg-brutal-naranja/15 p-3 font-mono text-sm font-bold text-brutal-naranja">
           Falta completar: {checklist.pendientes.join(', ')}
         </p>
       )}

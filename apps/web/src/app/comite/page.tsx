@@ -101,10 +101,10 @@ function ComiteContent() {
 
       <Container className="py-8">
         {error && (
-          <p className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</p>
+          <p className="mb-4 rounded-brutal border-[3px] border-brutal-rojo bg-red-50 p-4 text-sm font-bold text-brutal-rojo">{error}</p>
         )}
         {exito && (
-          <p className="mb-4 rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-700">{exito}</p>
+          <p className="mb-4 rounded-brutal border-[3px] border-brutal-tinta bg-brutal-lima/30 p-4 text-sm font-bold text-brutal-tinta">{exito}</p>
         )}
 
         {!sesiones ? (
@@ -112,13 +112,13 @@ function ComiteContent() {
         ) : (
           <>
             {detalle && (
-              <Card className="mb-6 border-2 border-sigeb-blue">
+              <Card className="mb-6 border-[3px] border-brutal-tinta shadow-brutal-sm">
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                   <div>
-                    <h3 className="text-lg font-bold text-sigeb-blue-dark">
+                    <h3 className="font-brut text-lg font-black uppercase tracking-wide text-brutal-tinta">
                       {detalle.comite?.nombre}
                     </h3>
-                    <p className="text-sm text-gray-600">
+                    <p className="font-mono text-sm text-brutal-tinta/60">
                       {formatearFecha(detalle.fecha)} · {detalle.lugar ?? 'Sin lugar'}
                     </p>
                   </div>
@@ -127,31 +127,31 @@ function ComiteContent() {
                   </Button>
                 </div>
 
-                <p className="mb-2 text-sm font-semibold text-gray-700">
+                <p className="mb-2 font-brut text-sm font-bold uppercase tracking-wide text-brutal-tinta">
                   Agenda de votación ({detalle.agenda.length})
                 </p>
                 {detalle.agenda.length === 0 ? (
-                  <p className="text-sm text-gray-500">La sesión no tiene solicitudes en agenda.</p>
+                  <p className="text-sm text-brutal-tinta/50">La sesión no tiene solicitudes en agenda.</p>
                 ) : (
                   <div className="space-y-3">
                     {detalle.agenda.map((item) => {
                       const votado = yaVoto(item.solicitud.id);
                       const marca = marcas[item.solicitud.id];
                       return (
-                        <div key={item.id} className="rounded-lg border border-gray-200 p-3">
+                        <div key={item.id} className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-papel p-3">
                           <div className="flex flex-wrap items-center justify-between gap-2">
                             <div>
-                              <p className="font-semibold text-sigeb-blue-dark">
+                              <p className="font-brut text-sm font-bold uppercase tracking-wide text-brutal-tinta">
                                 {item.solicitud.usuario.nombres}
                               </p>
-                              <p className="text-xs text-gray-500">CUI {item.solicitud.usuario.cui}</p>
+                              <p className="font-mono text-xs text-brutal-tinta/50">CUI {item.solicitud.usuario.cui}</p>
                             </div>
                             {votado && (
-                              <span className="text-sm font-semibold text-green-700">✓ Votado</span>
+                              <span className="rounded-brutal border-2 border-brutal-tinta bg-brutal-lima px-2 py-0.5 font-brut text-xs font-bold text-brutal-tinta">✓ Votado</span>
                             )}
                           </div>
                           {votado ? (
-                            <p className="mt-2 text-sm text-gray-600">
+                            <p className="mt-2 font-mono text-sm text-brutal-tinta/60">
                               Tu voto quedó registrado para esta solicitud.
                             </p>
                           ) : (
@@ -222,8 +222,8 @@ function ComiteContent() {
                           </h3>
                           <Badge estado={sesion.estado} />
                         </div>
-                        <p className="text-sm text-gray-600">{formatearFecha(sesion.fecha)}</p>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-brutal-tinta/70">{formatearFecha(sesion.fecha)}</p>
+                        <p className="text-sm text-brutal-tinta/70">
                           {sesion._count?.agenda ?? 0} solicitudes a votar
                         </p>
                       </div>

@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { fetchConToken } from '@/lib/api-auth';
+import { fetchConToken, descargarConstancia } from '@/lib/api-auth';
 import { Container } from '@/components/ui/Container';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -131,42 +131,60 @@ function SolicitudDetalleContent() {
 
   const puedeEnviar = solicitud.estado === 'BORRADOR' || solicitud.estado === 'CORRECCION';
 
+  const descargarPdf = async () => {
+    setError(null);
+    try {
+      await descargarConstancia(solicitud.id);
+      setExito('Constancia descargada.');
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'No se pudo descargar la constancia');
+    }
+  };
+
   return (
     <>
-      <section className="border-b-4 border-sigeb-gold bg-sigeb-blue-dark py-10 text-white">
+      <section className="brut-cinta border-b-[3px] border-brutal-tinta bg-sigeb-blue-dark py-10 text-brutal-papel">
         <Container>
           <button
             onClick={() => router.replace('/dashboard')}
-            className="mb-4 inline-block text-sm text-sigeb-light hover:text-white"
+            className="mb-4 inline-block rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco px-3 py-1 font-mono text-xs font-bold text-brutal-tinta"
           >
             ← Volver al dashboard
           </button>
-          <p className="mb-2 inline-block rounded-full bg-sigeb-gold px-3 py-1 text-xs font-bold uppercase tracking-wide text-sigeb-blue-dark">
+          <p className="mb-2 inline-block rounded-brutal border-[3px] border-brutal-tinta bg-brutal-gold px-3 py-1 font-brut text-xs font-bold uppercase tracking-wide text-brutal-tinta">
             Sistema interno
           </p>
           <div className="flex flex-wrap items-center gap-3">
             <Badge estado={solicitud.estado} />
-            <span className="text-sm font-medium text-sigeb-light">
+            <span className="brut-label font-mono text-xs font-bold uppercase text-brutal-gold">
               {solicitud.convocatoria.beca.nombre}
             </span>
           </div>
-          <h1 className="mt-3 text-2xl font-bold md:text-3xl">
+          <h1 className="text-mega mt-3 font-black text-2xl uppercase md:text-4xl">
             {solicitud.convocatoria.nombre}
           </h1>
-          <p className="mt-1 text-sm text-sigeb-white/80">
+          <p className="mt-1 font-mono text-sm text-brutal-papel/80">
             Postulada el {formatearFecha(solicitud.createdAt)}
           </p>
+          {solicitud.estado === 'APROBADA' && (
+            <Button
+              onClick={descargarPdf}
+              className="mt-5"
+            >
+              Descargar constancia (PDF)
+            </Button>
+          )}
         </Container>
       </section>
 
       <Container className="py-8">
         {error && (
-          <p className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          <p className="mb-4 rounded-brutal border-[3px] border-brutal-rojo bg-red-50 p-4 text-sm font-bold text-brutal-rojo">
             {error}
           </p>
         )}
         {exito && (
-          <p className="mb-4 rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-700">
+          <p className="mb-4 rounded-brutal border-[3px] border-brutal-tinta bg-brutal-lima/30 p-4 text-sm font-bold text-brutal-tinta">
             {exito}
           </p>
         )}
@@ -181,27 +199,27 @@ function SolicitudDetalleContent() {
             />
 
             <Card>
-              <h2 className="mb-3 text-lg font-bold text-sigeb-blue-dark">
+              <h2 className="mb-3 font-brut text-lg font-black uppercase tracking-wide text-brutal-tinta">
                 Historial de la solicitud
               </h2>
               {solicitud.historial && solicitud.historial.length > 0 ? (
-                <ol className="space-y-3 border-l-2 border-gray-200 pl-4">
+                <ol className="space-y-3 border-l-[3px] border-brutal-tinta pl-4">
                   {solicitud.historial.map((h, i) => (
                     <li key={i}>
-                      <p className="flex flex-wrap items-center gap-2 text-sm">
+                      <p className="flex flex-wrap items-center gap-2 font-mono">
                         <Badge estado={h.estado} />
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-brutal-tinta/50">
                           {formatearFecha(h.fecha)}
                         </span>
                       </p>
                       {h.comentario && (
-                        <p className="mt-1 text-sm text-gray-600">{h.comentario}</p>
+                        <p className="mt-1 font-mono text-sm text-brutal-tinta/60">{h.comentario}</p>
                       )}
                     </li>
                   ))}
                 </ol>
               ) : (
-                <p className="text-sm text-gray-500">Sin movimientos registrados.</p>
+                <p className="text-sm text-brutal-tinta/50">Sin movimientos registrados.</p>
               )}
             </Card>
           </div>
@@ -212,7 +230,7 @@ function SolicitudDetalleContent() {
                 Perfil académico
               </h2>
               {solicitud.perfilAcademico ? (
-                <dl className="space-y-1 text-sm text-gray-600">
+                <dl className="space-y-1 text-sm text-brutal-tinta/70">
                   <PerfilItem
                     label="Institución"
                     value={solicitud.perfilAcademico.institucion}
@@ -231,7 +249,7 @@ function SolicitudDetalleContent() {
                   />
                 </dl>
               ) : (
-                <p className="text-sm text-gray-500">No completado.</p>
+                <p className="text-sm text-brutal-tinta/70">No completado.</p>
               )}
             </Card>
 
@@ -240,7 +258,7 @@ function SolicitudDetalleContent() {
                 Perfil financiero
               </h2>
               {solicitud.perfilFinanciero ? (
-                <dl className="space-y-1 text-sm text-gray-600">
+                <dl className="space-y-1 text-sm text-brutal-tinta/70">
                   <PerfilItem
                     label="Ingreso familiar"
                     value={
@@ -263,7 +281,7 @@ function SolicitudDetalleContent() {
                   />
                 </dl>
               ) : (
-                <p className="text-sm text-gray-500">No completado.</p>
+                <p className="text-sm text-brutal-tinta/70">No completado.</p>
               )}
             </Card>
 
@@ -272,7 +290,7 @@ function SolicitudDetalleContent() {
                 <h2 className="mb-2 text-lg font-bold text-sigeb-blue-dark">
                   Enviar solicitud
                 </h2>
-                <p className="mb-4 text-sm text-gray-600">
+                <p className="mb-4 text-sm text-brutal-tinta/70">
                   {checklist?.completo
                     ? 'Tu solicitud está completa. Envíala para su evaluación.'
                     : `Faltan elementos para enviar: ${
@@ -314,28 +332,28 @@ function DocsSection({
 }) {
   return (
     <Card>
-      <h2 className="mb-4 text-lg font-bold text-sigeb-blue-dark">
+      <h2 className="mb-4 font-brut text-lg font-black uppercase tracking-wide text-brutal-tinta">
         Documentos
       </h2>
       {documentos.length === 0 ? (
-        <p className="text-sm text-gray-500">No se requieren documentos para esta solicitud.</p>
+        <p className="font-mono text-sm text-brutal-tinta/50">No se requieren documentos para esta solicitud.</p>
       ) : (
         <div className="space-y-3">
           {documentos.map((doc) => (
             <div
               key={doc.documentoTipoId}
-              className="flex flex-col gap-2 rounded-lg border border-gray-200 p-3 sm:flex-row sm:items-center sm:justify-between"
+              className="flex flex-col gap-2 rounded-brutal border-[3px] border-brutal-tinta bg-brutal-papel p-3 sm:flex-row sm:items-center sm:justify-between"
             >
               <div>
-                <p className="font-semibold text-sigeb-blue-dark">{doc.nombre}</p>
-                <p className="text-xs text-gray-500">
+                <p className="font-brut text-sm font-bold uppercase tracking-wide text-brutal-tinta">{doc.nombre}</p>
+                <p className="font-mono text-xs text-brutal-tinta/50">
                   {doc.obligatorio ? 'Obligatorio' : 'Opcional'}
                 </p>
               </div>
               <div className="flex items-center gap-3">
                 {doc.cargado ? (
                   <>
-                    <span className="text-sm font-semibold text-green-700">✓ Cargado</span>
+                    <span className="rounded-brutal border-2 border-brutal-tinta bg-brutal-lima px-2 py-0.5 font-brut text-xs font-bold text-brutal-tinta">✓ Cargado</span>
                     <Button
                       variant="ghost"
                       onClick={() => onQuitar(doc.documentoTipoId)}
@@ -345,7 +363,7 @@ function DocsSection({
                     </Button>
                   </>
                 ) : (
-                  <label className="cursor-pointer rounded-lg border-2 border-sigeb-blue px-4 py-1.5 text-sm font-semibold text-sigeb-blue transition-colors hover:bg-sigeb-blue hover:text-white">
+                  <label className="cursor-pointer rounded-brutal border-[3px] border-brutal-tinta bg-brutal-cyan px-4 py-1.5 font-brut text-sm font-bold uppercase tracking-wide text-brutal-tinta shadow-brutal-sm transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none">
                     {subiendo === doc.documentoTipoId ? 'Subiendo...' : 'Subir'}
                     <input
                       type="file"
@@ -373,8 +391,8 @@ function PerfilItem({ label, value }: { label: string; value?: string | null }) 
   if (!value) return null;
   return (
     <div className="flex justify-between">
-      <dt className="text-gray-500">{label}</dt>
-      <dd className="font-medium text-gray-900">{value}</dd>
+      <dt className="text-brutal-tinta/70">{label}</dt>
+      <dd className="font-medium text-brutal-tinta">{value}</dd>
     </div>
   );
 }

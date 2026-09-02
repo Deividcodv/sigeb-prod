@@ -11,9 +11,11 @@ import {
   UseInterceptors,
   UploadedFile,
   BadRequestException,
+  Res,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
+import { Response } from 'express';
 import {
   ApiTags,
   ApiOperation,
@@ -21,6 +23,7 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { SolicitudesService } from './solicitudes.service';
+import { ConstanciasService } from './constancias.service';
 import {
   CreateSolicitudDto,
   TransicionSolicitudDto,
@@ -58,7 +61,10 @@ export function documentoFileFilter(
 @Controller('solicitudes')
 @ApiBearerAuth()
 export class SolicitudesController {
-  constructor(private readonly solicitudesService: SolicitudesService) {}
+  constructor(
+    private readonly solicitudesService: SolicitudesService,
+    private readonly constanciasService: ConstanciasService,
+  ) {}
 
   @Post()
   @Permisos('solicitud:crear')
@@ -192,5 +198,30 @@ export class SolicitudesController {
       dto.estado,
       usuario,
     );
+  }
+
+  @Get(':id/constancia')
+  @Permisos('solicitud:ver')
+  @ApiOperation({
+    summary:
+      'Descargar constancia de beca en PDF (solo solicitudes APROBADAS)',
+  })
+  @ApiResponse({ status: 200, description: 'PDF de constancia' })
+  @ApiResponse({ status: 400, description: 'Solicitud no aprobada' })
+  @ApiResponse({ status: 403, description: 'Sin acceso a la solicitud' })
+  async descargarConstancia(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() usuario: AuthenticatedUser,
+    @Res() res: Response,
+  ) {
+    const pdf = await this.constanciasService.generarConstancia(id, usuario);
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="constancia-${id.slice(0, 8)}.pdf"`,
+    );
+    res.setHeader('Content-Length', pdf.length);
+    res.send(pdf);
   }
 }

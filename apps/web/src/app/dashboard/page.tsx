@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { useAuth } from '@/context/AuthContext';
-import { fetchConToken } from '@/lib/api-auth';
+import { fetchConToken, descargarConstancia } from '@/lib/api-auth';
 import { Container } from '@/components/ui/Container';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -67,7 +67,7 @@ function DashboardContent() {
 
       <Container className="py-10">
         {error && (
-          <p className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          <p className="mb-6 rounded-brutal border-[3px] border-brutal-rojo bg-red-50 p-4 text-sm font-bold text-brutal-rojo">
             {error}
           </p>
         )}
@@ -118,22 +118,36 @@ function DashboardContent() {
                         </h3>
                         <Badge estado={sol.estado} />
                       </div>
-                      <p className="mt-1 text-sm text-gray-600">
+                      <p className="mt-1 text-sm text-brutal-tinta/70">
                         {sol.convocatoria.nombre}
                       </p>
-                      <p className="mt-1 text-sm text-gray-500">
+                      <p className="mt-1 text-sm text-brutal-tinta/70">
                         Postulada el {formatearFecha(sol.createdAt)} ·{' '}
                         {sol._count?.documentos ?? 0} documento
                         {(sol._count?.documentos ?? 0) === 1 ? '' : 's'}
                       </p>
                     </div>
-                    <Button
-                      href={`/solicitudes/${sol.id}`}
-                      variant="ghost"
-                      className="shrink-0 whitespace-nowrap"
-                    >
-                      Ver detalle
-                    </Button>
+                    <div className="flex shrink-0 flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+                      {sol.estado === 'APROBADA' && (
+                        <Button
+                          onClick={() =>
+                            descargarConstancia(sol.id).catch((e: Error) =>
+                              setError(e.message),
+                            )
+                          }
+                          className="whitespace-nowrap"
+                        >
+                          Descargar constancia
+                        </Button>
+                      )}
+                      <Button
+                        href={`/solicitudes/${sol.id}`}
+                        variant="ghost"
+                        className="shrink-0 whitespace-nowrap"
+                      >
+                        Ver detalle
+                      </Button>
+                    </div>
                   </Card>
                 ))}
               </div>

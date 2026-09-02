@@ -97,14 +97,14 @@ export function ChatWidget() {
                 className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${
                   m.rol === 'usuario'
                     ? 'ml-auto bg-sigeb-blue text-white'
-                    : 'bg-white text-gray-800 shadow-sm'
+                    : 'bg-white text-brutal-tinta/90 shadow-sm'
                 }`}
               >
                 {m.contenido}
               </div>
             ))}
             {pensando && (
-              <div className="max-w-[85%] rounded-2xl bg-white px-3 py-2 text-sm text-gray-500 shadow-sm">
+              <div className="max-w-[85%] rounded-2xl bg-white px-3 py-2 text-sm text-brutal-tinta/70 shadow-sm">
                 Escribiendo...
               </div>
             )}

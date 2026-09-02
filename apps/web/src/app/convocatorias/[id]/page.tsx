@@ -42,57 +42,57 @@ export default async function ConvocatoriaDetallePage({ params }: Props) {
 
   return (
     <main>
-      <section className="bg-sigeb-blue py-12 text-white">
+      <section className="brut-cinta border-b-[3px] border-brutal-tinta bg-sigeb-blue-dark py-12 text-brutal-papel">
         <Container>
           <Link
             href="/convocatorias"
-            className="mb-4 inline-block text-sm text-sigeb-light hover:text-white"
+            className="mb-6 inline-block rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco px-3 py-1 font-mono text-xs font-bold text-brutal-tinta"
           >
             ← Volver a convocatorias
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <Badge estado={convocatoria.estado} />
-            <span className="text-sm font-medium text-sigeb-light">
+            <span className="brut-label font-mono text-xs font-bold uppercase text-brutal-gold">
               {convocatoria.beca.nombre}
             </span>
           </div>
-          <h1 className="mt-3 text-3xl font-bold md:text-4xl">
+          <h1 className="text-mega mt-3 text-3xl font-black md:text-5xl">
             {convocatoria.nombre}
           </h1>
         </Container>
       </section>
 
-      <section className="bg-sigeb-gray py-10">
+      <section className="bg-brutal-papel py-10">
         <Container>
           <div className="grid gap-8 lg:grid-cols-3">
             <div className="space-y-6 lg:col-span-2">
-              <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                <h2 className="mb-3 text-xl font-bold text-sigeb-blue-dark">
+              <div className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco p-6 shadow-brutal-sm">
+                <h2 className="mb-3 font-brut text-xl font-black uppercase tracking-wide text-sigeb-blue">
                   Descripción
                 </h2>
-                <p className="whitespace-pre-line text-gray-700">
+                <p className="whitespace-pre-line text-brutal-tinta/80">
                   {convocatoria.descripcion ||
                     'No se ha proporcionado una descripción para esta convocatoria.'}
                 </p>
               </div>
 
               {criterios.length > 0 && (
-                <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                  <h2 className="mb-3 text-xl font-bold text-sigeb-blue-dark">
+                <div className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco p-6 shadow-brutal-sm">
+                  <h2 className="mb-3 font-brut text-xl font-black uppercase tracking-wide text-sigeb-blue">
                     Criterios de evaluación
                   </h2>
-                  <table className="w-full text-left text-sm">
+                  <table className="w-full text-left font-mono text-sm">
                     <thead>
-                      <tr className="border-b border-gray-200 text-gray-500">
-                        <th className="py-2 pr-4 font-medium">Criterio</th>
-                        <th className="py-2 font-medium">Peso</th>
+                      <tr className="border-b-[3px] border-brutal-tinta text-brutal-tinta">
+                        <th className="py-2 pr-4 font-bold">Criterio</th>
+                        <th className="py-2 font-bold">Peso</th>
                       </tr>
                     </thead>
                     <tbody>
                       {criterios.map((criterio) => (
-                        <tr key={criterio.id} className="border-b border-gray-100">
-                          <td className="py-2 pr-4 text-gray-800">{criterio.nombre}</td>
-                          <td className="py-2 text-gray-600">
+                        <tr key={criterio.id} className="border-b border-brutal-tinta/20">
+                          <td className="py-2 pr-4 text-brutal-tinta">{criterio.nombre}</td>
+                          <td className="py-2 font-bold text-sigeb-blue">
                             {(criterio.peso * 100).toFixed(0)}%
                           </td>
                         </tr>
@@ -104,20 +104,20 @@ export default async function ConvocatoriaDetallePage({ params }: Props) {
             </div>
 
             <div className="space-y-6">
-              <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                <h2 className="mb-3 text-lg font-bold text-sigeb-blue-dark">
+              <div className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco p-6 shadow-brutal-sm">
+                <h2 className="mb-3 font-brut text-lg font-black uppercase tracking-wide text-sigeb-blue">
                   Datos de la convocatoria
                 </h2>
-                <dl className="space-y-2 text-sm text-gray-600">
+                <dl className="space-y-2 font-mono text-sm text-brutal-tinta/70">
                   <div className="flex justify-between">
                     <dt>Apertura</dt>
-                    <dd className="font-medium text-gray-900">
+                    <dd className="font-bold text-brutal-tinta">
                       {formatearFecha(convocatoria.fechaApertura)}
                     </dd>
                   </div>
                   <div className="flex justify-between">
                     <dt>Cierre</dt>
-                    <dd className="font-medium text-gray-900">
+                    <dd className="font-bold text-brutal-tinta">
                       {formatearFecha(convocatoria.fechaCierre)}
                     </dd>
                   </div>
@@ -125,19 +125,19 @@ export default async function ConvocatoriaDetallePage({ params }: Props) {
               </div>
 
               {docs.length > 0 && (
-                <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                  <h2 className="mb-3 text-lg font-bold text-sigeb-blue-dark">
+                <div className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco p-6 shadow-brutal-sm">
+                  <h2 className="mb-3 font-brut text-lg font-black uppercase tracking-wide text-sigeb-blue">
                     Documentos requeridos
                   </h2>
-                  <ul className="space-y-2 text-sm text-gray-700">
+                  <ul className="space-y-2 font-mono text-sm text-brutal-tinta/80">
                     {docs.map((doc) => (
                       <li key={doc.id} className="flex items-start justify-between gap-2">
                         <span>{doc.documentoTipo.nombre}</span>
                         <span
-                          className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${
+                          className={`shrink-0 rounded-brutal border-2 px-2 py-0.5 text-xs font-bold ${
                             doc.obligatorio
-                              ? 'bg-red-100 text-red-700'
-                              : 'bg-gray-100 text-gray-600'
+                              ? 'border-brutal-rojo bg-brutal-rojo/15 text-brutal-rojo'
+                              : 'border-brutal-tinta bg-brutal-tinta/10 text-brutal-tinta'
                           }`}
                         >
                           {doc.obligatorio ? 'Obligatorio' : 'Opcional'}
@@ -151,9 +151,9 @@ export default async function ConvocatoriaDetallePage({ params }: Props) {
               <Button href="/registro" className="w-full text-center">
                 Postularme
               </Button>
-              <p className="text-center text-xs text-gray-500">
+              <p className="text-center font-mono text-xs text-brutal-tinta/60">
                 Crear una cuenta para iniciar tu postulación.{' '}
-                <Link href="/login" className="text-sigeb-blue underline">
+                <Link href="/login" className="font-brut font-bold text-sigeb-blue hover:bg-brutal-cyan">
                   Inicia sesión
                 </Link>{' '}
                 si ya tienes una.

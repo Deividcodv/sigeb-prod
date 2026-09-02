@@ -4,15 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/Button';
-
-const rutaPorRol = (rol: string): string => {
-  const r = (rol || '').toUpperCase();
-  if (r === 'EVALUADOR') return '/evaluador';
-  if (r === 'COORDINADOR_COMITE') return '/coordinador';
-  if (r === 'MIEMBRO_COMITE') return '/comite';
-  if (r !== 'POSTULANTE') return '/admin';
-  return '/dashboard';
-};
+import { rutaPorRol } from '@/lib/rol';
 
 export function UserMenu() {
   const { usuario, cargando, logout } = useAuth();
@@ -23,7 +15,11 @@ export function UserMenu() {
   if (!usuario) {
     return (
       <div className="hidden gap-3 md:flex">
-        <Button href="/login" variant="ghost">
+        <Button
+          href="/login"
+          variant="ghost"
+          className="!border-brutal-papel !bg-transparent !text-brutal-papel hover:!bg-brutal-gold hover:!text-brutal-tinta"
+        >
           Iniciar sesión
         </Button>
         <Button href="/registro">Registrarse</Button>
@@ -42,7 +38,7 @@ export function UserMenu() {
     <div className="hidden items-center gap-3 md:flex">
       <Link
         href={ruta}
-        className="text-sm font-medium text-sigeb-blue-dark hover:text-sigeb-blue"
+        className="brut-label text-xs font-bold text-brutal-cyan transition-colors hover:text-brutal-gold"
       >
         Hola, {usuario.nombres.split(' ')[0]}
       </Link>

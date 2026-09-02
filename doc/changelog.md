@@ -186,23 +186,78 @@ Las categorías son:
 
 ---
 
-## [Sprint 7] — 2026-XX-XX
+## [Sprint 7] — 2026-08-31
 
 ### Added
-- [ ] Login + Registro frontend (React Hook Form + Zod)
-- [ ] Dashboard postulante con seguimiento
-- [ ] Formulario multi-step de solicitud
-- [ ] Gestión de documentos desde frontend
-- [ ] Panel de evaluador
-- [ ] Panel de administración de convocatorias
-- [ ] Panel de administración de seguridad
-- [ ] Widget de chat IA
-- [ ] Responsive design (desktop → tablet → mobile)
-- [ ] Identidad visual dual (público vs admin)
+- [x] Login + Registro frontend (React Hook Form + Zod)
+- [x] Dashboard postulante con seguimiento
+- [x] Formulario multi-step de solicitud
+- [x] Gestión de documentos desde frontend
+- [x] Panel de evaluador
+- [x] Panel de administración de convocatorias
+- [x] Panel de administración de seguridad
+- [x] Widget de chat IA
+- [x] Responsive design (desktop → tablet → mobile)
+- [x] Identidad visual dual (público vs admin)
 
 ### Notas
 - Hamilton en postulante + IA
 - Yemerson en admin + responsive
+
+---
+
+## [Sprint 8] — 2026-09-01
+
+### Added (US-F7: constancia de beca en PDF)
+- [x] Dependencia `puppeteer` en `apps/api` (Chromium headless)
+- [x] Adaptador `PdfRenderer` con implementación `PuppeteerPdfRenderer` (patrón Adapter, runtime usa Chromium del sistema vía `CHROME_EXECUTABLE_PATH`)
+- [x] `ConstanciasService` que construye el HTML institucional (MINEDUC/SIGEB) con escape de valores
+- [x] `GET /solicitudes/:id/constancia` (solo `APROBADA`; dueño, admin o coordinador) → `application/pdf` adjunto
+- [x] Tests unitarios de `ConstanciasService` (6 casos) + smoke CI del PDF real
+- [x] Frontend: botón "Descargar constancia" en el dashboard y en el detalle de la solicitud (helper `descargarConstancia` con Bearer token)
+
+### Added (CI/CD y despliegue)
+- [x] Dockerfiles multi-stage para API y Web (`apps/api/Dockerfile`, `apps/web/Dockerfile`)
+- [x] `output: 'standalone'` en Next.js y `.dockerignore`
+- [x] `docker-compose.prod.yml` para despliegue con Postgres + API + Web (healthchecks, volúmenes)
+- [x] `.env.example` con todas las variables por entorno
+- [x] CI: job `docker-build` que valida ambas imágenes, cache de Chromium (puppeteer) y smoke ampliado (Sprint 3-5 + S6/S7 + PDF)
+- [x] CD: jobs `deploy-staging`/`deploy-production` por SSH (PM2) con `environment: staging/production` y secretos documentados
+- [x] ADR-009 (PDF headless con Adapter) y documentación de despliegue actualizada
+
+### Added (Sprint 8 — Matriz de seguridad)
+- [x] Alta de usuarios/empleados desde el panel (`POST /seguridad/usuarios`) con validación de CUI/email únicos, hash bcrypt y rol obligatorio
+- [x] Detalle de usuario con rol y excepciones (`GET /seguridad/usuarios/:id`) y edición de rol/estado (`PATCH /seguridad/usuarios/:id`) con guard de auto-inactivación
+- [x] Excepciones individuales de permisos por usuario (tri-estado: heredar / `PERMITIR` / `DENEGAR`) vía `PATCH /seguridad/usuarios/:id/permisos` sin migraciones (modelo `UsuarioPermiso` existente)
+- [x] Respuestas y listados sin `passwordHash` + auditoría de crear/editar usuario
+- [x] Frontend: `PanelUsuarios` (listado con búsqueda/filtro, alta, cambio de rol/estado) y `MatrizPermisosUsuario` tri-estado agrupado por módulo; sub-tab "Usuarios" en Seguridad
+- [x] Smoke CI ampliado con bloque de seguridad (alta → login → PERMITIR/DENEGAR en `reporte:ver` → auto-inactivación 400 → inactivo 401 → ACL)
+
+### Changed (Sprint 8 — Rediseño brutalista/maximalista)
+- [x] Nueva identidad visual brutalista en toda la app: paleta `brutal`, bordes 3px, sombras duras (`shadow-brutal*`), esquinas 0px, fondo texturizado `brut-body`, diagonal institucional `brut-cinta` y tipografías Archivo + Instrument Sans + Space Mono
+- [x] Design System reescrito (Card, Button, Container, Badge, Input, Select, EmptyState, Spinner, Stepper, InternalPageHeader) y chrome (Header/Footer/UserMenu/MobileMenu) con dark band
+- [x] Superficies rediseñadas: home (hero mega + pasos numerados), login/registro, convocatorias + detalle, consulta (timeline brutal), dashboard, solicitudes (nueva + detalle), paneles de roles y admin (tablas/matrices brutales)
+
+### Notas
+- Sin migraciones de Prisma: la constancia se genera de forma stateless.
+- Para activar los deploys, el equipo debe definir los secretos de GitHub (`DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_KEY`, `DEPLOY_DATABASE_URL`, `DEPLOY_JWT_SECRET`).
+
+---
+
+## Sprint 8 (continuación) — Workbench por rol y perfil de usuario (S8-bis)
+
+### Added
+- [x] Portada auth-aware: con sesión iniciada, `/` muestra el **workbench del rol** (tarjetas de acciones por rol: postulante, evaluador, coordinador, miembro de comité y admin) en lugar del hero público de becas
+- [x] Navegación por rol: Header y menú móvil auth-aware (logueado → "Mi panel" + "Cerrar sesión"; anónimo → enlaces públicos + login/registro). Corrige el bug de móvil que mostraba "Iniciar sesión"/"Registrarse" a usuarios logueados
+- [x] Página **"Mis datos"** (`/perfil`): teléfono, fecha de nacimiento, género, departamento → municipio (selects en cascada) y dirección; guarda vía el nuevo `PATCH /auth/perfil`
+- [x] API: `PATCH /auth/perfil` con validación de FKs (género/departamento/municipio → 404), `getProfile` ampliado y auditoría `update_perfil`
+- [x] Migración aditiva `usuario_datos_perfil` sobre `usuario` (telefono, fechaNacimiento, direccion, generoId, departamentoId, municipioId) sin pérdida de datos
+- [x] `lib/rol.ts` con `rutaPorRol`/`tienePanel` compartido (elimina duplicación en Header/UserMenu/MobileMenu/ProtectedRoute)
+- [x] Armónica: reemplazo de tokens legados `text-gray-*` por la paleta `brutal` en paneles y superficies
+
+### Notas
+- La migración es aditiva; conviene destruir/crear el volumen en entornos nuevos.
+- `PATCH /auth/perfil` queda disponible para cualquier rol autenticado; el acceso rápido se ofrece desde el workbench del postulante.
 
 ---
 
@@ -219,4 +274,4 @@ Las categorías son:
 
 ---
 
-*Última actualización: 2026-08-31*
+*Última actualización: 2026-09-01*

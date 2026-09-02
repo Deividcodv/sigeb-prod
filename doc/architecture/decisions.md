@@ -226,4 +226,104 @@ Design System compartido con dos "mundos" visuales:
 
 ---
 
-*Última actualización: 2026-08-26*
+## ADR-009: Generación de PDF con navegador headless tras el patrón Adapter (US-F7)
+
+**Estado:** Aceptado
+
+**Fecha:** 2026-09-01
+
+**Contexto:**
+La versión 1.0 mantuvo la generación de PDF "con navegador headless" fuera de alcance. Para el cierre del
+flujo de beca (constancia oficial de una solicitud `APROBADA`) se necesita producir un documento PDF
+institucional.
+
+**Decisión:**
+Generar las constancias de forma **stateless** (sin nueva tabla ni migración): la API consulta la
+solicitud aprobada, construye un HTML institucional y lo convierte a PDF gracias a `PuppeteerPdfRenderer`,
+que implementa la interfaz `PdfRenderer` (patrón Adapter, mismo enfoque que `DocumentStorage`).
+
+**Alternativas consideradas:**
+- Biblioteca de bajo nivel (pdfkit): render más artesanal, peor maquetado y más código.
+- Plantilla pre-generada persistida en storage: agrega estado y rotación, sin beneficio.
+- Sin navegador (HTML simple): no cumple el requerimiento explícito de "navegador headless".
+
+**Consecuencias:**
+- En runtime se usa Chromium del sistema (`apt` en Docker, `CHROME_EXECUTABLE_PATH` en local) y se evita
+  que puppeteer descargue su navegador en imágenes o CI pesadas.
+- El costo de lanzar Chromium se paga por descarga; para este volumen académico es aceptable.
+- El contrato (`PdfRenderer`) permite cambiar a otro motor o a un servicio externo sin tocar el dominio.
+- La comprobación real del PDF se automatizó en el smoke CI (`.github/scripts/smoke-ci.sh`).
+
+---
+
+## ADR-010: Identidad brutalista/maximalista en toda la plataforma (Sprint 8)
+
+**Estado:** Aceptado
+
+**Fecha:** 2026-09-01
+
+**Contexto:**
+El frontend usaba un estilo "liquid" (esquinas redondeadas, sombras suaves, degradados). Para una
+identidad institucional distintiva y memorable se pidió reemplazarlo por un enfoque **brutalista /
+maximalista** en toda la aplicación, manteniendo accesibilidad y reutilización.
+
+**Decisión:**
+Sustituir la skin de la aplicación reescribiendo el Design System sobre una **paleta durable**
+(`brutal`), bordes de 3px, esquinas 0px (`rounded-brutal`), sombras duras offset (`shadow-brutal*`),
+fondo texturizado (`brut-body`), diagonal institucional (`brut-cinta`) y tipografías Arquivo +
+Instrument Sans + Space Mono. El cambio es **cosmético por tokens/componentes** (no cambia
+comportamiento ni API) y se aplica a chrome, superficies públicas y paneles administrativos,
+incluidas las tablas y matrices de seguridad.
+
+**Alternativas consideradas:**
+- Neobrutalismo parcial solo en home: inconsistente con el resto de secciones.
+- Volver a un tema claro/oscuro clásico: no atendía el pedido de diferenciación.
+- Gráficos/SVG generativos en runtime: costo alto y frágil en SSR.
+
+**Consecuencias:**
+- Un solo sistema de tokens en `tailwind.config.js` + utilidades en `globals.css`; los componentes UI
+  y el chrome se reescriben una única vez y las páginas los heredan.
+- Bootstrap del estado visual sin depender de degradados: la identidad es legible incluso en
+  texto plano (listas, tablas, alertas).
+- La marca SIGEB (azules) se conserva como acento documental sobre la paleta brutal.
+
+---
+
+## ADR-011: Matriz de seguridad con excepciones individuales por usuario (Sprint 8)
+
+**Estado:** Aceptado
+
+**Fecha:** 2026-09-01
+
+**Contexto:**
+El control de acceso se resolvía por rol vía `RolPermiso`. Para el sprint 8 se pidió una **matriz de
+seguridad** administrable: lista de usuarios desde el panel, alta de usuarios/empleados y asignación
+fina de permisos por usuario.
+
+**Decisión:**
+Gestionar permisos en dos niveles reutilizando el modelo `UsuarioPermiso` existente (sin migraciones):
+1. **Rol** — matriz rol×permiso actual (`PATCH /seguridad/roles/:id/permisos`, ALLOW).
+2. **Usuario** — excepciones tri-estado por usuario (`null`/`PERMITIR`/`DENEGAR`) vía
+   `PATCH /seguridad/usuarios/:id/permisos`; la cadena de decisión evalúa primero el rol y luego la
+   excepción individual (sobre-grant/sobre-deny).
+
+El guard `permiso:editar` protege todos los endpoints; el alta/edición de usuarios audita cada
+acción y nunca expone `passwordHash`. Se agregó autoprotección: un usuario no puede inactivarse a sí
+mismo (400).
+
+**Alternativas consideradas:**
+- Nuevo rol `EMPLEADO` con permisos fijos: duplicaba el modelo sin flexibilidad.
+- Tabla de asignación 1:1 por permiso con ABM por pantalla (grilla completa): sobre-complejidad y
+  matriz legible es más directa.
+- Habilitar borrado físico de usuarios: rompe trazabilidad; se optó por alta/rol/estado.
+
+**Consecuencias:**
+- Tri-estado implementado como cadena de permisos (`PERMITIR` gana a rol ALLOW/DENY, `DENEGAR` gana
+  siempre); documentado en `permission-chain.ts`.
+- El listado de usuarios admite rol obligatorio al crear; las excepciones se guardan por
+  reemplazo (delete + create) para convergencia de la UI.
+- Cobertura automatizada: `users.service.spec` (12 casos) más el bloque de seguridad del smoke CI.
+
+---
+
+*Última actualización: 2026-09-01*

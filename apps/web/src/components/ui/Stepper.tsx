@@ -15,24 +15,24 @@ export function Stepper({ pasos, actual, className = '' }: StepperProps) {
           <li key={paso} className="flex items-center gap-2">
             <div className="flex items-center gap-2">
               <span
-                className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold ${
+                className={`flex h-8 w-8 items-center justify-center border-2 border-brutal-tinta font-brut text-sm font-black ${
                   completado
-                    ? 'bg-green-100 text-green-700'
+                    ? 'bg-brutal-lima text-brutal-tinta'
                     : activo
                       ? 'bg-sigeb-blue text-white'
-                      : 'bg-gray-200 text-gray-500'
+                      : 'bg-brutal-papel text-brutal-tinta'
                 }`}
               >
                 {completado ? '✓' : numero}
               </span>
               <span
-                className={`text-sm ${activo ? 'font-semibold text-sigeb-blue-dark' : 'text-gray-500'}`}
+                className={`font-brut text-sm font-bold uppercase ${activo ? 'text-sigeb-blue-dark' : 'text-brutal-tinta/60'}`}
               >
                 {paso}
               </span>
             </div>
             {index < pasos.length - 1 && (
-              <span className="mx-1 h-px w-8 bg-gray-300" />
+              <span className="mx-1 h-[3px] w-8 bg-brutal-tinta" />
             )}
           </li>
         );

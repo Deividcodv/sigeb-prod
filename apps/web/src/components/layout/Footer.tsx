@@ -31,27 +31,32 @@ const columnas = [
 
 export function Footer() {
   return (
-    <footer className="bg-sigeb-blue-dark py-12 text-white">
+    <footer className="border-t-[3px] border-brutal-tinta bg-brutal-tinta py-12 text-brutal-papel">
       <Container>
         <div className="grid gap-8 md:grid-cols-4">
           <div>
-            <h3 className="mb-4 text-lg font-bold">SIGEB</h3>
-            <p className="text-sm text-sigeb-light">
+            <div className="mb-4 inline-block border-[3px] border-brutal-tinta bg-brutal-gold px-3 py-1 font-brut text-xl font-black uppercase text-brutal-tinta shadow-brutal-sm">
+              SIGEB
+            </div>
+            <p className="text-sm text-brutal-papel/70">
               Sistema Integral de Gestión de Becas
             </p>
-            <p className="mt-2 text-sm text-sigeb-light">
-              Ministerio de Educación
-            </p>
-            <p className="text-sm text-sigeb-light">República de Guatemala</p>
+            <p className="mt-2 text-sm text-brutal-papel/70">Ministerio de Educación</p>
+            <p className="text-sm text-brutal-papel/70">República de Guatemala</p>
           </div>
 
           {columnas.map((columna) => (
             <div key={columna.titulo}>
-              <h4 className="mb-4 font-semibold">{columna.titulo.toUpperCase()}</h4>
-              <ul className="space-y-2 text-sm text-sigeb-light">
+              <h4 className="mb-4 font-brut text-sm font-black uppercase tracking-wide text-brutal-cyan">
+                {columna.titulo.toUpperCase()}
+              </h4>
+              <ul className="space-y-2 text-sm text-brutal-papel/70">
                 {columna.enlaces.map((enlace) => (
                   <li key={enlace.href}>
-                    <Link href={enlace.href} className="hover:text-white">
+                    <Link
+                      href={enlace.href}
+                      className="transition-colors underline decoration-brutal-gold/40 underline-offset-4 hover:text-brutal-cyan"
+                    >
                       {enlace.label}
                     </Link>
                   </li>
@@ -61,11 +66,11 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-8 border-t border-sigeb-light pt-8 text-center text-sm text-sigeb-light">
-          <p>
-            © 2026 Ministerio de Educación de Guatemala. Todos los derechos
-            reservados.
+        <div className="mt-8 flex flex-col items-center justify-between gap-2 border-t-2 border-brutal-papel/20 pt-6 text-center md:flex-row md:text-left">
+          <p className="font-mono text-xs text-brutal-papel/60">
+            © 2026 Ministerio de Educación de Guatemala. Todos los derechos reservados.
           </p>
+          <p className="brut-label text-[10px] text-brutal-gold">v1.1 — brutal edition</p>
         </div>
       </Container>
     </footer>

@@ -109,10 +109,10 @@ function EvaluadorContent() {
 
       <Container className="py-8">
         {error && (
-          <p className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</p>
+          <p className="mb-4 rounded-brutal border-[3px] border-brutal-rojo bg-red-50 p-4 text-sm font-bold text-brutal-rojo">{error}</p>
         )}
         {exito && (
-          <p className="mb-4 rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-700">{exito}</p>
+          <p className="mb-4 rounded-brutal border-[3px] border-brutal-tinta bg-brutal-lima/30 p-4 text-sm font-bold text-brutal-tinta">{exito}</p>
         )}
 
         {!evaluaciones ? (
@@ -122,7 +122,7 @@ function EvaluadorContent() {
             <p className="text-lg font-semibold text-sigeb-blue-dark">
               No tienes evaluaciones asignadas
             </p>
-            <p className="mt-1 text-sm text-gray-600">
+            <p className="mt-1 text-sm text-brutal-tinta/70">
               Cuando te asignen solicitudes para evaluar aparecerán aquí.
             </p>
           </Card>
@@ -138,10 +138,10 @@ function EvaluadorContent() {
                       </h2>
                       <Badge estado={ev.solicitud.estado} />
                     </div>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-brutal-tinta/70">
                       {ev.solicitud.convocatoria.nombre}
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-brutal-tinta/70">
                       Postulante: {ev.solicitud.usuario.nombres} (CUI{' '}
                       {ev.solicitud.usuario.cui})
                     </p>
@@ -157,19 +157,19 @@ function EvaluadorContent() {
                     return (
                       <div
                         key={criterio.id}
-                        className="rounded-lg border border-gray-200 p-3"
+                        className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-papel p-3"
                       >
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <div>
-                            <p className="font-semibold text-sigeb-blue-dark">
+                            <p className="font-brut text-sm font-bold uppercase tracking-wide text-brutal-tinta">
                               {criterio.nombre}
                             </p>
-                            <p className="text-xs text-gray-500">
+                            <p className="font-mono text-xs text-brutal-tinta/50">
                               Peso {(criterio.peso * 100).toFixed(0)}%
                             </p>
                           </div>
                           {criterio.completada && (
-                            <span className="text-sm font-semibold text-green-700">
+                            <span className="rounded-brutal border-2 border-brutal-tinta bg-brutal-lima px-2 py-0.5 font-brut text-xs font-bold text-brutal-tinta">
                               ✓ Puntuado ({criterio.puntaje})
                             </span>
                           )}

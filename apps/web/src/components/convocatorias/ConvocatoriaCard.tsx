@@ -12,19 +12,19 @@ export function ConvocatoriaCard({
     <Card className="flex flex-col">
       <div className="mb-3 flex items-center justify-between gap-2">
         <Badge estado={convocatoria.estado} />
-        <span className="text-xs font-medium text-gray-500">
+        <span className="brut-label font-mono text-xs font-bold uppercase text-sigeb-blue">
           {convocatoria.beca.nombre}
         </span>
       </div>
-      <h3 className="mb-2 text-lg font-bold text-sigeb-blue-dark">
+      <h3 className="mb-2 font-brut text-lg font-black uppercase leading-snug text-brutal-tinta">
         {convocatoria.nombre}
       </h3>
       {convocatoria.descripcion && (
-        <p className="mb-4 line-clamp-3 text-sm text-gray-600">
+        <p className="mb-4 line-clamp-3 text-sm text-brutal-tinta/70">
           {convocatoria.descripcion}
         </p>
       )}
-      <dl className="mb-4 space-y-1 text-xs text-gray-500">
+      <dl className="mb-4 space-y-1 font-mono text-xs text-brutal-tinta/60">
         <div className="flex justify-between">
           <dt>Apertura</dt>
           <dd>{formatearFecha(convocatoria.fechaApertura)}</dd>
@@ -36,7 +36,7 @@ export function ConvocatoriaCard({
       </dl>
       <Link
         href={`/convocatorias/${convocatoria.id}`}
-        className="mt-auto inline-block rounded-lg bg-sigeb-blue px-4 py-2 text-center text-sm font-semibold text-white transition-colors hover:bg-sigeb-blue-dark"
+        className="mt-auto rounded-brutal border-[3px] border-brutal-tinta bg-brutal-cyan px-4 py-2 text-center font-brut text-sm font-bold uppercase tracking-wide text-brutal-tinta shadow-brutal-sm transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
       >
         Ver detalles
       </Link>

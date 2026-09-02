@@ -31,7 +31,7 @@ export function FiltrosConvocatorias({ becas }: FiltrosConvocatoriasProps) {
 
   return (
     <form
-      className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
+      className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco p-4 shadow-brutal-sm"
       onSubmit={(e) => {
         e.preventDefault();
         aplicarFiltros();
@@ -41,7 +41,7 @@ export function FiltrosConvocatorias({ becas }: FiltrosConvocatoriasProps) {
         <div className="flex-1">
           <label
             htmlFor="busqueda"
-            className="mb-1 block text-sm font-medium text-sigeb-blue-dark"
+            className="mb-1 block font-brut text-xs font-bold uppercase tracking-wide text-sigeb-blue-dark"
           >
             Buscar
           </label>
@@ -50,7 +50,7 @@ export function FiltrosConvocatorias({ becas }: FiltrosConvocatoriasProps) {
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
             placeholder="Nombre de convocatoria o beca..."
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-sigeb-blue focus:outline-none focus:ring-2 focus:ring-sigeb-blue/20"
+            className="w-full rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco px-3 py-2 text-sm focus:bg-brutal-cyan/10 focus:outline-none"
           />
         </div>
 
@@ -70,14 +70,14 @@ export function FiltrosConvocatorias({ becas }: FiltrosConvocatoriasProps) {
         <div className="flex gap-2">
           <button
             type="submit"
-            className="rounded-lg bg-sigeb-blue px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-sigeb-blue-dark"
+            className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-gold px-4 py-2 font-brut text-sm font-bold uppercase tracking-wide text-brutal-tinta shadow-brutal-sm transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
           >
             Filtrar
           </button>
           <button
             type="button"
             onClick={limpiar}
-            className="rounded-lg border-2 border-sigeb-blue px-4 py-2 text-sm font-semibold text-sigeb-blue transition-colors hover:bg-sigeb-blue hover:text-white"
+            className="rounded-brutal border-[3px] border-brutal-tinta bg-transparent px-4 py-2 font-brut text-sm font-bold uppercase tracking-wide text-brutal-tinta hover:bg-brutal-cyan"
           >
             Limpiar
           </button>

@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [develop, master]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint-and-test:
     runs-on: ubuntu-latest
@@ -34,6 +38,12 @@ jobs:
           node-version: 20
           cache: 'npm'
 
+      - name: Cache Puppeteer browser (constancia PDF / US-F7)
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/puppeteer
+          key: puppeteer-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
       - name: Install dependencies
         run: npm ci
 
@@ -57,7 +67,12 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Smoke Sprints 3-5 (API)
+      - name: Install Chromium system deps (US-F7 constancia PDF)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libgbm1 libasound2 libxshmfence1
+
+      - name: Smoke CI (Sprints 3-5 + S6/S7 + F7 constancia PDF)
         env:
           DATABASE_URL: postgresql://sigeb:sigeb123@localhost:5432/sigeb_test
           JWT_SECRET: test-secret-key
@@ -71,20 +86,87 @@ jobs:
           bash .github/scripts/smoke-ci.sh
           kill "$API_PID" || true
 
+  docker-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build API image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/api/Dockerfile
+          push: false
+          tags: sigeb/api:check
+
+      - name: Build Web image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/web/Dockerfile
+          push: false
+          tags: sigeb/web:check
+
   deploy-staging:
-    needs: lint-and-test
+    needs: [lint-and-test, docker-build]
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
+    environment: staging
     steps:
-      - name: Deploy to staging
-        run: echo "Deploy to staging server"
-        # Add deployment commands here
+      - uses: actions/checkout@v4
+
+      - name: Deploy to staging (PM2)
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          script: |
+            set -e
+            cd ${{ secrets.DEPLOY_PATH }}
+            git stash || true
+            git pull origin develop
+            npm ci
+            cd apps/api
+            DATABASE_URL=${{ secrets.DEPLOY_DATABASE_URL }} npx prisma migrate deploy
+            npx prisma generate
+            cd ../..
+            npm run build
+            DATABASE_URL=${{ secrets.DEPLOY_DATABASE_URL }} JWT_SECRET=${{ secrets.DEPLOY_JWT_SECRET }} pm2 restart sigeb-api --update-env || true
+            pm2 restart sigeb-web --update-env || true
+            pm2 save || true
 
   deploy-production:
-    needs: lint-and-test
+    needs: [lint-and-test, docker-build]
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
+    environment: production
     steps:
-      - name: Deploy to production
-        run: echo "Deploy to production server"
-        # Add deployment commands here
+      - uses: actions/checkout@v4
+
+      - name: Deploy to production (PM2)
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          script: |
+            set -e
+            cd ${{ secrets.DEPLOY_PATH }}
+            git stash || true
+            git pull origin master
+            npm ci
+            cd apps/api
+            DATABASE_URL=${{ secrets.DEPLOY_DATABASE_URL }} npx prisma migrate deploy
+            npx prisma generate
+            cd ../..
+            npm run build
+            DATABASE_URL=${{ secrets.DEPLOY_DATABASE_URL }} JWT_SECRET=${{ secrets.DEPLOY_JWT_SECRET }} pm2 restart sigeb-api --update-env || true
+            pm2 restart sigeb-web --update-env || true
+            pm2 save || true

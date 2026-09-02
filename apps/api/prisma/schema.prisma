@@ -54,17 +54,26 @@ enum SolicitudDocumentoEstado {
 // ==========================================
 
 model Usuario {
-  id           String         @id @default(uuid())
-  cui          String         @unique
-  nombres      String
-  email        String         @unique
-  passwordHash String
-  rolId        String
-  estado       UsuarioEstado  @default(ACTIVO)
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  id              String         @id @default(uuid())
+  cui             String         @unique
+  nombres         String
+  email           String         @unique
+  passwordHash    String
+  telefono        String?
+  fechaNacimiento DateTime?
+  direccion       String?
+  generoId        String?
+  departamentoId  String?
+  municipioId     String?
+  rolId           String
+  estado          UsuarioEstado  @default(ACTIVO)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 
   rol              Rol              @relation(fields: [rolId], references: [id])
+  genero           Genero?          @relation(fields: [generoId], references: [id])
+  departamento     Departamento?    @relation(fields: [departamentoId], references: [id])
+  municipio        Municipio?       @relation(fields: [municipioId], references: [id])
   solicitudes      Solicitud[]
   usuarioPermisos  UsuarioPermiso[]
   comiteMiembros   ComiteMiembro[]
@@ -138,6 +147,7 @@ model Genero {
   activo Boolean @default(true)
 
   perfiles SolicitudPerfilAcademico[]
+  usuarios Usuario[]
 
   @@map("genero")
 }
@@ -159,6 +169,7 @@ model Departamento {
 
   municipios Municipio[]
   perfiles   SolicitudPerfilAcademico[]
+  usuarios   Usuario[]
 
   @@map("departamento")
 }
@@ -171,6 +182,7 @@ model Municipio {
 
   departamento Departamento           @relation(fields: [departamentoId], references: [id])
   perfiles     SolicitudPerfilAcademico[]
+  usuarios     Usuario[]
 
   @@unique([nombre, departamentoId])
   @@map("municipio")
