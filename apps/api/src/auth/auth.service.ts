@@ -118,7 +118,7 @@ export class AuthService {
   async refreshToken(refreshToken: string, ip?: string) {
     try {
       const payload = this.jwtService.verify(refreshToken, {
-        secret: this.configService.get<string>('JWT_REFRESH_SECRET') || 'sigeb-jwt-refresh-secret-dev',
+        secret: this.configService.getOrThrow<string>('JWT_REFRESH_SECRET'),
       });
 
       const user = await this.prisma.usuario.findUnique({
@@ -133,7 +133,7 @@ export class AuthService {
         { sub: user.id, email: user.email },
         {
           expiresIn: this.configService.get<string>('JWT_ACCESS_EXPIRATION') || '15m',
-          secret: this.configService.get<string>('JWT_SECRET') || 'sigeb-jwt-secret-dev',
+          secret: this.configService.getOrThrow<string>('JWT_SECRET'),
         },
       );
 
@@ -277,11 +277,11 @@ export class AuthService {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
         expiresIn: this.configService.get<string>('JWT_ACCESS_EXPIRATION') || '15m',
-        secret: this.configService.get<string>('JWT_SECRET') || 'sigeb-jwt-secret-dev',
+        secret: this.configService.getOrThrow<string>('JWT_SECRET'),
       }),
       this.jwtService.signAsync(payload, {
         expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRATION') || '7d',
-        secret: this.configService.get<string>('JWT_REFRESH_SECRET') || 'sigeb-jwt-refresh-secret-dev',
+        secret: this.configService.getOrThrow<string>('JWT_REFRESH_SECRET'),
       }),
     ]);
 

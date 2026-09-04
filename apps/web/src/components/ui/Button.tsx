@@ -34,8 +34,8 @@ export function Button({
   disabled = false,
 }: ButtonProps) {
   const base =
-    'inline-block rounded-brutal px-6 py-3 font-brut font-bold uppercase tracking-wide transition-all';
-  const classes = `${base} ${styles[variant]} ${disabled ? 'cursor-not-allowed opacity-50 hover:translate-x-0 hover:translate-y-0 hover:shadow-brutal-sm' : ''} ${className}`;
+    'inline-block rounded-brutal px-6 py-3 font-brut font-bold uppercase tracking-wide transition-all disabled:cursor-not-allowed disabled:border-brutal-tinta/40 disabled:bg-gray-300 disabled:text-brutal-tinta/70 disabled:shadow-none disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-none';
+  const classes = `${base} ${styles[variant]} ${className}`;
 
   if (href) {
     return (

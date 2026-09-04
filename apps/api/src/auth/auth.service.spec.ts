@@ -3,9 +3,13 @@ import { AuthService } from './auth.service';
 import { UpdatePerfilDto } from './dto/update-perfil.dto';
 
 describe('AuthService (perfil)', () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let prisma: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let jwt: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let config: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let audit: any;
   let service: AuthService;
 

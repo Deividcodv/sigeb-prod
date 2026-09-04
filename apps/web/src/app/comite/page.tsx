@@ -118,7 +118,7 @@ function ComiteContent() {
                     <h3 className="font-brut text-lg font-black uppercase tracking-wide text-brutal-tinta">
                       {detalle.comite?.nombre}
                     </h3>
-                    <p className="font-mono text-sm text-brutal-tinta/60">
+                    <p className="font-mono text-sm text-brutal-tinta/80">
                       {formatearFecha(detalle.fecha)} · {detalle.lugar ?? 'Sin lugar'}
                     </p>
                   </div>
@@ -131,7 +131,7 @@ function ComiteContent() {
                   Agenda de votación ({detalle.agenda.length})
                 </p>
                 {detalle.agenda.length === 0 ? (
-                  <p className="text-sm text-brutal-tinta/50">La sesión no tiene solicitudes en agenda.</p>
+                  <p className="text-sm text-brutal-tinta/75">La sesión no tiene solicitudes en agenda.</p>
                 ) : (
                   <div className="space-y-3">
                     {detalle.agenda.map((item) => {
@@ -144,14 +144,14 @@ function ComiteContent() {
                               <p className="font-brut text-sm font-bold uppercase tracking-wide text-brutal-tinta">
                                 {item.solicitud.usuario.nombres}
                               </p>
-                              <p className="font-mono text-xs text-brutal-tinta/50">CUI {item.solicitud.usuario.cui}</p>
+                              <p className="font-mono text-xs text-brutal-tinta/75">CUI {item.solicitud.usuario.cui}</p>
                             </div>
                             {votado && (
                               <span className="rounded-brutal border-2 border-brutal-tinta bg-brutal-lima px-2 py-0.5 font-brut text-xs font-bold text-brutal-tinta">✓ Votado</span>
                             )}
                           </div>
                           {votado ? (
-                            <p className="mt-2 font-mono text-sm text-brutal-tinta/60">
+                            <p className="mt-2 font-mono text-sm text-brutal-tinta/80">
                               Tu voto quedó registrado para esta solicitud.
                             </p>
                           ) : (
@@ -217,7 +217,7 @@ function ComiteContent() {
                     >
                       <div>
                         <div className="flex flex-wrap items-center gap-3">
-                          <h3 className="text-lg font-semibold text-sigeb-blue-dark">
+                          <h3 className="text-lg font-bold text-brutal-tinta">
                             {sesion.comite?.nombre}
                           </h3>
                           <Badge estado={sesion.estado} />

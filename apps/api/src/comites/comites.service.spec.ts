@@ -14,7 +14,9 @@ const usuario: AuthenticatedUser = {
 };
 
 describe('ComitesService', () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let prisma: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let audit: any;
   let service: ComitesService;
 

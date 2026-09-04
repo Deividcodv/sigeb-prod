@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { http } from '@/lib/api';
+import { httpData } from '@/lib/api';
 
 interface Mensaje {
   rol: 'usuario' | 'asistente';
@@ -45,7 +45,7 @@ export function ChatWidget() {
     setMensajes((m) => [...m, { rol: 'usuario', contenido: pregunta }]);
     setPensando(true);
     try {
-      const res = await http<Respuesta>('/asistente/preguntar', {
+      const res = await httpData<Respuesta>('/asistente/preguntar', {
         method: 'POST',
         body: { pregunta },
       });
@@ -133,7 +133,7 @@ export function ChatWidget() {
             <button
               type="submit"
               disabled={!texto.trim() || pensando}
-              className="rounded-lg bg-sigeb-gold px-4 py-2 text-sm font-semibold text-sigeb-blue-dark transition-colors hover:bg-yellow-500 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-lg bg-sigeb-gold px-4 py-2 text-sm font-semibold text-brutal-tinta transition-colors hover:bg-yellow-500 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Enviar
             </button>

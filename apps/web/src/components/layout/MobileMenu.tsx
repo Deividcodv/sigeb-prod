@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import { rutaPorRol, tienePanel } from '@/lib/rol';
+import { rutaPorRol, tienePanel, nombreRol } from '@/lib/rol';
+import { accionesPorRol } from '@/lib/acciones';
 
 const enlacesPublicos = [
   { href: '/convocatorias', label: 'Convocatorias' },
@@ -43,17 +44,9 @@ export function MobileMenu() {
           viewBox="0 0 24 24"
         >
           {abierto ? (
-            <path
-              strokeLinecap="square"
-              strokeLinejoin="miter"
-              d="M6 18L18 6M6 6l12 12"
-            />
+            <path strokeLinecap="square" strokeLinejoin="miter" d="M6 18L18 6M6 6l12 12" />
           ) : (
-            <path
-              strokeLinecap="square"
-              strokeLinejoin="miter"
-              d="M4 6h16M4 12h16M4 18h16"
-            />
+            <path strokeLinecap="square" strokeLinejoin="miter" d="M4 6h16M4 12h16M4 18h16" />
           )}
         </svg>
       </button>
@@ -64,6 +57,9 @@ export function MobileMenu() {
             {esLogueado ? (
               usuario && tienePanel(usuario.rol) && (
                 <>
+                  <p className="mb-3 font-mono text-xs font-bold uppercase tracking-wider text-brutal-tinta/70">
+                    Hola, {usuario.nombres.split(' ')[0]} · {nombreRol(usuario.rol)}
+                  </p>
                   <Link
                     href={rutaPorRol(usuario.rol)}
                     onClick={cerrar}
@@ -71,10 +67,24 @@ export function MobileMenu() {
                   >
                     ▤ Mi panel
                   </Link>
+
+                  {(accionesPorRol[(usuario.rol || '').toUpperCase()] ?? []).map((accion) => (
+                    <Link
+                      key={accion.titulo}
+                      href={accion.href}
+                      onClick={cerrar}
+                      className="mt-1 flex items-center gap-3 rounded-brutal border-2 border-brutal-tinta/15 px-3 py-2.5 font-brut text-sm font-bold uppercase tracking-wide text-brutal-tinta hover:border-brutal-tinta hover:bg-white"
+                    >
+                      <span className={`flex h-8 w-8 shrink-0 items-center justify-center border-2 border-brutal-tinta text-base text-brutal-tinta ${accion.acento}`}>
+                        {accion.icono}
+                      </span>
+                      {accion.titulo}
+                    </Link>
+                  ))}
                   <button
                     type="button"
                     onClick={handleLogout}
-                    className="mt-3 border-2 border-brutal-tinta px-3 py-3 text-left font-brut text-sm font-bold uppercase tracking-wide text-brutal-tinta hover:bg-brutal-rojo hover:text-brutal-papel"
+                    className="mt-3 rounded-brutal border-[3px] border-brutal-rojo bg-brutal-rojo px-3 py-3 text-left font-brut text-sm font-bold uppercase tracking-wide text-brutal-papel hover:bg-brutal-tinta hover:text-brutal-papel"
                   >
                     Cerrar sesión
                   </button>

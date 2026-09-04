@@ -67,7 +67,7 @@ export default async function ConvocatoriaDetallePage({ params }: Props) {
           <div className="grid gap-8 lg:grid-cols-3">
             <div className="space-y-6 lg:col-span-2">
               <div className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco p-6 shadow-brutal-sm">
-                <h2 className="mb-3 font-brut text-xl font-black uppercase tracking-wide text-sigeb-blue">
+                <h2 className="mb-3 font-brut text-xl font-black uppercase tracking-wide text-brutal-tinta">
                   Descripción
                 </h2>
                 <p className="whitespace-pre-line text-brutal-tinta/80">
@@ -78,7 +78,7 @@ export default async function ConvocatoriaDetallePage({ params }: Props) {
 
               {criterios.length > 0 && (
                 <div className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco p-6 shadow-brutal-sm">
-                  <h2 className="mb-3 font-brut text-xl font-black uppercase tracking-wide text-sigeb-blue">
+                  <h2 className="mb-3 font-brut text-xl font-black uppercase tracking-wide text-brutal-tinta">
                     Criterios de evaluación
                   </h2>
                   <table className="w-full text-left font-mono text-sm">
@@ -92,7 +92,7 @@ export default async function ConvocatoriaDetallePage({ params }: Props) {
                       {criterios.map((criterio) => (
                         <tr key={criterio.id} className="border-b border-brutal-tinta/20">
                           <td className="py-2 pr-4 text-brutal-tinta">{criterio.nombre}</td>
-                          <td className="py-2 font-bold text-sigeb-blue">
+                          <td className="py-2 font-bold text-brutal-tinta">
                             {(criterio.peso * 100).toFixed(0)}%
                           </td>
                         </tr>
@@ -105,7 +105,7 @@ export default async function ConvocatoriaDetallePage({ params }: Props) {
 
             <div className="space-y-6">
               <div className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco p-6 shadow-brutal-sm">
-                <h2 className="mb-3 font-brut text-lg font-black uppercase tracking-wide text-sigeb-blue">
+                <h2 className="mb-3 font-brut text-lg font-black uppercase tracking-wide text-brutal-tinta">
                   Datos de la convocatoria
                 </h2>
                 <dl className="space-y-2 font-mono text-sm text-brutal-tinta/70">
@@ -126,7 +126,7 @@ export default async function ConvocatoriaDetallePage({ params }: Props) {
 
               {docs.length > 0 && (
                 <div className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco p-6 shadow-brutal-sm">
-                  <h2 className="mb-3 font-brut text-lg font-black uppercase tracking-wide text-sigeb-blue">
+                  <h2 className="mb-3 font-brut text-lg font-black uppercase tracking-wide text-brutal-tinta">
                     Documentos requeridos
                   </h2>
                   <ul className="space-y-2 font-mono text-sm text-brutal-tinta/80">
@@ -151,9 +151,9 @@ export default async function ConvocatoriaDetallePage({ params }: Props) {
               <Button href="/registro" className="w-full text-center">
                 Postularme
               </Button>
-              <p className="text-center font-mono text-xs text-brutal-tinta/60">
+              <p className="text-center font-mono text-xs text-brutal-tinta/80">
                 Crear una cuenta para iniciar tu postulación.{' '}
-                <Link href="/login" className="font-brut font-bold text-sigeb-blue hover:bg-brutal-cyan">
+                <Link href="/login" className="font-brut font-bold text-brutal-cyan hover:bg-brutal-cyan/20">
                   Inicia sesión
                 </Link>{' '}
                 si ya tienes una.

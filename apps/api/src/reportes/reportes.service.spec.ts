@@ -2,7 +2,9 @@ import { BadRequestException } from '@nestjs/common';
 import { ReportesService } from './reportes.service';
 
 describe('ReportesService', () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let prisma: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let evaluacionesService: any;
   let service: ReportesService;
 
@@ -103,9 +105,11 @@ describe('ReportesService', () => {
 
   describe('generarCsv (US-35)', () => {
     it('rechaza tipos inválidos', async () => {
+      /* eslint-disable @typescript-eslint/no-explicit-any */
       await expect(
         service.generarCsv('otro' as any),
       ).rejects.toThrow(BadRequestException);
+      /* eslint-enable @typescript-eslint/no-explicit-any */
     });
 
     it('genera CSV con BOM y encabezados', async () => {

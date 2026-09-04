@@ -10,6 +10,12 @@ import { CrearSesionDto, RegistrarVotoDto } from './sesiones.dto';
 import { AuthenticatedUser } from '../common/interfaces/authenticated-user.interface';
 import { SolicitudStateMachine } from '../solicitudes/solicitud-state-machine';
 import { ConvocatoriaStateMachine } from '../convocatorias/convocatoria-state-machine';
+import {
+  SOLICITUD_ESTADO,
+  CONVOCATORIA_ESTADO,
+  SESION_ESTADO,
+  DECISION_RESULTADO,
+} from '../common/constants/estados';
 
 @Injectable()
 export class SesionesService {
@@ -39,7 +45,7 @@ export class SesionesService {
       );
     }
 
-    const noEvaluadas = solicitudes.filter((s) => s.estado !== 'EVALUADA');
+    const noEvaluadas = solicitudes.filter((s) => s.estado !== SOLICITUD_ESTADO.EVALUADA);
     if (noEvaluadas.length > 0) {
       throw new BadRequestException(
         `La agenda solo admite solicitudes EVALUADA: ${noEvaluadas
@@ -143,7 +149,7 @@ export class SesionesService {
       throw new NotFoundException(`Sesión con id ${sesionId} no encontrada`);
     }
 
-    if (sesion.estado === 'FINALIZADA') {
+    if (sesion.estado === SESION_ESTADO.FINALIZADA) {
       throw new BadRequestException('La sesión ya fue finalizada');
     }
 
@@ -219,7 +225,7 @@ export class SesionesService {
       throw new NotFoundException(`Sesión con id ${sesionId} no encontrada`);
     }
 
-    if (sesion.estado === 'FINALIZADA') {
+    if (sesion.estado === SESION_ESTADO.FINALIZADA) {
       throw new BadRequestException('La sesión ya fue finalizada');
     }
 
@@ -232,7 +238,9 @@ export class SesionesService {
     }
 
     const solicitudes = sesion.agenda.map((a) => a.solicitud);
-    const enEvaluada = solicitudes.filter((s) => s.estado !== 'EVALUADA');
+    const enEvaluada = solicitudes.filter(
+      (s) => s.estado !== SOLICITUD_ESTADO.EVALUADA,
+    );
     if (enEvaluada.length > 0) {
       throw new BadRequestException(
         `No se puede finalizar: las solicitudes ${enEvaluada
@@ -241,84 +249,100 @@ export class SesionesService {
       );
     }
 
-    const decisiones = [];
-    for (const solicitud of solicitudes) {
-      const votos = sesion.votos.filter((v) => v.solicitudId === solicitud.id);
-      const aprobar = votos.filter((v) => v.voto === 'APROBAR').length;
-      const rechazar = votos.filter((v) => v.voto === 'RECHAZAR').length;
-      const resultado = aprobar > rechazar ? 'APROBADA' : 'RECHAZADA';
+    const sesionFinal = await this.prisma.$transaction(async (tx) => {
+      const decisiones = [];
+      for (const solicitud of solicitudes) {
+        const votos = sesion.votos.filter((v) => v.solicitudId === solicitud.id);
+        const aprobar = votos.filter((v) => v.voto === 'APROBAR').length;
+        const rechazar = votos.filter((v) => v.voto === 'RECHAZAR').length;
+        const resultado =
+          aprobar > rechazar
+            ? DECISION_RESULTADO.APROBADA
+            : DECISION_RESULTADO.RECHAZADA;
 
-      const siguiente = SolicitudStateMachine.next(
-        solicitud.estado,
-        resultado === 'APROBADA' ? 'aprobar' : 'rechazar',
-      );
+        const siguiente = SolicitudStateMachine.next(
+          solicitud.estado,
+          resultado === DECISION_RESULTADO.APROBADA ? 'aprobar' : 'rechazar',
+        );
 
-      await this.prisma.solicitud.update({
-        where: { id: solicitud.id },
-        data: { estado: siguiente },
-      });
-      await this.prisma.historialEstado.create({
-        data: {
-          solicitudId: solicitud.id,
-          estado: siguiente,
-          comentario: `Decisión de sesión ${sesionId}`,
-          usuarioId: usuario.id,
+        await tx.solicitud.update({
+          where: { id: solicitud.id },
+          data: { estado: siguiente },
+        });
+        await tx.historialEstado.create({
+          data: {
+            solicitudId: solicitud.id,
+            estado: siguiente,
+            comentario: `Decisión de sesión ${sesionId}`,
+            usuarioId: usuario.id,
+          },
+        });
+
+        decisiones.push(
+          await tx.decision.create({
+            data: {
+              solicitudId: solicitud.id,
+              sesionId,
+              resultado,
+            },
+          }),
+        );
+      }
+
+      const convocatoriaId = solicitudes[0]?.convocatoriaId;
+      if (convocatoriaId) {
+        const restantes = await tx.solicitud.count({
+          where: { convocatoriaId, estado: SOLICITUD_ESTADO.EVALUADA },
+        });
+        const convocatoria = await tx.convocatoria.findUnique({
+          where: { id: convocatoriaId },
+          select: { estado: true },
+        });
+        if (
+          convocatoria &&
+          convocatoria.estado === CONVOCATORIA_ESTADO.EN_EVALUACION &&
+          restantes === 0
+        ) {
+          const siguiente = ConvocatoriaStateMachine.next(
+            convocatoria.estado,
+            'resolver',
+          );
+          await tx.convocatoria.update({
+            where: { id: convocatoriaId },
+            data: { estado: siguiente },
+          });
+        }
+      }
+
+      const final = await tx.sesion.update({
+        where: { id: sesionId },
+        data: { estado: SESION_ESTADO.FINALIZADA },
+        include: {
+          comite: { select: { id: true, nombre: true } },
+          agenda: { select: { solicitudId: true } },
+          decisiones: true,
         },
       });
 
-      decisiones.push(
-        await this.prisma.decision.create({
-          data: {
-            solicitudId: solicitud.id,
-            sesionId,
-            resultado,
+      await this.audit.log(
+        {
+          usuarioId: usuario.id,
+          accion: 'finalizar',
+          entidad: 'sesion',
+          entidadId: sesionId,
+          detalle: {
+            decisiones: final.decisiones.map(
+              (d: { solicitudId: string; resultado: string }) => ({
+                solicitudId: d.solicitudId,
+                resultado: d.resultado,
+              }),
+            ),
           },
-        }),
+        },
+        tx,
       );
-    }
 
-    const convocatoriaId = solicitudes[0]?.convocatoriaId;
-    if (convocatoriaId) {
-      const restantes = await this.prisma.solicitud.count({
-        where: { convocatoriaId, estado: 'EVALUADA' },
-      });
-      const convocatoria = await this.prisma.convocatoria.findUnique({
-        where: { id: convocatoriaId },
-        select: { estado: true },
-      });
-      if (convocatoria && convocatoria.estado === 'EN_EVALUACION' && restantes === 0) {
-        const siguiente = ConvocatoriaStateMachine.next(
-          convocatoria.estado,
-          'resolver',
-        );
-        await this.prisma.convocatoria.update({
-          where: { id: convocatoriaId },
-          data: { estado: siguiente },
-        });
-      }
-    }
-
-    const sesionFinal = await this.prisma.sesion.update({
-      where: { id: sesionId },
-      data: { estado: 'FINALIZADA' },
-      include: {
-        comite: { select: { id: true, nombre: true } },
-        agenda: { select: { solicitudId: true } },
-        decisiones: true,
-      },
-    });
-
-    await this.audit.log({
-      usuarioId: usuario.id,
-      accion: 'finalizar',
-      entidad: 'sesion',
-      entidadId: sesionId,
-      detalle: {
-        decisiones: sesionFinal.decisiones.map((d: { solicitudId: string; resultado: string }) => ({
-          solicitudId: d.solicitudId,
-          resultado: d.resultado,
-        })),
-      },
+      return final;
     });
 
     return sesionFinal;

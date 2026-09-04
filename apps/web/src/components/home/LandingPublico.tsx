@@ -33,7 +33,7 @@ export function LandingPublico() {
         <Container>
           <div className="mb-12 flex flex-col items-start gap-2 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="brut-label text-xs font-bold text-sigeb-blue">// Convocatorias</p>
+              <p className="brut-label text-xs font-bold text-brutal-cyan">// Convocatorias</p>
               <h2 className="text-mega text-3xl font-black md:text-5xl">
                 Convocatorias abiertas
               </h2>
@@ -82,7 +82,7 @@ export function LandingPublico() {
       {/* Cómo solicitar */}
       <section className="bg-brutal-papel py-16">
         <Container>
-          <p className="brut-label text-xs font-bold text-sigeb-blue">// Proceso</p>
+          <p className="brut-label text-xs font-bold text-brutal-cyan">// Proceso</p>
           <h2 className="text-mega mb-12 text-3xl font-black text-brutal-tinta md:text-5xl">
             ¿Cómo solicitar una beca?
           </h2>
@@ -99,7 +99,7 @@ export function LandingPublico() {
                 key={paso.numero}
                 className="group rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco p-6 shadow-brutal-sm transition-transform hover:-translate-y-1"
               >
-                <div className="font-brut text-5xl font-black text-sigeb-blue transition-transform group-hover:rotate-6">
+                <div className="font-brut text-5xl font-black text-brutal-cyan transition-transform group-hover:rotate-6">
                   {paso.numero}
                 </div>
                 <h3 className="mt-3 font-brut text-lg font-black uppercase text-brutal-tinta">

@@ -54,3 +54,7 @@ coverage/
 *.tgz
 .cache
 .sigeb-dev/
+
+# AI tooling artifacts
+.aider/
+skills-src/

@@ -5,13 +5,20 @@ import {
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from './users.service';
+import { RolesService } from './roles.service';
+import { PermisosService } from './permisos.service';
+import { UsuariosService } from './usuarios.service';
 
 describe('UsersService (Matriz de seguridad)', () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let prisma: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let audit: any;
   let service: UsersService;
 
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   const actor = { id: 'admin-1', rol: { nombre: 'ADMIN' } } as any;
+  /* eslint-enable @typescript-eslint/no-explicit-any */
   const rolAdmin = { id: 'rol-admin', nombre: 'ADMIN' };
   const rolPostulante = { id: 'rol-postulante', nombre: 'POSTULANTE' };
 
@@ -30,7 +37,11 @@ describe('UsersService (Matriz de seguridad)', () => {
       },
     };
     audit = { log: jest.fn().mockResolvedValue({ id: 'audit-1' }) };
-    service = new UsersService(prisma, audit);
+    service = new UsersService(
+      new RolesService(prisma, audit),
+      new PermisosService(prisma),
+      new UsuariosService(prisma, audit),
+    );
   });
 
   describe('createUsuario', () => {

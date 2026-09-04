@@ -235,7 +235,7 @@ export function PanelUsuarios() {
           <tbody className="divide-y divide-brutal-tinta/20">
             {filtrados.map((usuario) => (
               <tr key={usuario.id} className="hover:bg-brutal-cyan/10">
-                <td className="px-4 py-3 text-xs text-brutal-tinta/60">{usuario.cui}</td>
+                <td className="px-4 py-3 text-xs text-brutal-tinta/80">{usuario.cui}</td>
                 <td className="px-4 py-3 font-bold text-brutal-tinta">{usuario.nombres}</td>
                 <td className="px-4 py-3 text-brutal-tinta/70">{usuario.email}</td>
                 <td className="px-4 py-3">
@@ -272,7 +272,7 @@ export function PanelUsuarios() {
             ))}
             {filtrados.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-10 text-center text-brutal-tinta/50">
+                <td colSpan={6} className="px-4 py-10 text-center text-brutal-tinta/75">
                   No hay usuarios que coincidan con la búsqueda.
                 </td>
               </tr>
@@ -361,7 +361,7 @@ function MatrizPermisosUsuario({
     <Card className="mb-6">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="font-brut text-lg font-black uppercase tracking-wide text-brutal-tinta">
-          Permisos individuales — <span className="text-sigeb-blue">{nombre}</span>
+          Permisos individuales — <span className="text-brutal-cyan">{nombre}</span>
         </h2>
         <Button variant="ghost" onClick={onClose}>
           Cerrar
@@ -437,7 +437,7 @@ function PermisosPorModulo({
                   ? 'border-brutal-tinta bg-brutal-lima text-brutal-tinta shadow-brutal-sm'
                   : estados[permiso.id] === 'DENEGAR'
                     ? 'border-brutal-tinta bg-brutal-rojo text-brutal-blanco shadow-brutal-sm'
-                    : 'border-brutal-tinta border-dashed bg-brutal-blanco text-brutal-tinta/60'
+                    : 'border-brutal-tinta border-dashed bg-brutal-blanco text-brutal-tinta/80'
               }`}
             >
               {estados[permiso.id] === 'PERMITIR'

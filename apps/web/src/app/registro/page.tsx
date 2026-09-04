@@ -139,7 +139,7 @@ export default function RegistroPage() {
         </form>
         <p className="mt-6 text-center text-sm text-brutal-tinta/70">
           ¿Ya tienes cuenta?{' '}
-          <Link href="/login" className="font-brut font-bold text-sigeb-blue hover:bg-brutal-cyan">
+          <Link href="/login" className="font-brut font-bold text-brutal-cyan hover:bg-brutal-cyan">
             Inicia sesión
           </Link>
         </p>

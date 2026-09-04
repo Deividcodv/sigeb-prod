@@ -119,7 +119,7 @@ function EvaluadorContent() {
           <div className="flex justify-center py-20"><Spinner /></div>
         ) : evaluaciones.length === 0 ? (
           <Card className="text-center">
-            <p className="text-lg font-semibold text-sigeb-blue-dark">
+            <p className="text-lg font-bold text-brutal-tinta">
               No tienes evaluaciones asignadas
             </p>
             <p className="mt-1 text-sm text-brutal-tinta/70">
@@ -133,7 +133,7 @@ function EvaluadorContent() {
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                   <div>
                     <div className="flex flex-wrap items-center gap-3">
-                      <h2 className="text-lg font-bold text-sigeb-blue-dark">
+                      <h2 className="text-lg font-black text-brutal-tinta">
                         {ev.solicitud.convocatoria.beca.nombre}
                       </h2>
                       <Badge estado={ev.solicitud.estado} />
@@ -146,7 +146,7 @@ function EvaluadorContent() {
                       {ev.solicitud.usuario.cui})
                     </p>
                   </div>
-                  <span className="text-sm font-semibold text-sigeb-blue-dark">
+                  <span className="text-sm font-bold text-brutal-tinta">
                     {ev.completados}/{ev.totalCriterios} completados
                   </span>
                 </div>
@@ -164,7 +164,7 @@ function EvaluadorContent() {
                             <p className="font-brut text-sm font-bold uppercase tracking-wide text-brutal-tinta">
                               {criterio.nombre}
                             </p>
-                            <p className="font-mono text-xs text-brutal-tinta/50">
+                            <p className="font-mono text-xs text-brutal-tinta/75">
                               Peso {(criterio.peso * 100).toFixed(0)}%
                             </p>
                           </div>

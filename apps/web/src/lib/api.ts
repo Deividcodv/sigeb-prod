@@ -55,6 +55,7 @@ export interface Solicitud {
     id: string;
     nombre: string;
     beca: Beca;
+    _count?: { documentosRequeridos?: number };
   };
   _count?: { documentos?: number };
 }

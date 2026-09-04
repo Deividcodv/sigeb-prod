@@ -208,25 +208,25 @@ function SolicitudDetalleContent() {
                     <li key={i}>
                       <p className="flex flex-wrap items-center gap-2 font-mono">
                         <Badge estado={h.estado} />
-                        <span className="text-xs text-brutal-tinta/50">
+                        <span className="text-xs text-brutal-tinta/75">
                           {formatearFecha(h.fecha)}
                         </span>
                       </p>
                       {h.comentario && (
-                        <p className="mt-1 font-mono text-sm text-brutal-tinta/60">{h.comentario}</p>
+                        <p className="mt-1 font-mono text-sm text-brutal-tinta/80">{h.comentario}</p>
                       )}
                     </li>
                   ))}
                 </ol>
               ) : (
-                <p className="text-sm text-brutal-tinta/50">Sin movimientos registrados.</p>
+                <p className="text-sm text-brutal-tinta/75">Sin movimientos registrados.</p>
               )}
             </Card>
           </div>
 
           <div className="space-y-6">
             <Card>
-              <h2 className="mb-3 text-lg font-bold text-sigeb-blue-dark">
+              <h2 className="mb-3 text-lg font-black text-brutal-tinta">
                 Perfil académico
               </h2>
               {solicitud.perfilAcademico ? (
@@ -254,7 +254,7 @@ function SolicitudDetalleContent() {
             </Card>
 
             <Card>
-              <h2 className="mb-3 text-lg font-bold text-sigeb-blue-dark">
+              <h2 className="mb-3 text-lg font-black text-brutal-tinta">
                 Perfil financiero
               </h2>
               {solicitud.perfilFinanciero ? (
@@ -287,7 +287,7 @@ function SolicitudDetalleContent() {
 
             {puedeEnviar && (
               <Card>
-                <h2 className="mb-2 text-lg font-bold text-sigeb-blue-dark">
+                <h2 className="mb-2 text-lg font-black text-brutal-tinta">
                   Enviar solicitud
                 </h2>
                 <p className="mb-4 text-sm text-brutal-tinta/70">
@@ -336,7 +336,7 @@ function DocsSection({
         Documentos
       </h2>
       {documentos.length === 0 ? (
-        <p className="font-mono text-sm text-brutal-tinta/50">No se requieren documentos para esta solicitud.</p>
+        <p className="font-mono text-sm text-brutal-tinta/75">No se requieren documentos para esta solicitud.</p>
       ) : (
         <div className="space-y-3">
           {documentos.map((doc) => (
@@ -346,7 +346,7 @@ function DocsSection({
             >
               <div>
                 <p className="font-brut text-sm font-bold uppercase tracking-wide text-brutal-tinta">{doc.nombre}</p>
-                <p className="font-mono text-xs text-brutal-tinta/50">
+                <p className="font-mono text-xs text-brutal-tinta/75">
                   {doc.obligatorio ? 'Obligatorio' : 'Opcional'}
                 </p>
               </div>

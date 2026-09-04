@@ -42,7 +42,7 @@ export default function NosotrosPage() {
                 key={bloque.titulo}
                 className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco p-8 shadow-brutal-sm"
               >
-                <h2 className="mb-3 font-brut text-2xl font-black uppercase tracking-wide text-sigeb-blue">
+                <h2 className="mb-3 font-brut text-2xl font-black uppercase tracking-wide text-brutal-cyan">
                   {bloque.titulo}
                 </h2>
                 <p className="text-brutal-tinta/80">{bloque.texto}</p>
@@ -50,7 +50,7 @@ export default function NosotrosPage() {
             ))}
 
             <div className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco p-8 shadow-brutal-sm">
-              <h2 className="mb-3 font-brut text-2xl font-black uppercase tracking-wide text-sigeb-blue">
+              <h2 className="mb-3 font-brut text-2xl font-black uppercase tracking-wide text-brutal-cyan">
                 Objetivos
               </h2>
               <ul className="space-y-2 pl-5 text-brutal-tinta/80 marker:text-brutal-gold">
@@ -62,7 +62,7 @@ export default function NosotrosPage() {
             </div>
 
             <div className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco p-8 shadow-brutal-sm">
-              <h2 className="mb-3 font-brut text-2xl font-black uppercase tracking-wide text-sigeb-blue">
+              <h2 className="mb-3 font-brut text-2xl font-black uppercase tracking-wide text-brutal-cyan">
                 Programas de becas
               </h2>
               <ul className="space-y-2 pl-5 text-brutal-tinta/80 marker:text-brutal-gold">
@@ -73,7 +73,7 @@ export default function NosotrosPage() {
             </div>
 
             <div className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco p-8 shadow-brutal-sm">
-              <h2 className="mb-3 font-brut text-2xl font-black uppercase tracking-wide text-sigeb-blue">
+              <h2 className="mb-3 font-brut text-2xl font-black uppercase tracking-wide text-brutal-cyan">
                 Transparencia
               </h2>
               <p className="text-brutal-tinta/80">
@@ -84,13 +84,13 @@ export default function NosotrosPage() {
             </div>
 
             <div className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco p-8 shadow-brutal-sm">
-              <h2 className="mb-3 font-brut text-2xl font-black uppercase tracking-wide text-sigeb-blue">
+              <h2 className="mb-3 font-brut text-2xl font-black uppercase tracking-wide text-brutal-cyan">
                 Contacto
               </h2>
               <p className="text-brutal-tinta/80">Ministerio de Educación de Guatemala</p>
               <p className="text-brutal-tinta/80">
                 Para consultas sobre becas, contáctanos a través de nuestro{' '}
-                <a href="/consulta" className="font-brut font-bold text-sigeb-blue hover:bg-brutal-cyan">
+                <a href="/consulta" className="font-brut font-bold text-brutal-cyan hover:bg-brutal-cyan">
                   consulta de solicitudes
                 </a>{' '}
                 o el centro de ayuda.

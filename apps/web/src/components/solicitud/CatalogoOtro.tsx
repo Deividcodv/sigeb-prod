@@ -28,7 +28,7 @@ export function CatalogoOtro({
   return (
     <div>
       <div className="w-full">
-        <label className="mb-1 block text-sm font-medium text-sigeb-blue-dark">
+        <label className="mb-1 block text-sm font-medium text-brutal-tinta">
           {nombre}
         </label>
         <select

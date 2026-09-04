@@ -302,10 +302,10 @@ fina de permisos por usuario.
 
 **Decisión:**
 Gestionar permisos en dos niveles reutilizando el modelo `UsuarioPermiso` existente (sin migraciones):
-1. **Rol** — matriz rol×permiso actual (`PATCH /seguridad/roles/:id/permisos`, ALLOW).
-2. **Usuario** — excepciones tri-estado por usuario (`null`/`PERMITIR`/`DENEGAR`) vía
-   `PATCH /seguridad/usuarios/:id/permisos`; la cadena de decisión evalúa primero el rol y luego la
-   excepción individual (sobre-grant/sobre-deny).
+1. **Usuario** — excepciones por usuario (`PERMITIR`/`DENEGAR`) vía
+   `PATCH /seguridad/usuarios/:id/permisos`; la cadena de decisión evalúa primero la excepción
+   individual del usuario y luego el rol (sobre-grant/sobre-deny).
+2. **Rol** — matriz rol×permiso (`PATCH /seguridad/roles/:id/permisos`, ALLOW/DENY).
 
 El guard `permiso:editar` protege todos los endpoints; el alta/edición de usuarios audita cada
 acción y nunca expone `passwordHash`. Se agregó autoprotección: un usuario no puede inactivarse a sí
@@ -318,12 +318,13 @@ mismo (400).
 - Habilitar borrado físico de usuarios: rompe trazabilidad; se optó por alta/rol/estado.
 
 **Consecuencias:**
-- Tri-estado implementado como cadena de permisos (`PERMITIR` gana a rol ALLOW/DENY, `DENEGAR` gana
-  siempre); documentado en `permission-chain.ts`.
+- Cadena de permisos binaria: excepción de usuario (`PERMITIR`/`DENEGAR`) se evalúa primero; si no
+  existe, se evalúa el permiso de rol. `DENEGAR` de usuario siempre gana; documentado en
+  `permission-chain.ts`.
 - El listado de usuarios admite rol obligatorio al crear; las excepciones se guardan por
   reemplazo (delete + create) para convergencia de la UI.
 - Cobertura automatizada: `users.service.spec` (12 casos) más el bloque de seguridad del smoke CI.
 
 ---
 
-*Última actualización: 2026-09-01*
+*Última actualización: 2026-09-02*

@@ -93,7 +93,7 @@ function DashboardContent() {
                   if (cantidad === 0) return null;
                   return (
                     <Card key={estado} className="p-4">
-                      <p className="text-3xl font-bold text-sigeb-blue-dark">
+                      <p className="text-3xl font-black text-brutal-tinta">
                         {cantidad}
                       </p>
                       <div className="mt-1">
@@ -104,52 +104,63 @@ function DashboardContent() {
                 })}
               </div>
 
-              <h2 className="mt-10 mb-4 text-xl font-bold text-sigeb-blue-dark">
+              <h2 className="mt-10 mb-4 text-xl font-black text-brutal-tinta">
                 Mis solicitudes
               </h2>
 
               <div className="space-y-4">
-                {lista.map((sol) => (
-                  <Card key={sol.id} className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <div className="flex flex-wrap items-center gap-3">
-                        <h3 className="text-lg font-semibold text-sigeb-blue-dark">
-                          {sol.convocatoria.beca.nombre}
-                        </h3>
-                        <Badge estado={sol.estado} />
+                {lista.map((sol) => {
+                  const docsRequeridos = sol.convocatoria?._count?.documentosRequeridos ?? 0;
+                  const docsCargados = sol._count?.documentos ?? 0;
+                  const codigoConv = `CONV-${(sol.convocatoria?.id ?? '').slice(0, 6).toUpperCase()}`;
+
+                  return (
+                    <Card key={sol.id} className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="flex-1">
+                        <div className="flex flex-wrap items-center gap-3">
+                          <h3 className="text-lg font-bold text-brutal-tinta">
+                            {sol.convocatoria?.beca?.nombre ?? 'Beca'}
+                          </h3>
+                          <Badge estado={sol.estado} />
+                        </div>
+                        <p className="mt-1 text-sm text-brutal-tinta/70">
+                          <span className="font-mono font-bold text-brutal-tinta">{codigoConv}</span>
+                          {' · '}
+                          {sol.convocatoria?.nombre ?? ''}
+                        </p>
+                        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-brutal-tinta/60">
+                          <span>Postulada el {formatearFecha(sol.createdAt)}</span>
+                          {docsRequeridos > 0 && (
+                            <span>
+                              Docs: <span className="font-bold text-brutal-tinta">{docsCargados}</span>/{docsRequeridos} cargados
+                            </span>
+                          )}
+                        </div>
                       </div>
-                      <p className="mt-1 text-sm text-brutal-tinta/70">
-                        {sol.convocatoria.nombre}
-                      </p>
-                      <p className="mt-1 text-sm text-brutal-tinta/70">
-                        Postulada el {formatearFecha(sol.createdAt)} ·{' '}
-                        {sol._count?.documentos ?? 0} documento
-                        {(sol._count?.documentos ?? 0) === 1 ? '' : 's'}
-                      </p>
-                    </div>
-                    <div className="flex shrink-0 flex-col items-stretch gap-2 sm:flex-row sm:items-center">
-                      {sol.estado === 'APROBADA' && (
+                      <div className="flex shrink-0 flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+                        {sol.estado === 'APROBADA' && (
+                          <Button
+                            onClick={() =>
+                              descargarConstancia(sol.id).catch((e: Error) =>
+                                setError(e.message),
+                              )
+                            }
+                            className="whitespace-nowrap"
+                          >
+                            Descargar constancia
+                          </Button>
+                        )}
                         <Button
-                          onClick={() =>
-                            descargarConstancia(sol.id).catch((e: Error) =>
-                              setError(e.message),
-                            )
-                          }
-                          className="whitespace-nowrap"
+                          href={`/solicitudes/${sol.id}`}
+                          variant="ghost"
+                          className="shrink-0 whitespace-nowrap"
                         >
-                          Descargar constancia
+                          Ver detalle
                         </Button>
-                      )}
-                      <Button
-                        href={`/solicitudes/${sol.id}`}
-                        variant="ghost"
-                        className="shrink-0 whitespace-nowrap"
-                      >
-                        Ver detalle
-                      </Button>
-                    </div>
-                  </Card>
-                ))}
+                      </div>
+                    </Card>
+                  );
+                })}
               </div>
 
               <div className="mt-8">

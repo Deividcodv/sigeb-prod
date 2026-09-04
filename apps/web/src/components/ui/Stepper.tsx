@@ -26,7 +26,7 @@ export function Stepper({ pasos, actual, className = '' }: StepperProps) {
                 {completado ? '✓' : numero}
               </span>
               <span
-                className={`font-brut text-sm font-bold uppercase ${activo ? 'text-sigeb-blue-dark' : 'text-brutal-tinta/60'}`}
+                className={`font-brut text-sm font-bold uppercase ${activo ? 'text-brutal-tinta' : 'text-brutal-tinta/80'}`}
               >
                 {paso}
               </span>

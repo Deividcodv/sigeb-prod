@@ -41,7 +41,7 @@ export function FiltrosConvocatorias({ becas }: FiltrosConvocatoriasProps) {
         <div className="flex-1">
           <label
             htmlFor="busqueda"
-            className="mb-1 block font-brut text-xs font-bold uppercase tracking-wide text-sigeb-blue-dark"
+            className="mb-1 block font-brut text-xs font-bold uppercase tracking-wide text-brutal-tinta"
           >
             Buscar
           </label>

@@ -132,7 +132,7 @@ export function PanelSolicitudes() {
           <h3 className="mb-2 font-brut text-lg font-black uppercase tracking-wide text-brutal-tinta">
             Asignar evaluadores a la solicitud
           </h3>
-          <p className="mb-4 font-mono text-sm text-brutal-tinta/60">
+          <p className="mb-4 font-mono text-sm text-brutal-tinta/80">
             {asignando.convocatoria?.nombre} · {asignando.convocatoria?.beca?.nombre}
           </p>
           {evaluadores.length === 0 ? (
@@ -154,7 +154,7 @@ export function PanelSolicitudes() {
                   />
                   <span>
                     {ev.nombres}
-                    <span className="block text-xs text-brutal-tinta/50">{ev.email}</span>
+                    <span className="block text-xs text-brutal-tinta/75">{ev.email}</span>
                   </span>
                 </label>
               ))}
@@ -182,7 +182,7 @@ export function PanelSolicitudes() {
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <div className="flex flex-wrap items-center gap-3">
-                      <h3 className="text-lg font-semibold text-sigeb-blue-dark">
+                      <h3 className="text-lg font-bold text-brutal-tinta">
                         {solicitud.convocatoria?.beca?.nombre ?? 'Beca'}
                       </h3>
                       <Badge estado={solicitud.estado} />
@@ -215,7 +215,7 @@ export function PanelSolicitudes() {
                       Score por evaluador
                     </p>
                     {score.evaluadores.length === 0 ? (
-                      <p className="font-mono text-sm text-brutal-tinta/50">
+                      <p className="font-mono text-sm text-brutal-tinta/75">
                         Aún no hay evaluadores asignados.
                       </p>
                     ) : (
@@ -227,7 +227,7 @@ export function PanelSolicitudes() {
                           >
                             <span className="font-bold text-brutal-tinta">
                               {ev.evaluador.nombres}
-                              <span className="text-brutal-tinta/50">
+                              <span className="text-brutal-tinta/75">
                                 {' '}({ev.completados}/{ev.total})
                               </span>
                             </span>
@@ -235,7 +235,7 @@ export function PanelSolicitudes() {
                               className={
                                 ev.completo
                                   ? 'rounded-brutal border-2 border-brutal-tinta bg-brutal-lima px-2 py-0.5 font-bold text-brutal-tinta'
-                                  : 'font-semibold text-brutal-tinta/50'
+                                  : 'font-semibold text-brutal-tinta/75'
                               }
                             >
                               {ev.completo ? `${ev.score?.toFixed(2) ?? '—'}` : 'Pendiente'}

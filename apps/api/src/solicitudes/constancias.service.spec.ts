@@ -4,12 +4,16 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConstanciasService } from './constancias.service';
+import { AuthzService } from '../common/services/authz.service';
 
 describe('ConstanciasService (US-F7)', () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let prisma: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let renderer: any;
   let service: ConstanciasService;
 
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   const usuarioAdmin = {
     id: 'a1',
     rol: { nombre: 'ADMIN' },
@@ -24,6 +28,7 @@ describe('ConstanciasService (US-F7)', () => {
     id: 'u2',
     rol: { nombre: 'POSTULANTE' },
   } as any;
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 
   const solicitudAprobada = {
     id: 'sol-12345678',
@@ -54,7 +59,7 @@ describe('ConstanciasService (US-F7)', () => {
       solicitud: { findUnique: jest.fn() },
     };
     renderer = { render: jest.fn().mockResolvedValue(Buffer.from('%PDF-1.4')) };
-    service = new ConstanciasService(prisma, renderer);
+    service = new ConstanciasService(prisma, renderer, new AuthzService());
   });
 
   it('lanza NotFoundException si la solicitud no existe', async () => {

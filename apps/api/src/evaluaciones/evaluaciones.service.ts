@@ -7,16 +7,46 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { AuditService } from '../audit/audit.service';
 import { AuthenticatedUser } from '../common/interfaces/authenticated-user.interface';
+import { AuthzService } from '../common/services/authz.service';
+import { SOLICITUD_ESTADO } from '../common/constants/estados';
+import { ROL } from '../common/constants/roles';
 import {
   AsignarEvaluadoresDto,
   RegistrarPuntajeDto,
 } from './evaluaciones.dto';
+
+export interface CriterioPuntaje {
+  id: string;
+  nombre: string;
+  peso: number;
+  puntaje: number | null;
+}
+
+export interface GrupoEvaluador {
+  evaluador: { id: string; nombres: string };
+  criterios: CriterioPuntaje[];
+  completados: number;
+  total: number;
+}
+
+export interface EvaluadorScoreResult extends GrupoEvaluador {
+  completo: boolean;
+  score: number | null;
+}
+
+export interface ScoreSolicitudResult {
+  solicitudId: string;
+  score: number | null;
+  completo: boolean;
+  evaluadores: EvaluadorScoreResult[];
+}
 
 @Injectable()
 export class EvaluacionesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly audit: AuditService,
+    private readonly authz: AuthzService,
   ) {}
 
   async misEvaluaciones(usuario: AuthenticatedUser) {
@@ -85,20 +115,29 @@ export class EvaluacionesService {
     dto: AsignarEvaluadoresDto,
     usuario: AuthenticatedUser,
   ) {
-    this.esAdminOrThrow(usuario);
+    this.authz.assertAdmin(
+      usuario,
+      'Solo los administradores pueden asignar evaluadores',
+    );
 
     const solicitud = await this.prisma.solicitud.findUnique({
       where: { id: solicitudId },
       include: {
-        convocatoria: { include: { beca: { include: { criteriosEvaluacion: true } } } },
+        convocatoria: {
+          include: {
+            beca: { include: { criteriosEvaluacion: true } },
+          },
+        },
       },
     });
 
     if (!solicitud) {
-      throw new NotFoundException(`Solicitud con id ${solicitudId} no encontrada`);
+      throw new NotFoundException(
+        `Solicitud con id ${solicitudId} no encontrada`,
+      );
     }
 
-    if (solicitud.estado !== 'EN_REVISION') {
+    if (solicitud.estado !== SOLICITUD_ESTADO.EN_REVISION) {
       throw new BadRequestException(
         'Solo se pueden asignar evaluadores a solicitudes en EN_REVISION',
       );
@@ -113,38 +152,56 @@ export class EvaluacionesService {
       );
     }
 
-    for (const evaluadorId of dto.evaluadorIds) {
-      const evaluador = await this.prisma.usuario.findUnique({
-        where: { id: evaluadorId },
-        include: { rol: true },
-      });
-      if (!evaluador) {
-        throw new NotFoundException(`Evaluador con id ${evaluadorId} no existe`);
-      }
-      if (evaluador.rol.nombre !== 'EVALUADOR') {
+    const evaluadores = await this.prisma.usuario.findMany({
+      where: { id: { in: dto.evaluadorIds } },
+      include: { rol: true },
+    });
+
+    if (evaluadores.length !== dto.evaluadorIds.length) {
+      const encontrados = new Set(evaluadores.map((e) => e.id));
+      const faltantes = dto.evaluadorIds.filter((id) => !encontrados.has(id));
+      throw new NotFoundException(
+        `Evaluadores no encontrados: ${faltantes.join(', ')}`,
+      );
+    }
+
+    for (const evaluador of evaluadores) {
+      if (evaluador.rol.nombre !== ROL.EVALUADOR) {
         throw new BadRequestException(
           `El usuario ${evaluador.nombres} no tiene rol EVALUADOR`,
         );
       }
+    }
 
-      for (const criterio of criterios) {
-        const existente = await this.prisma.evaluacion.findFirst({
+    const existentes = dto.evaluadorIds.length > 0
+      ? await this.prisma.evaluacion.findMany({
           where: {
             solicitudId,
-            criterioEvaluacionId: criterio.id,
-            evaluadorId,
+            evaluadorId: { in: dto.evaluadorIds },
+            criterioEvaluacionId: { in: criterios.map((c) => c.id) },
           },
-        });
-        if (!existente) {
-          await this.prisma.evaluacion.create({
-            data: {
-              solicitudId,
-              criterioEvaluacionId: criterio.id,
-              evaluadorId,
-            },
-          });
-        }
-      }
+          select: { evaluadorId: true, criterioEvaluacionId: true },
+        })
+      : [];
+
+    const existentesSet = new Set(
+      existentes.map(
+        (e) => `${e.evaluadorId}:${e.criterioEvaluacionId}`,
+      ),
+    );
+
+    const aCrear = dto.evaluadorIds.flatMap((evaluadorId) =>
+      criterios
+        .filter((c) => !existentesSet.has(`${evaluadorId}:${c.id}`))
+        .map((c) => ({
+          solicitudId,
+          criterioEvaluacionId: c.id,
+          evaluadorId,
+        })),
+    );
+
+    if (aCrear.length > 0) {
+      await this.prisma.evaluacion.createMany({ data: aCrear });
     }
 
     if (dto.evaluadorIds.length > 0) {
@@ -177,7 +234,7 @@ export class EvaluacionesService {
       throw new NotFoundException(`Solicitud con id ${solicitudId} no encontrada`);
     }
 
-    if (solicitud.estado !== 'EN_REVISION') {
+    if (solicitud.estado !== SOLICITUD_ESTADO.EN_REVISION) {
       throw new BadRequestException(
         'La solicitud no está en EN_REVISION para ser evaluada',
       );
@@ -208,13 +265,7 @@ export class EvaluacionesService {
     });
   }
 
-  private esAdminOrThrow(usuario: AuthenticatedUser) {
-    if (usuario.rol?.nombre !== 'ADMIN') {
-      throw new ForbiddenException('Solo los administradores pueden asignar evaluadores');
-    }
-  }
-
-  async scoreSolicitud(solicitudId: string) {
+  async scoreSolicitud(solicitudId: string): Promise<ScoreSolicitudResult> {
     const solicitud = await this.prisma.solicitud.findUnique({
       where: { id: solicitudId },
     });
@@ -231,12 +282,12 @@ export class EvaluacionesService {
       },
     });
 
-    const porEvaluador = new Map<string, any>();
+    const porEvaluador = new Map<string, GrupoEvaluador>();
     for (const ev of evaluaciones) {
       const key = ev.evaluadorId;
       const grupo = porEvaluador.get(key) ?? {
         evaluador: { id: key, nombres: ev.evaluador.nombres },
-        criterios: [] as any[],
+        criterios: [] as CriterioPuntaje[],
         completados: 0,
         total: 0,
       };
@@ -253,14 +304,13 @@ export class EvaluacionesService {
       porEvaluador.set(key, grupo);
     }
 
-    const evaluadores = Array.from(porEvaluador.values()).map((g) => {
+    const evaluadores = Array.from(porEvaluador.values()).map((g): EvaluadorScoreResult => {
       const sumPesos = g.criterios.reduce(
-        (acc: number, c: { peso: number }) => acc + c.peso,
+        (acc: number, c: CriterioPuntaje) => acc + c.peso,
         0,
       );
       const sumPonderado = g.criterios.reduce(
-        (acc: number, c: { peso: number; puntaje: number }) =>
-          acc + c.peso * c.puntaje,
+        (acc: number, c: CriterioPuntaje) => acc + c.peso * (c.puntaje ?? 0),
         0,
       );
       const completo = g.completados === g.total && g.total > 0;

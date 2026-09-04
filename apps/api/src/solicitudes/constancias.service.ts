@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ForbiddenException,
   Inject,
   Injectable,
   NotFoundException,
@@ -8,6 +7,8 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { PDF_RENDERER, PdfRenderer } from './pdf/pdf-renderer.interface';
 import { AuthenticatedUser } from '../common/interfaces/authenticated-user.interface';
+import { AuthzService } from '../common/services/authz.service';
+import { SOLICITUD_ESTADO } from '../common/constants/estados';
 
 interface SolicitudConstancia {
   id: string;
@@ -31,6 +32,7 @@ export class ConstanciasService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(PDF_RENDERER) private readonly renderer: PdfRenderer,
+    private readonly authz: AuthzService,
   ) {}
 
   async generarConstancia(
@@ -51,9 +53,9 @@ export class ConstanciasService {
       throw new NotFoundException(`Solicitud con id ${id} no encontrada`);
     }
 
-    this.assertAcceso(solicitud, usuario);
+    this.authz.assertAcceso(solicitud, usuario);
 
-    if (solicitud.estado !== 'APROBADA') {
+    if (solicitud.estado !== SOLICITUD_ESTADO.APROBADA) {
       throw new BadRequestException(
         'La constancia solo está disponible para solicitudes aprobadas',
       );
@@ -239,16 +241,6 @@ export class ConstanciasService {
         year: 'numeric',
       })
       .replace(/ de /g, ' de ');
-  }
-
-  private assertAcceso(
-    solicitud: { usuarioId: string },
-    usuario: AuthenticatedUser,
-  ) {
-    const esAdmin = usuario.rol?.nombre === 'ADMIN';
-    if (!esAdmin && solicitud.usuarioId !== usuario.id) {
-      throw new ForbiddenException('No tienes acceso a esta solicitud');
-    }
   }
 }
 

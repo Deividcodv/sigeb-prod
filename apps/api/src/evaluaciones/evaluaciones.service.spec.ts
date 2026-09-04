@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { EvaluacionesService } from './evaluaciones.service';
 import { AuthenticatedUser } from '../common/interfaces/authenticated-user.interface';
+import { AuthzService } from '../common/services/authz.service';
 
 const admin: AuthenticatedUser = {
   id: 'u-admin',
@@ -23,7 +24,9 @@ const evaluador: AuthenticatedUser = {
 };
 
 describe('EvaluacionesService', () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let prisma: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let audit: any;
   let service: EvaluacionesService;
 
@@ -39,7 +42,7 @@ describe('EvaluacionesService', () => {
       usuario: { findUnique: jest.fn() },
     };
     audit = { log: jest.fn() };
-    service = new EvaluacionesService(prisma, audit);
+    service = new EvaluacionesService(prisma, audit, new AuthzService());
   });
 
   describe('misEvaluaciones (US-26)', () => {

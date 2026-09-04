@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/Button';
-import { rutaPorRol } from '@/lib/rol';
+import { rutaPorRol, nombreRol } from '@/lib/rol';
+import { MenuAcciones } from '@/components/layout/MenuAcciones';
 
 export function UserMenu() {
   const { usuario, cargando, logout } = useAuth();
@@ -28,6 +29,7 @@ export function UserMenu() {
   }
 
   const ruta = rutaPorRol(usuario.rol);
+  const rol = nombreRol(usuario.rol);
 
   const handleLogout = () => {
     logout();
@@ -36,13 +38,21 @@ export function UserMenu() {
 
   return (
     <div className="hidden items-center gap-3 md:flex">
+      <MenuAcciones />
       <Link
         href={ruta}
-        className="brut-label text-xs font-bold text-brutal-cyan transition-colors hover:text-brutal-gold"
+        className="flex items-center gap-2 rounded-brutal border-2 border-brutal-gold bg-brutal-gold px-3 py-1.5 font-brut text-xs font-black uppercase tracking-wide text-brutal-tinta transition-colors hover:-translate-y-0.5 hover:bg-brutal-papel hover:text-brutal-tinta"
       >
-        Hola, {usuario.nombres.split(' ')[0]}
+        <span className="text-base">▤</span>
+        Panel {rol}
       </Link>
-      <Button onClick={handleLogout} variant="ghost">
+      <span className="font-mono text-xs text-brutal-papel">
+        Hola, {usuario.nombres.split(' ')[0]}
+      </span>
+      <Button
+        onClick={handleLogout}
+        className="!border-brutal-rojo !bg-brutal-rojo !text-brutal-papel hover:!bg-brutal-tinta hover:!text-brutal-papel"
+      >
         Cerrar sesión
       </Button>
     </div>

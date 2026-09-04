@@ -12,7 +12,7 @@ export function ConvocatoriaCard({
     <Card className="flex flex-col">
       <div className="mb-3 flex items-center justify-between gap-2">
         <Badge estado={convocatoria.estado} />
-        <span className="brut-label font-mono text-xs font-bold uppercase text-sigeb-blue">
+        <span className="brut-label font-mono text-xs font-bold uppercase text-brutal-cyan">
           {convocatoria.beca.nombre}
         </span>
       </div>
@@ -24,7 +24,7 @@ export function ConvocatoriaCard({
           {convocatoria.descripcion}
         </p>
       )}
-      <dl className="mb-4 space-y-1 font-mono text-xs text-brutal-tinta/60">
+      <dl className="mb-4 space-y-1 font-mono text-xs text-brutal-tinta/80">
         <div className="flex justify-between">
           <dt>Apertura</dt>
           <dd>{formatearFecha(convocatoria.fechaApertura)}</dd>

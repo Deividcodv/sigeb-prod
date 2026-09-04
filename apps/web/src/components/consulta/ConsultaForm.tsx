@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
-import { http, type ConsultaSolicitud } from '@/lib/api';
+import { httpData, type ConsultaSolicitud } from '@/lib/api';
 
 export function ConsultaForm() {
   const [codigo, setCodigo] = useState('');
@@ -23,7 +23,7 @@ export function ConsultaForm() {
     setError(null);
     setResultado(null);
     try {
-      const data = await http<ConsultaSolicitud>(
+      const data = await httpData<ConsultaSolicitud>(
         `/solicitudes/consulta/${encodeURIComponent(codigoTrim)}`,
       );
       setResultado(data);
@@ -78,12 +78,12 @@ export function ConsultaForm() {
 
 const coloresEstado: Record<string, string> = {
   BORRADOR: 'bg-brutal-tinta/15 text-brutal-tinta',
-  ENVIADA: 'bg-brutal-cyan/20 text-sigeb-blue-dark',
-  EN_REVISION: 'bg-brutal-gold/20 text-brutal-gold',
-  CORRECCION: 'bg-brutal-naranja/20 text-brutal-naranja',
-  EVALUADA: 'bg-brutal-indigo/20 text-brutal-indigo',
+  ENVIADA: 'bg-brutal-cyan/20 text-brutal-tinta',
+  EN_REVISION: 'bg-brutal-gold/20 text-brutal-tinta',
+  CORRECCION: 'bg-brutal-naranja/20 text-brutal-tinta',
+  EVALUADA: 'bg-brutal-indigo/20 text-brutal-tinta',
   APROBADA: 'bg-brutal-lima/30 text-brutal-tinta',
-  RECHAZADA: 'bg-brutal-rojo/20 text-brutal-rojo',
+  RECHAZADA: 'bg-brutal-rojo/20 text-brutal-tinta',
 };
 
 function ResultadoConsulta({ resultado }: { resultado: ConsultaSolicitud }) {
@@ -94,7 +94,7 @@ function ResultadoConsulta({ resultado }: { resultado: ConsultaSolicitud }) {
       <div className="brut-cinta border-b border-brutal-tinta bg-brutal-tinta px-6 py-4 text-brutal-papel">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="brut-label font-mono text-xs text-brutal-papel/70">
+            <p className="brut-label font-mono text-xs text-brutal-papel/85">
               Solicitud
             </p>
             <p className="font-mono text-sm font-bold text-brutal-gold">
@@ -114,13 +114,13 @@ function ResultadoConsulta({ resultado }: { resultado: ConsultaSolicitud }) {
       <div className="px-6 py-5">
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <p className="brut-label font-mono text-xs text-brutal-tinta/50">Beca</p>
+            <p className="brut-label font-mono text-xs text-brutal-tinta/75">Beca</p>
             <p className="font-brut font-bold text-brutal-tinta">
               {resultado.beca ?? '—'}
             </p>
           </div>
           <div>
-            <p className="brut-label font-mono text-xs text-brutal-tinta/50">Convocatoria</p>
+            <p className="brut-label font-mono text-xs text-brutal-tinta/75">Convocatoria</p>
             <p className="font-brut font-bold text-brutal-tinta">
               {resultado.convocatoria ?? '—'}
             </p>
@@ -129,7 +129,7 @@ function ResultadoConsulta({ resultado }: { resultado: ConsultaSolicitud }) {
 
         {etapa.length > 0 ? (
           <div className="mt-6">
-            <p className="mb-3 font-brut text-sm font-bold uppercase tracking-wide text-sigeb-blue">
+            <p className="mb-3 font-brut text-sm font-bold uppercase tracking-wide text-brutal-cyan">
               Historial del proceso
             </p>
             <ol className="relative space-y-4 border-l-[3px] border-brutal-tinta pl-6">
@@ -140,9 +140,9 @@ function ResultadoConsulta({ resultado }: { resultado: ConsultaSolicitud }) {
                     {hito.estado}
                   </p>
                   {hito.comentario && (
-                    <p className="text-xs text-brutal-tinta/60">{hito.comentario}</p>
+                    <p className="text-xs text-brutal-tinta/80">{hito.comentario}</p>
                   )}
-                  <p className="font-mono text-xs text-brutal-tinta/40">
+                  <p className="font-mono text-xs text-brutal-tinta/75">
                     {new Date(hito.fecha).toLocaleDateString('es-GT', {
                       day: '2-digit',
                       month: 'short',
@@ -154,7 +154,7 @@ function ResultadoConsulta({ resultado }: { resultado: ConsultaSolicitud }) {
             </ol>
           </div>
         ) : (
-          <p className="mt-4 text-xs text-brutal-tinta/50">
+          <p className="mt-4 text-xs text-brutal-tinta/75">
             Sin historial registrado aún.
           </p>
         )}

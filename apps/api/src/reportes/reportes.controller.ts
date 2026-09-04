@@ -15,6 +15,8 @@ import {
 import { Response } from 'express';
 import { ReportesService, TipoReporte } from './reportes.service';
 import { Permisos } from '../common/decorators/permisos.decorator';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { AuthenticatedUser } from '../common/interfaces/authenticated-user.interface';
 
 @ApiTags('Reportes')
 @Controller('reportes')
@@ -48,6 +50,41 @@ export class ReportesController {
   })
   evaluaciones() {
     return this.reportesService.evaluaciones();
+  }
+
+  @Get('general')
+  @Permisos('reporte:ver')
+  @ApiOperation({ summary: 'Reporte general: KPIs de solicitudes, convocatorias y evaluaciones' })
+  reporteGeneral() {
+    return this.reportesService.reporteGeneral();
+  }
+
+  @Get('tendencia')
+  @Permisos('reporte:ver')
+  @ApiOperation({ summary: 'Tendencia mensual de solicitudes y evaluaciones completadas' })
+  tendencia() {
+    return this.reportesService.tendencia();
+  }
+
+  @Get('mis-evaluaciones')
+  @Permisos('reporte:ver')
+  @ApiOperation({ summary: 'Reporte: mis evaluaciones (EVALUADOR)' })
+  misEvaluaciones(@CurrentUser() usuario: AuthenticatedUser) {
+    return this.reportesService.misEvaluaciones(usuario.id);
+  }
+
+  @Get('mis-comites')
+  @Permisos('reporte:ver')
+  @ApiOperation({ summary: 'Reporte: mis comités (COORDINADOR_COMITE)' })
+  misComites(@CurrentUser() usuario: AuthenticatedUser) {
+    return this.reportesService.misComites(usuario.id);
+  }
+
+  @Get('mis-sesiones')
+  @Permisos('reporte:ver')
+  @ApiOperation({ summary: 'Reporte: mis sesiones (MIEMBRO_COMITE)' })
+  misSesiones(@CurrentUser() usuario: AuthenticatedUser) {
+    return this.reportesService.misSesiones(usuario.id);
   }
 
   @Get(':tipo/csv')
