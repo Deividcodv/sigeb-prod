@@ -70,7 +70,7 @@ jobs:
       - name: Install Chromium system deps (US-F7 constancia PDF)
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libgbm1 libasound2 libxshmfence1
+          sudo apt-get install -y --no-install-recommends libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libgbm1 libasound2t64 libxshmfence1
 
       - name: Smoke CI (Sprints 3-5 + S6/S7 + F7 constancia PDF)
         env:
