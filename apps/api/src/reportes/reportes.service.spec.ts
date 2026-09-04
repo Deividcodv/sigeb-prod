@@ -10,7 +10,7 @@ describe('ReportesService', () => {
     prisma = {
       solicitud: { groupBy: jest.fn(), findMany: jest.fn(), count: jest.fn() },
       convocatoria: { groupBy: jest.fn(), findMany: jest.fn() },
-      decision: { groupBy: jest.fn() },
+      decision: { findMany: jest.fn() },
       evaluacion: { findMany: jest.fn() },
     };
     service = new ReportesService(prisma);
@@ -88,9 +88,15 @@ describe('ReportesService', () => {
         { solicitudId: 's2', evaluadorId: 'u1', completada: false, puntaje: null, criterioEvaluacion: { peso: 0.4 } },
         { solicitudId: 's2', evaluadorId: 'u2', completada: false, puntaje: null, criterioEvaluacion: { peso: 0.6 } },
       ]);
-      prisma.decision.groupBy.mockResolvedValue([
-        { resultado: 'APROBADA', _count: { _all: 1 } },
-        { resultado: 'RECHAZADA', _count: { _all: 1 } },
+      prisma.decision.findMany.mockResolvedValue([
+        {
+          resultado: 'APROBADA',
+          solicitud: { convocatoriaId: 'c1' },
+        },
+        {
+          resultado: 'RECHAZADA',
+          solicitud: { convocatoriaId: 'c1' },
+        },
       ]);
 
       const r = await service.evaluaciones();
@@ -128,7 +134,7 @@ describe('ReportesService', () => {
         { solicitudId: 's1', evaluadorId: 'u1', completada: true, puntaje: 80, criterioEvaluacion: { peso: 0.4 } },
         { solicitudId: 's1', evaluadorId: 'u1', completada: true, puntaje: 90, criterioEvaluacion: { peso: 0.6 } },
       ]);
-      prisma.decision.groupBy.mockResolvedValue([]);
+      prisma.decision.findMany.mockResolvedValue([]);
 
       const csv = await service.generarCsv('evaluaciones');
 

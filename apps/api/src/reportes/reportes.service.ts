@@ -144,11 +144,13 @@ export class ReportesService {
         })
       : [];
 
-    const decisiones = solicitudIds.length
-      ? await this.prisma.decision.groupBy({
-          by: ['resultado'],
-          where: { solicitudId: { in: solicitudIds } },
-          _count: { _all: true },
+    const decisiones = convocatoriaIds.length
+      ? await this.prisma.decision.findMany({
+          where: { solicitud: { convocatoriaId: { in: convocatoriaIds } } },
+          select: {
+            resultado: true,
+            solicitud: { select: { convocatoriaId: true } },
+          },
         })
       : [];
 
@@ -222,14 +224,16 @@ export class ReportesService {
         solicitudesEvaluadas: solicitudes.length,
         conScore,
         scorePromedio,
-        aprobadas:
-          decisiones.find(
-            (d) => d.resultado === DECISION_RESULTADO.APROBADA,
-          )?._count._all ?? 0,
-        rechazadas:
-          decisiones.find(
-            (d) => d.resultado === DECISION_RESULTADO.RECHAZADA,
-          )?._count._all ?? 0,
+        aprobadas: decisiones.filter(
+          (d) =>
+            d.solicitud.convocatoriaId === c.id &&
+            d.resultado === DECISION_RESULTADO.APROBADA,
+        ).length,
+        rechazadas: decisiones.filter(
+          (d) =>
+            d.solicitud.convocatoriaId === c.id &&
+            d.resultado === DECISION_RESULTADO.RECHAZADA,
+        ).length,
         pendientes: pendientes + enRevision,
       };
     });
