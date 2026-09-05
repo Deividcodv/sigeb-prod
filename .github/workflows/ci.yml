@@ -76,6 +76,7 @@ jobs:
         env:
           DATABASE_URL: postgresql://sigeb:sigeb123@localhost:5432/sigeb_test
           JWT_SECRET: test-secret-key
+          JWT_REFRESH_SECRET: test-refresh-secret-key
           STORAGE_PATH: /tmp/sigeb-storage
         run: |
           cd apps/api
