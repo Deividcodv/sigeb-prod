@@ -74,15 +74,15 @@ Revisa que estés en tu rama: `git branch` (debe aparecer `* feature/...`).
 ## 4. Obtener TU versión del código (lo más importante)
 
 Ve al documento `05-versiones-asignadas-por-persona.md`, busca **tu persona y tu sprint**, y ahí están:
-- el **hito** (`<HITO>`),
+- el **commit fuente** (`<FUENTE>`) del que copias tu código,
 - los **módulos** (carpetas) que te tocan,
 - el **comando exacto** para copiar ese código a tu rama.
 
 Ejemplo genérico (los valores exactos están en ese documento):
 
 ```bash
-# Copiar SOLO tus carpetas desde el hito del sprint hacia tu rama de trabajo
-git checkout <HITO> -- apps/api/src/<tu-modulo>
+# Copiar SOLO tus carpetas desde el commit fuente del sprint hacia tu rama de trabajo
+git checkout <FUENTE> -- apps/api/src/<tu-modulo>
 ```
 
 Y confirma que no quedaron archivos raros:

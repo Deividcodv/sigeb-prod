@@ -35,7 +35,7 @@
 - [6. Ciclo semanal sin interferencias (paso a paso)](#6-ciclo-semanal-sin-interferencias-paso-a-paso)
 - [7. Protocolo anti-interferencia (reglas duras)](#7-protocolo-anti-interferencia-reglas-duras)
 - [8. Cierre de sprint y release](#8-cierre-de-sprint-y-release)
-- [9. Verificación de fidelidad contra los hitos](#9-verificación-de-fidelidad-contra-los-hitos)
+- [9. Verificación de fidelidad contra los commits fuente](#9-verificación-de-fidelidad-contra-los-commits-fuente)
 
 ---
 
@@ -46,16 +46,21 @@ Vamos a reconstruir SIGEB en un **repositorio nuevo y privado de GitHub**. El c�
 proyecto haya sido construido por un equipo de 6 personas en 6 sprints, cada quien con su sección,
 entregándola mediante Pull Requests que David aprueba después de probarlas.
 
-- El **código de referencia** se toma de `sigeb-prod` en **6 hitos** (commits). Cada hito representa el
-  "estado exacto" que debe tener el repositorio nuevo al **cierre de cada sprint**.
+- El **código de referencia** se toma de `sigeb-prod` en **commits fuente** (el estado exacto de cada módulo
+  en su mejor momento). Cada sprint del repo nuevo copia los módulos de esos commits fuente y termina
+  equivalente a lo esperado del sprint.
+- Meta especial: **en los primeros 2-3 sprints tener un prototipo semi-funcional (portal público + login)**.
+  Para el demo (≈ 16 sep) David crea al cierre del S3 el **hito personalizado `v0.1-prototipo-demo`** (tag
+  en `sigeb-equipo`), que junta solo los módulos del prototipo (excluye evaluación/reportes/asistente/auditoría
+  y sus paneles). Esto NO existe en `sigeb-prod`: el proyecto real puso el portal y el login al final.
 - Al terminar la simulación (sup. viernes 16 de octubre) el repositorio nuevo debe equivaler al estado
-  actual de `sigeb-prod`.
+  actual de `sigeb-prod` (CI #40 = `a720298`).
 
 ### 6 personas
 
 | Persona | Rol Scrum | Rol técnico | En esta simulación |
 |---|---|---|---|
-| David | Scrum Master / Product Owner (dual) | Full-stack, supervisión | Admin del repo, revisa/prueba/aprueba PRs, CI, archivos compartidos |
+| David | Scrum Master / Product Owner (dual) | Full-stack, supervisión | Admin del repo, revisa/prueba/aprueba PRs, CI, archivos compartidos, crea el hito personalizado `v0.1-prototipo-demo` |
 | Marcos | Development Team | Backend 1 — Seguridad y Autenticación | `auth/`, `users/`, `audit/`, `common/` |
 | Héctor | Development Team | Backend 2 — Convocatorias | `catalogos/`, `convocatorias/`, `storage/`, tipos de documento |
 | José | Development Team | Backend 3 — Solicitudes y Evaluación | `solicitudes/`, `evaluaciones/`, `comites/`, `sesiones/`, `decisiones/`, `reportes/` |
@@ -64,25 +69,27 @@ entregándola mediante Pull Requests que David aprueba después de probarlas.
 
 > Detalles oficiales en `doc/team/members.md` y `doc/team/roles.md`.
 
-### Los 6 hitos (commits de referencia en sigeb-prod)
+### Los 6 sprints (y el prototipo)
 
-Cada sprint termina con el repositorio nuevo en el estado del hito correspondiente:
-
-| Sprint | Semana | Hito (commit) | Tema |
+| Sprint | Semana | Tema | Commits fuente (por módulo) |
 |---|---|---|---|
-| S1 | 07–11 sep | `4b0795f` | Auth y seguridad (JWT, roles, permisos) |
-| S2 | 14–18 sep | `acb3b0e` | Convocatorias, catálogos, solicitudes, CI |
-| S3 | 21–25 sep | `41285d4` | Evaluación: evaluadores, comités, sesiones, decisiones |
-| S4 | 28 sep–02 oct | `ab66393` | Reportes, auditoría, asistente IA, layout base |
-| S5 | 05–09 oct | `dcba851` | Portal público, web auth, dashboard |
-| S6 | 12–16 oct | `e36ac2c` | Sistema interno, paneles, constancia PDF |
+| S1 | 07–09 sep | Cimientos y seguridad (monorepo, auth API, catálogos/convocatorias backend, CI) | `4b0795f`, `85122d2` |
+| S2 | 09–11/12 sep | **Portal público** (US-41..48) | `986fc89` (+ `ab66393` layout) |
+| S3 | 14–16/18 sep | **Login/registro + dashboard postulante** (US-49/50) → `v0.1-prototipo-demo` | `3dfa19a` |
+| S4 | 21–25 sep | Evaluación: evaluadores, comités, sesiones, decisiones | `41285d4`, `3cb58e9` |
+| S5 | 28 sep–02 oct | Reportes, auditoría, asistente IA, paneles admin | `ab66393`, `0a05250`, `dab4fcd` |
+| S6 | 05–16 oct | Sistema interno completo + constancia PDF + estabilización → `a720298` (CI #40) | `2e52a69`, `dcba851`, `1436e41`, `e36ac2c` |
 
 ### Modelo de versiones (la clave)
 
-- `develop` del repositorio nuevo **siempre equivale al hito del sprint anterior**.
-- La rama de cada persona = `develop` actualizado **+ únicamente su sección** extraída del hito del sprint actual.
-- Al mergear todas las ramas del sprint en el orden correcto, el cierre equivale **exactamente** al hito.
+- `develop` del repositorio nuevo **siempre equivale a la entrega del sprint anterior**.
+- La rama de cada persona = `develop` actualizado **+ únicamente su sección** extraída de su **commit fuente**.
+- Al mergear todas las ramas del sprint en el orden correcto, el cierre equivale **exactamente** a lo esperado
+  (en el prototipo: por módulo; en S4-S6: contra el commit fuente y finalmente `a720298`).
 - Como cada persona solo toca *sus* carpetas, las ramas no se pisan entre sí.
+- **Hito personalizado `v0.1-prototipo-demo`:** al cierre del S3 David crea este tag en `sigeb-equipo` con
+  SOLO los módulos del prototipo (portal + login + dashboard + auth + catálogos/convocatorias/consulta).
+  No tiene por qué coincidir con un commit exacto de `sigeb-prod`; se verifica por módulo contra el commit fuente.
 
 ---
 
@@ -159,15 +166,17 @@ git remote add sigeb-prod https://github.com/Deividcodv/sigeb-prod.git
 git fetch sigeb-prod
 ```
 
-Comprobar que los hitos existen:
+Comprobar que los commits fuente existen:
 
 ```bash
 git log --oneline sigeb-prod/4b0795f -1
-git log --oneline sigeb-prod/acb3b0e -1
+git log --oneline sigeb-prod/85122d2 -1
+git log --oneline sigeb-prod/986fc89 -1
+git log --oneline sigeb-prod/3dfa19a -1
 git log --oneline sigeb-prod/41285d4 -1
 git log --oneline sigeb-prod/ab66393 -1
-git log --oneline sigeb-prod/dcba851 -1
 git log --oneline sigeb-prod/e36ac2c -1
+git log --oneline sigeb-prod/a720298 -1
 ```
 
 ---
@@ -175,87 +184,96 @@ git log --oneline sigeb-prod/e36ac2c -1
 ## 4. Propiedad de secciones: la versión de cada persona
 
 Cada persona es **dueña única** de sus módulos. Nunca debe modificar archivos de un módulo ajeno.
+La columna "Fuente" indica el commit de `sigeb-prod` del que copia **su** código en ese sprint.
 
 ### Marcos — Backend Seguridad
 
-| Sprint | Hito | Qué le toca | Ramas de ejemplo |
+| Sprint | Fuente | Qué le toca | Ramas de ejemplo |
 |---|---|---|---|
-| S1 | `4b0795f` | `apps/api/src/auth/`, `apps/api/src/common/` (guards, decoradores, filtros, interceptores), `apps/api/src/users/`, DTOs y validaciones | `feature/auth-login`, `feature/auth-jwt-roles` |
-| S4 | `ab66393` | Auditoría: `apps/api/src/audit/` (registro dirigido, US-36) | `feature/auditoria-registro` |
-| S6 | `e36ac2c` | Auditoría por rol + ajustes de seguridad | `feature/auditoria-por-rol` |
+| S1 | `4b0795f` | `apps/api/src/auth/`, `apps/api/src/common/` (guards, decoradores, filtros, interceptores, guard de permisos), `apps/api/src/users/`, DTOs y validaciones | `feature/auth-login`, `feature/auth-jwt-roles` |
+| S3 | `3dfa19a` | API ajustes para la sesión web (refresh/expiración) solo si el planning lo marca; coordinar con Hamilton | `feature/auth-web` |
+| S5 | `ab66393` | Auditoría: `apps/api/src/audit/` (registro dirigido, US-36) | `feature/auditoria-registro` |
+| S6 | `a720298` | Auditoría por rol + ajustes de seguridad | `feature/auditoria-por-rol` |
 
 ### Héctor — Backend Convocatorias
 
-| Sprint | Hito | Qué le toca | Ramas de ejemplo |
+| Sprint | Fuente | Qué le toca | Ramas de ejemplo |
 |---|---|---|---|
-| S2 | `acb3b0e` | `apps/api/src/catalogos/` (género, nivel académico, departamento, municipio), `apps/api/src/convocatorias/` (CRUD + máquina de estados + documentos requeridos), `apps/api/src/storage/` | `feature/catalogos`, `feature/convocatorias-crud`, `feature/storage-documentos` |
-| S3 | `41285d4` | Soporte en documentos (solo su parte: tipos de documento) | `feature/tipos-documento` |
+| S1 | `85122d2` | `apps/api/src/catalogos/` (género, nivel académico, departamento, municipio), `apps/api/src/convocatorias/` (CRUD + máquina de estados + documentos requeridos), `apps/api/src/storage/` | `feature/catalogos`, `feature/convocatorias-crud`, `feature/storage-documentos` |
+| S2 | `986fc89` | Endpoints **públicos** de convocatorias (US-44/45): `GET /convocatorias` con `?busqueda=`, `GET /convocatorias/:id` público | `feature/convocatorias-publicas` |
+| S4 | `41285d4` | Soporte en documentos (solo su parte: tipos de documento) | `feature/tipos-documento` |
 
 ### José — Backend Solicitudes y Evaluación
 
-| Sprint | Hito | Qué le toca | Ramas de ejemplo |
+| Sprint | Fuente | Qué le toca | Ramas de ejemplo |
 |---|---|---|---|
-| S2 | `acb3b0e` | `apps/api/src/solicitudes/` (crear solicitud, perfiles académico/financiero, carga de documentos, checklist, envío, máquina de estados) | `feature/solicitudes-core`, `feature/solicitudes-documentos`, `feature/solicitudes-checklist` |
-| S3 | `41285d4` | `apps/api/src/evaluaciones/` (asignar evaluadores, puntajes, score ponderado), `apps/api/src/comites/` (CRUD comités), `apps/api/src/sesiones/` (agenda, votos, quórum, finalización), `decisiones/` (mayoría, convocatoria RESUELTA), rechazo de documentos | `feature/evaluaciones-puntajes`, `feature/comites`, `feature/sesiones-quorum` |
-| S4 | `ab66393` | `apps/api/src/reportes/` (agregados + CSV con BOM) | `feature/reportes-csv` |
-| S6 | `e36ac2c` | Constancia PDF en `apps/api/src/solicitudes/pdf/` | `feature/constancia-pdf` |
+| S2 | `986fc89` | `apps/api/src/solicitudes/` **solo el endpoint público** `GET /solicitudes/consulta/:codigo` (US-46, respuesta acotada). El resto del módulo se entrega en S6 | `feature/consulta-publica` |
+| S4 | `41285d4` | `apps/api/src/evaluaciones/` (asignar evaluadores, puntajes, score ponderado), `apps/api/src/comites/` (CRUD comités), `apps/api/src/sesiones/` (agenda, votos, quórum, finalización), `decisiones/` (mayoría, convocatoria RESUELTA), rechazo de documentos | `feature/evaluaciones-puntajes`, `feature/comites`, `feature/sesiones-quorum` |
+| S5 | `ab66393` | `apps/api/src/reportes/` (agregados + CSV con BOM) | `feature/reportes-csv` |
+| S6 | `e36ac2c` | Constancia PDF en `apps/api/src/solicitudes/pdf/` + resto de `solicitudes/` | `feature/constancia-pdf` |
 
 ### Yemerson — Frontend Portal
 
-| Sprint | Hito | Qué le toca | Ramas de ejemplo |
+| Sprint | Fuente | Qué le toca | Ramas de ejemplo |
 |---|---|---|---|
-| S4 | `ab66393` | Layout base + Design System + home conectada al API (US-40): `apps/web/src/styles`, `apps/web/src/components` (base), páginas base | `feature/layout-base` |
-| S5 | `dcba851` | Portal público (US-41..47): hero, convocatorias públicas con filtros, convocatoria individual, consulta de beca, nosotros, contacto, footer | `feature/portal-publico`, `feature/convocatorias-publicas` |
-| S6 | `e36ac2c` | Panel admin (workbench por rol, header de acciones, páginas institucionales/footer) | `feature/panel-admin`, `feature/header-acciones` |
+| S2 | `ab66393` (layout) + `986fc89` (portal) | Layout base + Design System + home conectada al API (US-40): `apps/web/src/styles`, `apps/web/src/components` (base), páginas base; portal público (US-41..48): hero, convocatorias públicas con filtros, convocatoria individual, consulta de beca, nosotros, footer. **Sin panel admin** | `feature/layout-base`, `feature/portal-publico`, `feature/convocatorias-publicas` |
+| S5 | `ab66393` / `986fc89` | Panel admin (workbench por rol, header de acciones) US-54/55 | `feature/panel-admin`, `feature/header-acciones` |
+| S6 | `1436e41` / `e36ac2c` | Rediseño institucional final, páginas institucionales/footer, responsive (US-57), identidad dual (US-58) | `feature/identidad-dual`, `feature/panel-admin` |
 
 ### Hamilton — Frontend Sistema Interno + IA
 
-| Sprint | Hito | Qué le toca | Ramas de ejemplo |
+| Sprint | Fuente | Qué le toca | Ramas de ejemplo |
 |---|---|---|---|
-| S4 | `ab66393` | Asistente IA: base de conocimiento US-37/39, proveedor LLM opcional US-38. Backend: `apps/api/src/asistente/` + partes web del chat | `feature/asistente-ia`, `feature/asistente-llm` |
-| S5 | `dcba851` | Web auth conectado al backend (US-49): login/registro, sesión persistente, desempaquetado del interceptor. Script npm (`npm run dev` | `feature/web-login`, `feature/web-registro` |
-| S6 | `e36ac2c` | Dashboard postulante (US-50), formulario multi-step, gestión documentos, paneles (postulante/evaluador), chat IA widget, identidad dual del sistema interno | `feature/dashboard-postulante`, `feature/sistema-interno`, `feature/chat-ia` |
+| S3 | `3dfa19a` | Web auth conectado al backend (US-49): login/registro, `AuthContext`, `ProtectedRoute`, `UserMenu`, `api-auth`/`lib/auth`, sesión persistente; dashboard postulante (US-50). Script `npm run dev`. **Sin paneles admin/evaluador** | `feature/web-login`, `feature/web-registro`, `feature/dashboard-postulante` |
+| S4 | `3cb58e9` | Web flujo de evaluación (asignar evaluadores, comités, sesiones) | `feature/web-evaluacion` |
+| S5 | `0a05250` + `dab4fcd` | Asistente IA: base de conocimiento US-37/39, proveedor LLM US-38. Backend: `apps/api/src/asistente/` + partes web del chat | `feature/asistente-ia`, `feature/asistente-llm` |
+| S6 | `2e52a69` + `dcba851` | Dashboard postulante, formulario multi-step (US-51), gestión documentos (US-52), panel evaluador (US-53), chat IA widget (US-56), identidad dual del sistema interno | `feature/sistema-interno`, `feature/chat-ia` |
 
-### David — Base, compatibilidad y supervisión
+### David — Base, CI, hito personalizado y supervisión
 
 | Sprint | Qué hace |
 |---|---|
-| Todos | Base scaffold y migraciones iniciales (Sprint 0 y S1), `prisma/schema.prisma` + `migrations/` cuando aplica, `package.json` / `turbo.json` / `.github/workflows/ci.yml`, registrar módulos en `app.module.ts` cuando toca, revisar y **aprobar todos los PRs** |
+| Base | Scaffold del monorepo (Sprint 0): estructura NestJS/Next.js/Prisma/Docker + migración base |
+| S1 | `prisma/schema.prisma` + `migrations/` con los modelos del prototipo; CI base en `.github/workflows/ci.yml` |
+| S2 | Registro de módulos del prototipo en `app.module.ts`/`main.ts`; smoke del portal |
+| S3 | Script `npm run dev`, CORS y **crea el tag `v0.1-prototipo-demo`** (hito personalizado) |
+| S4–S6 | Registro de módulos, revisión final de compartidos, y **aprobar todos los PRs** |
 
 ---
 
 ## 5. Cómo descargar la versión de código de cada persona
 
-Símbolo usado: **`<HITO>`** = el commit del sprint → `4b0795f`, `acb3b0e`, `41285d4`, `ab66393`, `dcba851` o `e36ac2c`.
+Símbolo usado: **`<FUENTE>`** = tu commit fuente del sprint → `4b0795f`, `85122d2`, `986fc89`, `3dfa19a`,
+`41285d4`, `ab66393`, `3cb58e9`, `0a05250`, `dab4fcd`, `2e52a69`, `dcba851`, `1436e41`, `e36ac2c`, `a720298`.
 
-### 5.0 Marcar los hitos (una vez, en el clon de trabajo)
+### 5.0 Marcar los commits fuente (una vez, en el clon de trabajo)
 
-Cuando tienes `sigeb-prod` como remote (sección 3), el hito del sprint al que llegarás será tu referencia.
+Cuando tienes `sigeb-prod` como remote (sección 3), el commit fuente del sprint será tu referencia.
 Puedes también crear nombres cortos para no repetir SHA:
 
 ```bash
-# Copia de trabajo del hito como referencia (no toca tu repo)
-git worktree add /tmp/ref-<HITO> <HITO>
+# Copia de trabajo del commit fuente como referencia (no toca tu repo)
+git worktree add /tmp/ref-<FUENTE> <FUENTE>
 ```
 
-`/tmp/ref-<HITO>` es una carpeta temporal con el proyecto completo en ese estado. De ahí cada quien
+`/tmp/ref-<FUENTE>` es una carpeta temporal con el proyecto completo en ese estado. De ahí cada quien
 copia **solo su carpeta** (la de su módulo).
 
-### 5.1 Listar los archivos que me tocan en el hito
+### 5.1 Listar los archivos que me tocan en el commit fuente
 
-Ejemplo: Marcos, S1 (hito `4b0795f`):
+Ejemplo: Marcos, S1 (fuente `4b0795f`):
 
 ```bash
 git ls-tree -r --name-only 4b0795f -- apps/api/src/auth apps/api/src/common
 ```
 
-Ejemplo: José, S2 (hito `acb3b0e`):
+Ejemplo: José, S2 (fuente `986fc89`, solo la consulta pública):
 
 ```bash
-git ls-tree -r --name-only acb3b0e -- apps/api/src/solicitudes
+git ls-tree -r --name-only 986fc89 -- apps/api/src/solicitudes
 ```
 
-### 5.2 Ver el contenido de un archivo exacto del hito
+### 5.2 Ver el contenido de un archivo exacto del commit fuente
 
 ```bash
 git show 4b0795f:apps/api/src/auth/auth.service.ts
@@ -263,32 +281,32 @@ git show 4b0795f:apps/api/src/auth/auth.service.ts
 
 ### 5.3 Ver SOLO lo que cambió en mi sección en el sprint
 
-Diff contra el hito anterior. Ejemplo: José en S3 (hito `41285d4`, anterior `acb3b0e`):
+Diff contra el commit fuente anterior. Ejemplo: Héctor en S2 (configura lo público de convocatorias entre
+`85122d2` y `986fc89`):
 
 ```bash
-git diff acb3b0e..41285d4 -- apps/api/src/solicitudes apps/api/src/evaluaciones \
-  apps/api/src/comites apps/api/src/sesiones apps/api/src/decisiones
+git diff 85122d2..986fc89 -- apps/api/src/convocatorias
 ```
 
-### 5.4 Copiar los archivos del hito a mi rama de trabajo
+### 5.4 Copiar los archivos del commit fuente a mi rama de trabajo
 
 Estando dentro de tu rama `feature/*` en el repo nuevo:
 
 ```bash
-git checkout <HITO> -- apps/api/src/auth      # archivos del hito a mi working tree
+git checkout <FUENTE> -- apps/api/src/auth      # archivos del commit fuente a mi working tree
 ```
 
 O copiando desde la carpeta de referencia:
 
 ```bash
-cp -r /tmp/ref-<HITO>/apps/api/src/auth apps/api/src/auth
+cp -r /tmp/ref-<FUENTE>/apps/api/src/auth apps/api/src/auth
 ```
 
 ### 5.5 Resumen de la "versión que cada uno debe tener"
 
-> **Tu versión** = `develop` actualizado del repo nuevo + los archivos de *tu módulo* tomados del hito `<HITO>`.
-> Nunca mezcles archivos de módulos de otros. Si faltan piezas de otros módulos para que tu código compile,
-> NO los descargues: se integran con el PR del dueño (ver orden de merge, sección 6 y 7).
+> **Tu versión** = `develop` actualizado del repo nuevo + los archivos de *tu módulo* tomados del commit
+> fuente `<FUENTE>`. Nunca mezcles archivos de módulos de otros. Si faltan piezas de otros módulos para que
+> tu código compile, NO los descargues: se integran con el PR del dueño (ver orden de merge, sección 6 y 7).
 
 ---
 
@@ -297,6 +315,11 @@ cp -r /tmp/ref-<HITO>/apps/api/src/auth apps/api/src/auth
 ### Lunes · Sprint Planning (David)
 - David publica `doc/scrum/sprint-N/sprint-planning.md`: historias del sprint (del `product-backlog.md`),
   quién toma cada historia, metas M1..Mx y el orden de merge.
+
+> En la simulación de los 3 primeros sprints, las carpetas de artefactos son
+> `doc/scrum/recreacion-sprint-1-cimientos/`, `doc/scrum/recreacion-sprint-2-portal-publico/` y
+> `doc/scrum/recreacion-sprint-3-login-dashboard/` (mismos archivos: `goal.md`, `backlog.md`,
+> `daily-log.md`, `review.md`, `retrospective.md`).
 - Cada dev pasa su historia a "En progreso".
 
 ### Cada dev, antes de empezar a trabajar
@@ -307,7 +330,7 @@ git checkout -b feature/<modulo>-<descripcion>
 ```
 
 ### Implementar (solo sus archivos)
-1. Descargar/adaptar su sección del hito (sección 5).
+1. Descargar/adaptar su sección del commit fuente (sección 5).
 2. Revisar lo que va a commitear:
    ```bash
    git status
@@ -346,7 +369,7 @@ Checklist DoD: [x] tests [x] lint [x] revisión [x] funcional"
   git push --force-with-lease   # sólo a TU rama feature
   ```
 - **David revisa**: prueba localmente (`npm run dev` para web, `npm run start:prod` o `npm start` para API),
-  da **1 aprobación**, y hace **squash merge** en el orden del hito.
+  da **1 aprobación**, y hace **squash merge** en el orden fijado para el sprint (sección 6).
 
 ---
 
@@ -403,21 +426,27 @@ Reglas del bloque de estabilización (igual que un sprint):
 
 ---
 
-## 9. Verificación de fidelidad contra los hitos
+## 9. Verificación de fidelidad contra los commits fuente
 
 Al terminar cada sprint (del S1 al S6), David (o quien revise) compara, por sección, el repo nuevo contra el
-hito real:
+commit fuente real:
 
 ```bash
 # En sigeb-prod: qué cambió en esa sección en el sprint
-git diff <ANTERIOR>..<HITO> -- apps/api/src/<modulo>
+git diff <FUENTE-ANTERIOR>..<FUENTE> -- apps/api/src/<modulo>
 ```
 
 Y se revisa que el repo nuevo tenga exactamente eso. Si sobra o falta algo, se corrige con un PR
 menor en el sprint siguiente.
 
+**En los sprints 1 al 3 (prototipo)** la comparación se hace **por módulo** contra el **commit fuente**
+(mientras el trabajo de cada persona sea `git diff <FUENTE> -- <su-modulo>` = vacío en el repo nuevo, el
+módulo está fiel). El tag `v0.1-prototipo-demo` es un **hito personalizado** de `sigeb-equipo`: verifica
+que NO incluya los módulos excluidos (`evaluaciones/`, `sesiones/`, `comites/`, `decisiones/`, `reportes/`,
+`asistente/`, `audit/` y sus registros en `app.module.ts`/`prisma`, ni paneles admin/evaluador).
+
 **Al cierre del S6 + estabilización (16 de octubre)** el repo nuevo debe equivaler al **estado actual de
-`sigeb-prod` = CI #40 = commit `a720298`** (los 6 hitos A–F más los hotfixes de la sección 8.1).
+`sigeb-prod` = CI #40 = commit `a720298`** (los 6 sprints completos más los hotfixes de la sección 8.1).
 La verificación final se hace contra ese commit y no contra `e36ac2c`.
 
 ---

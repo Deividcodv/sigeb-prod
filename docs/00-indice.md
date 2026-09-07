@@ -26,23 +26,27 @@
 | Repositorio de referencia (tiene el código original) | `https://github.com/Deividcodv/sigeb-prod.git` (alias: `sigeb-prod`) |
 | Repositorio nuevo (donde trabajamos) | `sigeb-equipo` (privado, creado por David) |
 | **Estado final = CI #40 = commit `a720298`** | Es la versión a la que debe llegar el repositorio nuevo al cierre (16 oct) |
-| Hitos por sprint | S1=`4b0795f`, S2=`acb3b0e`, S3=`41285d4`, S4=`ab66393`, S5=`dcba851`, S6=`e36ac2c` |
+| **Prototipo (demo ≈ 16 sep)** | **Hito personalizado `v0.1-prototipo-demo`** (tag en `sigeb-equipo`): portal público + login funcionales en los primeros 3 sprints |
+| Commits fuente (de dónde copia cada persona su módulo) | `4b0795f` (auth), `85122d2` (catálogos/convocatorias/storage), `986fc89` (portal público + endpoints públicos + consulta US-46), `3dfa19a` (login/registro + dashboard postulante), `ab66393` (layout base) |
 | Rama de integración | `develop` |
 | Rama de producción | `master` (protegida) |
 | Ramas de trabajo | `feature/<modulo>-<descripcion>` |
 | Ramas de arreglos | `hotfix/<descripcion>` |
 
-### Los 6 sprints
+### Los 6 sprints + demo del prototipo
 
-| Sprint | Fechas | Hito | Tema |
+| Sprint | Fechas | Fuente / hito | Tema |
 |---|---|---|---|
-| S1 | 07–11 sep | `4b0795f` | Auth y seguridad |
-| S2 | 14–18 sep | `acb3b0e` | Convocatorias, catálogos, solicitudes, CI |
-| S3 | 21–25 sep | `41285d4` | Evaluación, comités, sesiones, decisiones |
-| S4 | 28 sep–02 oct | `ab66393` | Reportes, auditoría, asistente IA, layout |
-| S5 | 05–09 oct | `dcba851` | Portal público, web auth, dashboard |
-| S6 | 12–16 oct | `e36ac2c` | Sistema interno, paneles, constancia PDF |
-| Estabilización | 12–16 oct | `a720298` (CI #40) | Hotfixes de specs, CI y reportes |
+| S1 | 07–09 sep | `4b0795f`, `85122d2` | Cimientos: monorepo, auth API (JWT/roles), catálogos/convocatorias backend, CI base |
+| S2 | 09–11/12 sep | `986fc89` (+ `ab66393` layout) | **Portal público** (US-41..48): layout/Design System, home, convocatorias públicas + filtros, convocatoria individual, consulta de beca, nosotros, footer |
+| S3 | 14–16/18 sep | `3dfa19a` → tag `v0.1-prototipo-demo` | **Login/registro web + dashboard postulante + sesión persistente** (US-49/50). Cierre del prototipo: **demo ≈ 16 sep** |
+| S4 | 21–25 sep | `41285d4`, `3cb58e9` | Evaluación: evaluadores, puntajes, comités, sesiones, decisiones |
+| S5 | 28 sep–02 oct | `ab66393`, `0a05250`, `dab4fcd` | Reportes (CSV), auditoría, asistente IA, paneles admin |
+| S6 | 05–16 oct | `2e52a69`, `dcba851`, `1436e41`, `e36ac2c` | Sistema interno completo, constancia PDF, rediseño + estabilización → **`a720298` (CI #40)** |
+
+> **Demo del prototipo (meta para el 16 sep):** al cierre del S3 presentamos los **3 primeros sprints**:
+> portal público navegable + login/registro funcional + dashboard del postulante, montados sobre datos reales
+> de la API (auth y convocatorias). El resto (evaluación, reportes, sistema interno) se completa del S4 al S6.
 
 ---
 

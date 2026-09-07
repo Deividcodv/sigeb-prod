@@ -49,6 +49,10 @@ Regla de oro: **cada módulo tiene un solo dueño**. Nadie toca el módulo de ot
 | **Sprint Retrospective** | Viernes después del review | 1 hora | Solo equipo | ¿Qué salió bien, qué mejorar, con qué me quedo? Salida: `doc/scrum/sprint-N/retrospective.md` |
 
 > Todas las salidas (archivos) las prepara/revisa David. El código lo entregan los devs vía PRs.
+>
+> Para la simulación, los 3 primeros sprints se archivan como `doc/scrum/recreacion-sprint-1-cimientos/`,
+> `doc/scrum/recreacion-sprint-2-portal-publico/` y `doc/scrum/recreacion-sprint-3-login-dashboard/`
+> (con los mismos archivos: `goal.md`, `backlog.md`, `daily-log.md`, `review.md`, `retrospective.md`).
 
 ---
 
@@ -66,7 +70,7 @@ Ejemplo real de SIGEB:
 > US-18: Como postulante, quiero crear una solicitud de beca, para poder postular a una convocatoria.
 
 El backlog de SIGEB tiene **58 historias** (US-1 … US-58). En cada planning, David elige las que
-corresponden al hito del sprint (su número de US se indica en `05-versiones-asignadas-por-persona.md`).
+corresponden al tema del sprint (su número de US se indica en `05-versiones-asignadas-por-persona.md`).
 
 ---
 
@@ -81,9 +85,14 @@ Ningún PR se aprueba si no cumple TODO:
 - [ ] David lo probó localmente y confirmó que funciona.
 - [ ] David dio **1 aprobación** y lo mergeó con **squash** a `develop`.
 - [ ] La rama feature se eliminó después del merge.
-- [ ] Al cierre del sprint, `develop` equivale al hito del sprint (verificación de fidelidad).
+- [ ] Al cierre del sprint, `develop` equivale a la entrega esperada del sprint (verificación de fidelidad por módulo).
 
 > Si una casilla no está marcada, el PR NO se aprueba. Así evitamos que cosas a medias entren al sistema.
+>
+> **En los primeros 3 sprints (prototipo)**, la "entrega esperada" no es un commit del proyecto original:
+> cada persona copia sus módulos desde su **commit fuente** y David crea al cierre del S3 el **hito personalizado
+> `v0.1-prototipo-demo`** (tag). La fidelidad se verifica **por módulo** contra el commit fuente (detalles en
+> `05-versiones-asignadas-por-persona.md`).
 
 ---
 
@@ -112,21 +121,26 @@ vs. planificados) se registran en `review.md`.
 
 ---
 
-## 7. Calendario de los 6 sprints + estabilización
+## 7. Calendario de los 6 sprints + estabilización + demo
 
-| Sprint | Semana | Hito (commit de referencia) | Tema principal | Quiénes entregan |
+> Meta de la simulación: **en los primeros 2-3 sprints tener un prototipo semi-funcional (portal público +
+> login) para el demo ≈ 16 sep**. Por eso los S1-S2 son más cortos y el S3 cierra el prototipo. Del S4 en
+> adelante la cadencia es semanal normal.
+
+| Sprint | Semana | Tema principal | Fuente (de dónde copia su módulo) | Quiénes entregan |
 |---|---|---|---|---|
-| **S1** | 07–11 sep | `4b0795f` | Auth y seguridad (JWT, roles, permisos) | Marcos |
-| **S2** | 14–18 sep | `acb3b0e` | Convocatorias, catálogos, solicitudes y CI | Héctor, José, David |
-| **S3** | 21–25 sep | `41285d4` | Evaluación: evaluadores, comités, sesiones, decisiones | José |
-| **S4** | 28 sep–02 oct | `ab66393` | Reportes, auditoría, asistente IA y layout base | José, Marcos, Hamilton, Yemerson |
-| **S5** | 05–09 oct | `dcba851` | Portal público, web auth y dashboard | Yemerson, Hamilton |
-| **S6** | 12–16 oct | `e36ac2c` | Sistema interno, paneles y constancia PDF | Hamilton, Yemerson, José |
-| **Estabilización** | 12–16 oct | **`a720298` (CI #40)** | Hotfixes de specs, CI y reportes (post-Sprint 9) | David, Marcos, José |
+| **S1** | 07–09 sep | Cimientos: monorepo, auth API (JWT, roles, permisos), catálogos/convocatorias backend, CI base | `4b0795f`, `85122d2` | Marcos, Héctor, David |
+| **S2** | 09–11/12 sep | **Portal público** (US-41..48): layout/Design System, home, convocatorias públicas, detalle, consulta, nosotros, footer | `986fc89` (+ `ab66393` layout) | Yemerson, Héctor, José, David |
+| **S3** | 14–16/18 sep | **Login/registro web + dashboard postulante** (US-49/50) → cierre del prototipo (`v0.1-prototipo-demo`) | `3dfa19a` | Hamilton, Marcos, Yemerson, David |
+| **S4** | 21–25 sep | Evaluación: evaluadores, puntajes, comités, sesiones, decisiones | `41285d4`, `3cb58e9` | José, Marcos, Hamilton, David |
+| **S5** | 28 sep–02 oct | Reportes (CSV), auditoría, asistente IA, paneles admin | `ab66393`, `0a05250`, `dab4fcd` | José, Marcos, Hamilton, Yemerson |
+| **S6** | 05–16 oct | Sistema interno y paneles completos, constancia PDF, rediseño | `2e52a69`, `dcba851`, `1436e41`, `e36ac2c` | Hamilton, Yemerson, José |
+| **Estabilización** | 05–16 oct | Hotfixes de specs, CI y reportes (CI #35-40) | **`a720298` (CI #40)** | David, Marcos, José |
 
 > **Recordatorio:** el objetivo final es que el repositorio nuevo llegue al **estado CI #40 (`a720298`)**,
-> es decir, idéntico al proyecto real actual. Los hitos A–F son los pasos del camino y los hotfixes
-> de estabilización cierran la última semana.
+> es decir, idéntico al proyecto real actual. El **prototipo** (demo ≈ 16 sep) es el primer hito de la
+> simulación: presentamos los 3 primeros sprints con portal público + login funcionales; el resto de los
+> sprints (S4-S6 + estabilización) completa el sistema hasta el estado final.
 
 ---
 

@@ -3,6 +3,7 @@
 > Documento **solo para David** (admin del repo y Scrum Master). Explica, paso a paso y desde cero,
 > cómo revisar un Pull Request, verificar la CI, probar el código, aprobar y mergear, hacer el release
 > semanal y verificar que el proyecto nuevo quede fiel al original (hasta **CI #40 = `a720298`**).
+> Además: **al cierre del S3 creas el hito personalizado `v0.1-prototipo-demo`** para el demo ≈ 16 sep.
 
 ---
 
@@ -158,17 +159,24 @@ Al cierre de cada sprint, `develop` = incremento del sprint. Para dejar "versió
 
 ## 8. Verificación de fidelidad contra el original (cada sprint)
 
-Comprueba que la sección de cada dev en `develop` sea **exactamente** la que está en `sigeb-prod` en el
-hito del sprint:
+Comprueba que la sección de cada dev en `develop` sea **exactamente** la que está en `sigeb-prod` en su
+**commit fuente** del sprint:
 
 ```bash
 git fetch sigeb-prod
-# Ejemplo: sección de José en S4 (hito ab66393, anterior acb3b0e)
-git diff acb3b0e..ab66393 -- apps/api/src/reportes
+# Ejemplo: sección de Héctor en S2 (convocatorias públicas, entre 85122d2 y 986fc89)
+git diff 85122d2..986fc89 -- apps/api/src/convocatorias
 ```
 
 Compara con lo que hay en `develop` del repo nuevo para esa misma carpeta. Si falta/sobra algo,
 manda un PR menor (o `hotfix/`) para corregirlo antes del viernes.
+
+**Prototipo (S1–S3):** en los primeros 3 sprints la verificación es **por módulo** contra el **commit fuente**
+(la sección de cada dev debe igualar exactamente el contenido del commit fuente en su carpeta). David además,
+al cierre del S3, crea el **hito personalizado `v0.1-prototipo-demo`** en `sigeb-equipo` (tag) con solo los
+módulos del prototipo y **sin** `evaluaciones/`, `sesiones/`, `comites/`, `decisiones/`, `reportes/`,
+`asistente/`, `audit/` (y sus registros en `app.module.ts`/`prisma`) ni paneles `admin`/`evaluador`. Ese tag
+no tiene por qué coincidir con un commit de `sigeb-prod`.
 
 **Cierre final (16-oct):** verificación completa contra **CI #40 = `a720298`**:
 ```bash
@@ -185,6 +193,9 @@ Antes de cerrar la semana, crea/revisa (con base en los PRs del sprint):
 - `doc/scrum/sprint-N/review.md` — demo, historias completadas, puntos cumplidos (ej. 29/29).
 - `doc/scrum/sprint-N/retrospective.md` — qué mejorar.
 - `doc/scrum/sprint-N/daily-log.md` — avance diario de cada dev.
+
+> En los sprints de la simulación (S1–S3) las carpetas son `doc/scrum/recreacion-sprint-1-cimientos/`,
+> `doc/scrum/recreacion-sprint-2-portal-publico/` y `doc/scrum/recreacion-sprint-3-login-dashboard/`.
 
 ---
 
