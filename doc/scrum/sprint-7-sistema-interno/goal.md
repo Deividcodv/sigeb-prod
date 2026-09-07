@@ -4,8 +4,8 @@
 
 **Objetivo:** Implementar dashboards y sistema administrativo
 
-**Fecha de inicio:** 
-**Fecha de fin:** 
+**Fecha de inicio:** 2026-08-31
+**Fecha de fin:** 2026-08-31
 **Duración:** 2 semanas
 
 ## Resultado Esperado
@@ -23,16 +23,16 @@
 
 ## Criterios de Aceptación
 
-- [ ] Login/Register funcionan con backend
-- [ ] Dashboard muestra resumen del postulante
-- [ ] Formulario multi-step guía al postulante
-- [ ] Documentos se gestionan desde el frontend
-- [ ] Evaluador puede evaluar desde su panel
-- [ ] Admin gestiona convocatorias
-- [ ] Admin gestiona usuarios y roles
-- [ ] Chat IA responde preguntas
-- [ ] Todo funciona en mobile y desktop
-- [ ] Identidad visual es coherente
+- [x] Login/Register funcionan con backend
+- [x] Dashboard muestra resumen del postulante
+- [x] Formulario multi-step guía al postulante
+- [x] Documentos se gestionan desde el frontend
+- [x] Evaluador puede evaluar desde su panel
+- [x] Admin gestiona convocatorias
+- [x] Admin gestiona usuarios y roles
+- [x] Chat IA responde preguntas
+- [x] Todo funciona en mobile y desktop
+- [x] Identidad visual es coherente
 
 ## Participantes
 

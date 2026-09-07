@@ -8,6 +8,7 @@ dist/
 build/
 .next/
 out/
+*.tsbuildinfo
 
 # Environment
 .env
@@ -52,3 +53,8 @@ coverage/
 # Misc
 *.tgz
 .cache
+.sigeb-dev/
+
+# AI tooling artifacts
+.aider/
+skills-src/

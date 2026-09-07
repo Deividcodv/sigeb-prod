@@ -41,8 +41,9 @@ Extendido según los últimos requerimientos del Product Owner:
 
 Explícitamente **fuera de alcance** en esta versión (a diferencia del sistema de referencia analizado):
 pagos y conciliación bancaria, contratos y formalización, renovaciones, lista de espera, autenticación de
-dos factores, almacenamiento en la nube, generación de PDF con navegador headless, múltiples idiomas,
-búsqueda vectorial. Todo esto queda como trabajo futuro documentado en el backlog, no como deuda oculta.
+dos factores, almacenamiento en la nube, múltiples idiomas, búsqueda vectorial. Todo esto queda como
+trabajo futuro documentado en el backlog, no como deuda oculta. La generación de constancias en PDF para
+solicitudes aprobadas ya está incluida (US-F7, ver `apps/api/src/solicitudes/constancias.service.ts`).
 
 ---
 

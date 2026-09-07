@@ -1,6 +1,10 @@
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { SolicitudesService } from './solicitudes.service';
+import { SolicitudPerfilService } from './solicitud-perfil.service';
+import { SolicitudDocumentoService } from './solicitud-documento.service';
+import { SolicitudChecklistService } from './solicitud-checklist.service';
 import { AuthenticatedUser } from '../common/interfaces/authenticated-user.interface';
+import { AuthzService } from '../common/services/authz.service';
 
 const postulante: AuthenticatedUser = {
   id: 'u-postulante',
@@ -11,9 +15,13 @@ const postulante: AuthenticatedUser = {
 };
 
 describe('SolicitudesService', () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let prisma: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let storage: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let audit: any;
+  let authz: AuthzService;
   let service: SolicitudesService;
 
   beforeEach(() => {
@@ -26,6 +34,12 @@ describe('SolicitudesService', () => {
       historialEstado: { create: jest.fn() },
       genero: { findUnique: jest.fn() },
     };
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    prisma.$transaction = jest.fn(async (fn: (tx: any) => Promise<unknown>) =>
+    /* eslint-enable @typescript-eslint/no-explicit-any */
+      fn(prisma),
+    );
+    authz = new AuthzService();
     storage = {
       save: jest.fn(),
       delete: jest.fn(),
@@ -33,7 +47,14 @@ describe('SolicitudesService', () => {
       exists: jest.fn(),
     };
     audit = { log: jest.fn() };
-    service = new SolicitudesService(prisma, storage, audit);
+    service = new SolicitudesService(
+      prisma,
+      audit,
+      authz,
+      new SolicitudPerfilService(prisma, authz),
+      new SolicitudDocumentoService(prisma, storage, audit, authz),
+      new SolicitudChecklistService(prisma, authz),
+    );
   });
 
   describe('guardarPerfilAcademico (US-13: opcion otro)', () => {

@@ -277,7 +277,7 @@ async function main() {
   // ==========================================
   const departamentos = [
     'Alta Verapaz', 'Baja Verapaz', 'Chimaltenango', 'Chiquimula',
-    'El Proverbio', 'Escuintla', 'Guatemala', 'Huehuetenango',
+    'El Progreso', 'Escuintla', 'Guatemala', 'Huehuetenango',
     'Izabal', 'Jalapa', 'Jutiapa', 'Petén',
     'Quetzaltenango', 'Quiché', 'Retalhuleu', 'Sacatepéquez',
     'San Marcos', 'Santa Rosa', 'Sololá', 'Suchitepéquez',
@@ -318,7 +318,7 @@ async function main() {
   const documentos = [
     'Certificado académico',
     'Constancia de estudios',
-    'Cédula de depletedción',
+    'Cédula de depleción',
     'Fotografía',
     'Comprobante de ingresos',
     'Carta de recomendación',

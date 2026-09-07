@@ -1,9 +1,12 @@
+'use client';
+
 import Link from 'next/link';
-import { Button } from '@/components/ui/Button';
+import { useAuth } from '@/context/AuthContext';
 import { Container } from '@/components/ui/Container';
 import { MobileMenu } from '@/components/layout/MobileMenu';
+import { UserMenu } from '@/components/layout/UserMenu';
 
-const enlaces = [
+const enlacesPublicos = [
   { href: '/', label: 'Inicio' },
   { href: '/convocatorias', label: 'Convocatorias' },
   { href: '/nosotros', label: 'Nosotros' },
@@ -11,40 +14,41 @@ const enlaces = [
 ];
 
 export function Header() {
+  const { usuario, cargando } = useAuth();
+  const esLogueado = !cargando && !!usuario;
+
   return (
-    <header className="sticky top-0 z-20 bg-white shadow-sm">
-      <Container className="flex items-center justify-between py-4">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-sigeb-blue text-lg font-bold text-white">
+    <header className="sticky top-0 z-40 border-b-[3px] border-brutal-tinta bg-brutal-tinta">
+      <Container className="flex items-center justify-between py-3">
+        <Link href="/" className="group flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center border-[3px] border-brutal-tinta bg-brutal-gold font-brut text-2xl font-black text-brutal-tinta shadow-brutal-sm transition-transform group-hover:-rotate-6">
             S
           </div>
           <div>
-            <p className="text-lg font-bold leading-tight text-sigeb-blue-dark">
+            <p className="font-brut text-lg font-black uppercase leading-tight tracking-wide text-brutal-papel">
               SIGEB
             </p>
-            <p className="text-xs leading-tight text-sigeb-light">
+            <p className="brut-label text-[10px] leading-tight text-brutal-cyan">
               Sistema Integral de Gestión de Becas
             </p>
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-6 md:flex">
-          {enlaces.map((enlace) => (
-            <Link
-              key={enlace.href}
-              href={enlace.href}
-              className="text-sm font-medium text-sigeb-blue-dark hover:text-sigeb-blue"
-            >
-              {enlace.label}
-            </Link>
-          ))}
+        <nav className="hidden items-center gap-1 md:flex">
+          {!esLogueado &&
+            enlacesPublicos.map((enlace) => (
+              <Link
+                key={enlace.href}
+                href={enlace.href}
+                className="px-3 py-2 font-brut text-xs font-bold uppercase tracking-wide text-brutal-papel transition-colors hover:bg-brutal-cyan hover:text-brutal-tinta"
+              >
+                {enlace.label}
+              </Link>
+            ))}
         </nav>
 
-        <div className="hidden gap-3 md:flex">
-          <Button href="/login" variant="ghost">
-            Iniciar sesión
-          </Button>
-          <Button href="/registro">Registrarse</Button>
+        <div className="hidden items-center gap-3 md:flex">
+          <UserMenu />
         </div>
 
         <MobileMenu />

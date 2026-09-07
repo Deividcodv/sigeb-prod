@@ -29,7 +29,7 @@ export function Convocatorias() {
         {[0, 1, 2].map((i) => (
           <div
             key={i}
-            className="h-44 animate-pulse rounded-xl bg-gray-200"
+            className="h-44 animate-pulse rounded-xl border-2 border-brutal-tinta/20 bg-brutal-tinta/10"
           />
         ))}
       </div>
@@ -58,7 +58,7 @@ export function Convocatorias() {
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {activas.length === 0 ? (
-        <p className="col-span-full text-center text-gray-600">
+        <p className="col-span-full text-center text-brutal-tinta/70">
           Por el momento no hay convocatorias abiertas. Vuelve pronto.
         </p>
       ) : (
@@ -66,19 +66,19 @@ export function Convocatorias() {
           <Card key={convocatoria.id}>
             <div className="mb-3 flex items-center justify-between gap-2">
               <Badge estado={convocatoria.estado} />
-              <span className="text-xs font-medium text-gray-500">
+              <span className="text-xs font-medium text-brutal-tinta/70">
                 {convocatoria.beca.nombre}
               </span>
             </div>
-            <h3 className="mb-2 text-lg font-bold text-sigeb-blue-dark">
+            <h3 className="mb-2 text-lg font-bold text-brutal-tinta">
               {convocatoria.nombre}
             </h3>
             {convocatoria.descripcion && (
-              <p className="mb-4 line-clamp-3 text-sm text-gray-600">
+              <p className="mb-4 line-clamp-3 text-sm text-brutal-tinta/70">
                 {convocatoria.descripcion}
               </p>
             )}
-            <dl className="space-y-1 text-xs text-gray-500">
+            <dl className="space-y-1 text-xs text-brutal-tinta/70">
               <div className="flex justify-between">
                 <dt>Apertura</dt>
                 <dd>{formatearFecha(convocatoria.fechaApertura)}</dd>

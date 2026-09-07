@@ -145,6 +145,22 @@
 
 ---
 
+## Sprint 8 — Constancias PDF, CI/CD, Matriz de seguridad y Rediseño (S8)
+
+| ID | Historia | Pts | Prioridad | Asignado |
+|---|---|---|---|---|
+| US-F7 | Como usuario, quiero descargar la constancia de mi beca en PDF cuando la solicitud esté APROBADA, para tener un documento oficial | 5 | Must | David |
+| CI/CD | Como dev, quiero construir las imágenes Docker del API y la web y desplegar por SSH a staging/producción, para operar el sistema | 3 | Must | David |
+| US-S8-1 | Como admin, quiero crear usuarios/empleados desde el listado y asignarles rol, para gestionar el personal | 5 | Must | David |
+| US-S8-2 | Como admin, quiero asignar excepciones de permisos por usuario (heredar/PERMITIR/DENEGAR), para una matriz de seguridad fina | 5 | Must | David |
+| US-S8-3 | Como usuario, quiero una experiencia brutalista/maximalista consistente en toda la plataforma, para una identidad diferenciada | 8 | Must | David |
+| US-S8-4 | Como usuario logueado, quiero ver en la portada el panel de acciones de mi rol (workbench) y que la navegación se adapte a mi sesión, para trabajar desde mi espacio | 5 | Must | David |
+| US-S8-5 | Como postulante, quiero un "Mis datos" editable (teléfono, género, nacimiento, departamento/municipio, dirección), para mantener mi información al día | 5 | Must | David |
+
+**Sprint 8 total: 36 puntos**
+
+---
+
 ## Backlog Futuro (Won't — esta versión)
 
 | ID | Historia | Prioridad |
@@ -155,7 +171,6 @@
 | US-F4 | Lista de espera | Won't |
 | US-F5 | Autenticación de dos factores (2FA) | Won't |
 | US-F6 | Almacenamiento en la nube (S3/Azure) | Won't |
-| US-F7 | Generación de PDF con navegador headless | Won't |
 | US-F8 | Múltiples idiomas (i18n) | Won't |
 | US-F9 | Búsqueda vectorial (RAG) | Won't |
 | US-F10 | App móvil nativa | Won't |
@@ -174,8 +189,9 @@
 | S5 Reportes+IA | 29 | 13 | 16 | 0 |
 | S6 Portal público | 25 | 22 | 3 | 0 |
 | S7 Sistema interno | 47 | 37 | 10 | 3 |
-| **Total** | **226** | **197** | **29** | **3** |
+| S8 PDF + CI/CD | 8 | 5 | 0 | 0 |
+| **Total** | **234** | **202** | **29** | **3** |
 
 ---
 
-*Última actualización: 2026-08-26*
+*Última actualización: 2026-09-01*

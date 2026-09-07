@@ -13,6 +13,7 @@ export interface Convocatoria {
   fechaApertura: string;
   fechaCierre: string;
   beca: Beca;
+  _count?: { solicitudes?: number };
 }
 
 export interface DocumentoTipo {
@@ -41,6 +42,75 @@ export interface HistorialEstado {
   estado: string;
   comentario: string | null;
   fecha: string;
+}
+
+export interface Solicitud {
+  id: string;
+  convocatoriaId: string;
+  estado: string;
+  correccionesCount: number;
+  createdAt: string;
+  updatedAt: string;
+  convocatoria: {
+    id: string;
+    nombre: string;
+    beca: Beca;
+    _count?: { documentosRequeridos?: number };
+  };
+  _count?: { documentos?: number };
+}
+
+export interface SolicitudPerfilAcademico {
+  generoId: string | null;
+  generoOtro: string | null;
+  nivelAcademicoId: string | null;
+  nivelAcademicoOtro: string | null;
+  institucion: string | null;
+  carrera: string | null;
+  promedio: number | null;
+  departamentoId: string | null;
+  departamentoOtro: string | null;
+  municipioId: string | null;
+  municipioOtro: string | null;
+}
+
+export interface SolicitudPerfilFinanciero {
+  ingresoFamiliar: number | null;
+  numeroDependientes: number | null;
+  becasAnteriores: boolean;
+  descripcionSituacion: string | null;
+}
+
+export interface SolicitudDetalle extends Solicitud {
+  perfilAcademico?: SolicitudPerfilAcademico | null;
+  perfilFinanciero?: SolicitudPerfilFinanciero | null;
+  documentos?: {
+    id: string;
+    documentoTipoId: string;
+    archivoUrl: string;
+    estado: string;
+    version: number;
+    documentoTipo: DocumentoTipo;
+  }[];
+  historial?: HistorialEstado[];
+}
+
+export interface SolicitudChecklistDocumento {
+  documentoTipoId: string;
+  nombre: string;
+  obligatorio: boolean;
+  cargado: boolean;
+  archivoUrl: string | null;
+}
+
+export interface SolicitudChecklist {
+  solicitudId: string;
+  estado: string;
+  perfilAcademico: boolean;
+  perfilFinanciero: boolean;
+  documentos: SolicitudChecklistDocumento[];
+  pendientes: string[];
+  completo: boolean;
 }
 
 export interface ConsultaSolicitud {
@@ -72,6 +142,103 @@ export interface Departamento {
   id: string;
   nombre: string;
   municipios?: Municipio[];
+}
+
+export interface UsuarioSimplificado {
+  id: string;
+  cui: string;
+  nombres: string;
+  email: string;
+  estado: string;
+  rol: { nombre: string };
+}
+
+export interface Comite {
+  id: string;
+  nombre: string;
+  descripcion: string | null;
+  activo: boolean;
+  createdAt: string;
+  updatedAt: string;
+  _count?: { miembros?: number };
+}
+
+export interface ComiteMiembro {
+  id: string;
+  rol: string;
+  activo: boolean;
+  usuario: { id: string; nombres: string; email: string; cui: string };
+}
+
+export interface ComiteDetalle extends Comite {
+  miembros: ComiteMiembro[];
+}
+
+export interface Sesion {
+  id: string;
+  comiteId: string;
+  fecha: string;
+  lugar: string | null;
+  estado: string;
+  quorumMinimo: number | null;
+  createdAt: string;
+  updatedAt: string;
+  comite?: { id: string; nombre: string };
+  _count?: { agenda?: number; votos?: number };
+}
+
+export interface SesionVoto {
+  id: string;
+  voto: string;
+  observaciones: string | null;
+  createdAt: string;
+  usuario?: { id: string; nombres: string };
+  solicitud?: { id: string };
+}
+
+export interface SesionAgendaItem {
+  id: string;
+  solicitud: {
+    id: string;
+    estado: string;
+    usuario: { nombres: string; cui: string };
+  };
+}
+
+export interface Decision {
+  id: string;
+  solicitudId: string;
+  sesionId: string;
+  resultado: string;
+  observaciones: string | null;
+  fecha: string;
+}
+
+export interface SesionDetalle extends Sesion {
+  agenda: SesionAgendaItem[];
+  votos: SesionVoto[];
+  decisiones: Decision[];
+}
+
+export interface EvaluadorScore {
+  evaluador: { id: string; nombres: string };
+  criterios: {
+    id: string;
+    nombre: string;
+    peso: number;
+    puntaje: number;
+  }[];
+  completados: number;
+  total: number;
+  completo: boolean;
+  score: number | null;
+}
+
+export interface ScoreSolicitud {
+  solicitudId: string;
+  score: number | null;
+  completo: boolean;
+  evaluadores: EvaluadorScore[];
 }
 
 export interface ListaResponse<T> {
@@ -124,6 +291,19 @@ export async function http<T>(
   }
 
   return (await res.json()) as T;
+}
+
+export async function httpData<T>(
+  path: string,
+  options: {
+    method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
+    body?: unknown;
+    isFormData?: boolean;
+    token?: string | null;
+  } = {},
+): Promise<T> {
+  const res = await http<{ data: T }>(path, options);
+  return res.data;
 }
 
 export function formatearFecha(fecha: string) {

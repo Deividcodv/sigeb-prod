@@ -2,18 +2,18 @@ import { BadRequestException } from '@nestjs/common';
 import { ReportesService } from './reportes.service';
 
 describe('ReportesService', () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let prisma: any;
-  let evaluacionesService: any;
   let service: ReportesService;
 
   beforeEach(() => {
     prisma = {
       solicitud: { groupBy: jest.fn(), findMany: jest.fn(), count: jest.fn() },
       convocatoria: { groupBy: jest.fn(), findMany: jest.fn() },
-      decision: { groupBy: jest.fn() },
+      decision: { findMany: jest.fn() },
+      evaluacion: { findMany: jest.fn() },
     };
-    evaluacionesService = { scoreSolicitud: jest.fn() };
-    service = new ReportesService(prisma, evaluacionesService);
+    service = new ReportesService(prisma);
   });
 
   describe('solicitudesPorEstado (US-34)', () => {
@@ -70,55 +70,71 @@ describe('ReportesService', () => {
     });
   });
 
-  describe('evaluaciones (US-34 + pendientes review S4)', () => {
-    it('calcula score promedio por evaluador y decisiones', async () => {
+  describe('evaluaciones (S4+ refactorizado a prisma)', () => {
+    it('calcula score promedio, decisiones y pendientes por convocatoria', async () => {
       prisma.convocatoria.findMany.mockResolvedValue([
         { id: 'c1', nombre: 'Beca CI', beca: { nombre: 'Permanencia' } },
       ]);
+      prisma.solicitud.groupBy.mockResolvedValue([
+        { convocatoriaId: 'c1', estado: 'EVALUADA', _count: { _all: 2 } },
+      ]);
       prisma.solicitud.findMany.mockResolvedValue([
-        { id: 's1' },
-        { id: 's2' },
+        { id: 's1', convocatoriaId: 'c1' },
+        { id: 's2', convocatoriaId: 'c1' },
       ]);
-      prisma.solicitud.count.mockResolvedValue(1);
-      prisma.decision.groupBy.mockResolvedValue([
-        { resultado: 'APROBADA', _count: { _all: 1 } },
-        { resultado: 'RECHAZADA', _count: { _all: 1 } },
+      prisma.evaluacion.findMany.mockResolvedValue([
+        { solicitudId: 's1', evaluadorId: 'u1', completada: true, puntaje: 80, criterioEvaluacion: { peso: 0.4 } },
+        { solicitudId: 's1', evaluadorId: 'u1', completada: true, puntaje: 90, criterioEvaluacion: { peso: 0.6 } },
+        { solicitudId: 's2', evaluadorId: 'u1', completada: false, puntaje: null, criterioEvaluacion: { peso: 0.4 } },
+        { solicitudId: 's2', evaluadorId: 'u2', completada: false, puntaje: null, criterioEvaluacion: { peso: 0.6 } },
       ]);
-      evaluacionesService.scoreSolicitud
-        .mockResolvedValueOnce({ score: 80, completo: true })
-        .mockResolvedValueOnce({ score: null, completo: false });
+      prisma.decision.findMany.mockResolvedValue([
+        {
+          resultado: 'APROBADA',
+          solicitud: { convocatoriaId: 'c1' },
+        },
+        {
+          resultado: 'RECHAZADA',
+          solicitud: { convocatoriaId: 'c1' },
+        },
+      ]);
 
       const r = await service.evaluaciones();
 
       const conv = r.porConvocatoria[0];
+      expect(r.totalConvocatorias).toBe(1);
+      expect(r.totalSolicitudesEvaluadas).toBe(2);
       expect(conv.solicitudesEvaluadas).toBe(2);
       expect(conv.conScore).toBe(1);
-      expect(conv.scorePromedio).toBe(80);
+      expect(conv.scorePromedio).toBe(85);
       expect(conv.aprobadas).toBe(1);
       expect(conv.rechazadas).toBe(1);
-      // 1 EVALUADA sin score completo + 1 EN_REVISION
-      expect(conv.pendientes).toBe(2);
+      expect(conv.pendientes).toBe(1);
     });
   });
 
   describe('generarCsv (US-35)', () => {
     it('rechaza tipos inválidos', async () => {
+      /* eslint-disable @typescript-eslint/no-explicit-any */
       await expect(
         service.generarCsv('otro' as any),
       ).rejects.toThrow(BadRequestException);
+      /* eslint-enable @typescript-eslint/no-explicit-any */
     });
 
-    it('genera CSV con BOM y encabezados', async () => {
-      evaluacionesService.scoreSolicitud.mockResolvedValue({
-        score: 80,
-        completo: true,
-      });
+    it('genera CSV con BOM y encabezados para evaluaciones', async () => {
       prisma.convocatoria.findMany.mockResolvedValue([
         { id: 'c1', nombre: 'Beca CI', beca: { nombre: 'P' } },
       ]);
-      prisma.solicitud.findMany.mockResolvedValue([{ id: 's1' }]);
-      prisma.solicitud.count.mockResolvedValue(0);
-      prisma.decision.groupBy.mockResolvedValue([]);
+      prisma.solicitud.groupBy.mockResolvedValue([]);
+      prisma.solicitud.findMany.mockResolvedValue([
+        { id: 's1', convocatoriaId: 'c1' },
+      ]);
+      prisma.evaluacion.findMany.mockResolvedValue([
+        { solicitudId: 's1', evaluadorId: 'u1', completada: true, puntaje: 80, criterioEvaluacion: { peso: 0.4 } },
+        { solicitudId: 's1', evaluadorId: 'u1', completada: true, puntaje: 90, criterioEvaluacion: { peso: 0.6 } },
+      ]);
+      prisma.decision.findMany.mockResolvedValue([]);
 
       const csv = await service.generarCsv('evaluaciones');
 

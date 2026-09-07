@@ -61,14 +61,14 @@ export class ComitesService {
     return comite;
   }
 
-async actualizarComite(
+  async actualizarComite(
     id: string,
     dto: ActualizarComiteDto,
     usuario: AuthenticatedUser,
   ) {
     const existente = await this.prisma.comite.findUnique({ where: { id } });
     if (!existente) {
-      throw new NotFoundException(`Comit� con id ${id} no encontrado`);
+      throw new NotFoundException(`Comité con id ${id} no encontrado`);
     }
     const actualizado = await this.prisma.comite.update({ where: { id }, data: dto });
     await this.audit.log({
@@ -84,7 +84,7 @@ async actualizarComite(
   async eliminarComite(id: string, usuario: AuthenticatedUser) {
     const existente = await this.prisma.comite.findUnique({ where: { id } });
     if (!existente) {
-      throw new NotFoundException(`Comit� con id ${id} no encontrado`);
+      throw new NotFoundException(`Comité con id ${id} no encontrado`);
     }
     await this.prisma.comite.delete({ where: { id } });
     await this.audit.log({

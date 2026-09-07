@@ -1,8 +1,5 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuditService } from '../audit/audit.service';
 import { AuthenticatedUser } from '../common/interfaces/authenticated-user.interface';
@@ -16,6 +13,9 @@ import {
   ConvocatoriaStateMachine,
   ConvocatoriaEstado,
 } from './convocatoria-state-machine';
+import {
+  CONVOCATORIA_ESTADO,
+} from '../common/constants/estados';
 
 @Injectable()
 export class ConvocatoriasService {
@@ -31,7 +31,7 @@ export class ConvocatoriasService {
         nombre: dto.nombre,
         descripcion: dto.descripcion,
         becaId: dto.becaId,
-        estado: 'BORRADOR',
+        estado: CONVOCATORIA_ESTADO.BORRADOR,
         fechaApertura: dto.fechaApertura ? new Date(dto.fechaApertura) : null,
         fechaCierre: dto.fechaCierre ? new Date(dto.fechaCierre) : null,
       },
@@ -40,7 +40,7 @@ export class ConvocatoriasService {
   }
 
   async findAllPublic(filtros?: { busqueda?: string }) {
-    const where: any = { estado: 'ABIERTA' };
+    const where: Prisma.ConvocatoriaWhereInput = { estado: CONVOCATORIA_ESTADO.ABIERTA };
 
     if (filtros?.busqueda) {
       where.OR = [
@@ -149,7 +149,7 @@ export class ConvocatoriasService {
   ) {
     const convocatoria = await this.findById(id);
 
-    if (convocatoria.estado !== 'BORRADOR') {
+    if (convocatoria.estado !== CONVOCATORIA_ESTADO.BORRADOR) {
       throw new BadRequestException(
         'Solo se pueden configurar documentos en estado BORRADOR',
       );

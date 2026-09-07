@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { EvaluacionesService } from './evaluaciones.service';
 import { AuthenticatedUser } from '../common/interfaces/authenticated-user.interface';
+import { AuthzService } from '../common/services/authz.service';
 
 const admin: AuthenticatedUser = {
   id: 'u-admin',
@@ -23,7 +24,9 @@ const evaluador: AuthenticatedUser = {
 };
 
 describe('EvaluacionesService', () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let prisma: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let audit: any;
   let service: EvaluacionesService;
 
@@ -33,13 +36,14 @@ describe('EvaluacionesService', () => {
         findMany: jest.fn(),
         findFirst: jest.fn(),
         create: jest.fn(),
+        createMany: jest.fn(),
         update: jest.fn(),
       },
       solicitud: { findUnique: jest.fn() },
-      usuario: { findUnique: jest.fn() },
+      usuario: { findMany: jest.fn(), findUnique: jest.fn() },
     };
     audit = { log: jest.fn() };
-    service = new EvaluacionesService(prisma, audit);
+    service = new EvaluacionesService(prisma, audit, new AuthzService());
   });
 
   describe('misEvaluaciones (US-26)', () => {
@@ -145,7 +149,7 @@ describe('EvaluacionesService', () => {
 
     it('rechaza evaluador inexistente', async () => {
       prisma.solicitud.findUnique.mockResolvedValue(solicitudEnRevision);
-      prisma.usuario.findUnique.mockResolvedValue(null);
+      prisma.usuario.findMany.mockResolvedValue([]);
       await expect(
         service.asignarEvaluadores('s1', { evaluadorIds: ['u-x'] }, admin),
       ).rejects.toThrow(NotFoundException);
@@ -153,11 +157,13 @@ describe('EvaluacionesService', () => {
 
     it('rechaza evaluador con rol distinto a EVALUADOR', async () => {
       prisma.solicitud.findUnique.mockResolvedValue(solicitudEnRevision);
-      prisma.usuario.findUnique.mockResolvedValue({
-        id: 'u-x',
-        nombres: 'Postulante',
-        rol: { nombre: 'POSTULANTE' },
-      });
+      prisma.usuario.findMany.mockResolvedValue([
+        {
+          id: 'u-x',
+          nombres: 'Postulante',
+          rol: { nombre: 'POSTULANTE' },
+        },
+      ]);
       await expect(
         service.asignarEvaluadores('s1', { evaluadorIds: ['u-x'] }, admin),
       ).rejects.toThrow('no tiene rol EVALUADOR');
@@ -165,14 +171,16 @@ describe('EvaluacionesService', () => {
 
     it('crea filas Evaluacion placeholder por criterio y salta las existentes', async () => {
       prisma.solicitud.findUnique.mockResolvedValue(solicitudEnRevision);
-      prisma.usuario.findUnique.mockResolvedValue({
-        id: 'u-evaluador',
-        nombres: 'Evaluador Demo',
-        rol: { nombre: 'EVALUADOR' },
-      });
-      prisma.evaluacion.findFirst
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce({ id: 'ev2' });
+      prisma.usuario.findMany.mockResolvedValue([
+        {
+          id: 'u-evaluador',
+          nombres: 'Evaluador Demo',
+          rol: { nombre: 'EVALUADOR' },
+        },
+      ]);
+      prisma.evaluacion.findMany.mockResolvedValueOnce([
+        { evaluadorId: 'u-evaluador', criterioEvaluacionId: 'c2' },
+      ]);
 
       const result = await service.asignarEvaluadores(
         's1',
@@ -181,13 +189,15 @@ describe('EvaluacionesService', () => {
       );
 
       expect(result).toEqual({ asignados: 1, criterios: 2 });
-      expect(prisma.evaluacion.create).toHaveBeenCalledTimes(1);
-      expect(prisma.evaluacion.create).toHaveBeenCalledWith({
-        data: {
-          solicitudId: 's1',
-          criterioEvaluacionId: 'c1',
-          evaluadorId: 'u-evaluador',
-        },
+      expect(prisma.evaluacion.createMany).toHaveBeenCalledTimes(1);
+      expect(prisma.evaluacion.createMany).toHaveBeenCalledWith({
+        data: [
+          {
+            solicitudId: 's1',
+            criterioEvaluacionId: 'c1',
+            evaluadorId: 'u-evaluador',
+          },
+        ],
       });
     });
   });

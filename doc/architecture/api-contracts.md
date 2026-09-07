@@ -91,12 +91,37 @@ Response 200:
   "cui": "1234567890123",
   "nombres": "Juan Pérez",
   "email": "juan@test.com",
+  "telefono": "+502 5555 1234",
+  "fechaNacimiento": "1998-05-21T00:00:00.000Z",
+  "direccion": "Calle 3, zona 8",
+  "genero": { "id": "uuid", "nombre": "Masculino" },
+  "departamento": { "id": "uuid", "nombre": "Guatemala" },
+  "municipio": { "id": "uuid", "nombre": "Guatemala" },
   "rol": {
     "id": "uuid",
     "nombre": "POSTULANTE"
   }
 }
 ```
+
+### PATCH `/auth/perfil`
+**Requiere: autenticado**
+
+Actualiza datos del perfil del usuario logueado (todos opcionales). Género/departamento/municipio inexistentes → 404; UUIDs malformados → 400.
+
+```json
+{
+  "nombres": "Juan Carlos Pérez",
+  "telefono": "+502 5555 1234",
+  "fechaNacimiento": "1998-05-21",
+  "direccion": "Calle 3, zona 8",
+  "generoId": "uuid",
+  "departamentoId": "uuid",
+  "municipioId": "uuid"
+}
+```
+
+Response 200: mismo shape que `GET /auth/perfil`.
 
 ---
 
@@ -223,6 +248,11 @@ Request:
 ### GET `/solicitudes/:id/checklist`
 **Permiso:** dueño
 
+### GET `/solicitudes/:id/constancia` (US-F7)
+**Permiso:** dueño o `solicitud:ver` (admin/coordinador). Solo solicitudes en `APROBADA`; si no está aprobada → 400, sin acceso → 403.
+
+Genera la constancia de beca en PDF con navegador headless (Chromium vía `PuppeteerPdfRenderer`, patrón Adapter detrás de `PdfRenderer`). La respuesta es `application/pdf` con `Content-Disposition: attachment`. El HTML se construye en `constancias.service.ts` con los datos de la solicitud, el postulante y la resolución (XSS mitigado con escape HTML).
+
 ### POST `/solicitudes/:id/enviar`
 **Permiso:** dueño
 
@@ -277,6 +307,39 @@ Request:
 
 ### PATCH `/seguridad/roles/:id/permisos`
 **Permiso:** `permiso:editar`
+
+### GET `/seguridad/usuarios`
+**Permiso:** `permiso:editar`
+
+Lista usuarios (opcional `?rol=`). Respuesta sin `passwordHash`.
+
+### POST `/seguridad/usuarios`
+**Permiso:** `permiso:editar`
+
+Alta de usuario/empleado. `cui` y `email` únicos al conflictar → 409; rol inexistente → 404.
+
+```json
+{ "cui": "1234567890123", "nombres": "Ana López", "email": "ana@demo.gt", "password": "…8+…", "rolId": "…" }
+```
+
+### GET `/seguridad/usuarios/:id`
+**Permiso:** `permiso:editar`
+
+Detalle con `rol` y excepciones `usuarioPermisos[{ permiso { id, modulo, accion }, efecto: 'PERMITIR'|'DENEGAR' }]`.
+
+### PATCH `/seguridad/usuarios/:id`
+**Permiso:** `permiso:editar`
+
+Actualiza `rolId` y/o `estado` (`ACTIVO`/`INACTIVO`). Auto-inactivación del propio usuario → 400.
+
+### PATCH `/seguridad/usuarios/:id/permisos`
+**Permiso:** `permiso:editar`
+
+Reemplaza las excepciones individuales (tri-estado). Vaciar `permisos: []` restaura herencia por rol.
+
+```json
+{ "permisos": [{ "permisoId": "…", "efecto": "PERMITIR" }] }
+```
 
 El log de auditoría se consulta vía `/audit` (sección Auditoría abajo).
 

@@ -3,22 +3,91 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 244, 247, 250;
-  --background-end-rgb: 255, 255, 255;
+  --foreground-rgb: 20, 20, 20;
+  --background-rgb: 244, 241, 234;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background: rgb(var(--background-rgb));
 }
 
-/* SIGEB Custom Styles */
+/* Brutalista: fondo con trama de puntos sutil en todo el body */
+.brut-body {
+  background-color: var(--brut-papel, #f4f1ea);
+  background-image: radial-gradient(rgba(20, 20, 20, 0.08) 1px, transparent 1.2px);
+  background-size: 22px 22px;
+}
+
+/* Franja diagonal decorativa (estampa "ticket" / cinta) */
+.brut-cinta {
+  position: relative;
+  overflow: hidden;
+}
+.brut-cinta::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 220%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 18px,
+    rgba(0, 87, 184, 0.12) 18px,
+    rgba(0, 87, 184, 0.12) 36px
+  );
+  pointer-events: none;
+}
+
+/* Remarque de texto máximo para hero */
+.text-mega {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  line-height: 0.95;
+  text-transform: uppercase;
+}
+
+/* Etiqueta tipo "sticker" brutalista */
+.brut-label {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Celda de tablas bordeadas "ración" */
+.brut-cell {
+  border: 2px solid #141414;
+}
+
+/* Scrollbar retro */
+::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+::-webkit-scrollbar-track {
+  background: #e4e0d6;
+  border-left: 2px solid #141414;
+}
+::-webkit-scrollbar-thumb {
+  background: #0057b8;
+  border: 2px solid #141414;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #d4a72c;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

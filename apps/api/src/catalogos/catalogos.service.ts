@@ -140,6 +140,13 @@ export class CatalogosService {
     });
   }
 
+  findAllBecas() {
+    return this.prisma.beca.findMany({
+      where: { activa: true },
+      orderBy: { nombre: 'asc' },
+    });
+  }
+
   async createDocumento(dto: CreateCatalogoDto) {
     await this.assertUnique('documentoTipo', dto.nombre);
     return this.prisma.documentoTipo.create({ data: { nombre: dto.nombre, activo: dto.activo ?? true } });

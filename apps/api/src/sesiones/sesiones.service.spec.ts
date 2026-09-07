@@ -15,7 +15,9 @@ const miembro: AuthenticatedUser = {
 };
 
 describe('SesionesService', () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let prisma: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let audit: any;
   let service: SesionesService;
 
@@ -35,6 +37,11 @@ describe('SesionesService', () => {
       historialEstado: { create: jest.fn() },
       convocatoria: { findUnique: jest.fn(), update: jest.fn() },
     };
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    prisma.$transaction = jest.fn(async (fn: (tx: any) => Promise<unknown>) =>
+    /* eslint-enable @typescript-eslint/no-explicit-any */
+      fn(prisma),
+    );
     audit = { log: jest.fn() };
     service = new SesionesService(prisma, audit);
   });
