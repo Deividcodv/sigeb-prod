@@ -16,7 +16,7 @@
   git config --global user.name "Tu Nombre"
   git config --global user.email "tu-usuario@users.noreply.github.com"
   ```
-- [ ] David ya te agregó como colaborador del repo `sigeb-equipo`.
+- [ ] David ya te agregó como colaborador del repo del equipo `proyecto-analisis-Sigeb`.
 - [ ] Saber tu sección de este sprint (módulos y rama): en `05-versiones-asignadas-por-persona.md`.
 
 ---
@@ -27,8 +27,8 @@ Abre Git Bash y escribe:
 
 ```bash
 cd /c/proyectos
-git clone git@github.com:<David>/sigeb-equipo.git
-cd sigeb-equipo
+git clone https://github.com/Deividcodv/proyecto-analisis-Sigeb.git
+cd proyecto-analisis-Sigeb
 ```
 
 Importante: también vamos a conectar el repositorio original para poder descargar de ahí "tu versión"
@@ -78,11 +78,20 @@ Ve al documento `05-versiones-asignadas-por-persona.md`, busca **tu persona y tu
 - los **módulos** (carpetas) que te tocan,
 - el **comando exacto** para copiar ese código a tu rama.
 
+> ⭐ **Ya tienes tu código descargado en `recreacion/sprint-N/<tu-nombre>/repo/`** (espejo de las rutas
+> del repo, con tu `README.md` y la carpeta `modulos/`). Puedes copiar tu sección desde ahí directo.
+
 Ejemplo genérico (los valores exactos están en ese documento):
 
 ```bash
 # Copiar SOLO tus carpetas desde el commit fuente del sprint hacia tu rama de trabajo
 git checkout <FUENTE> -- apps/api/src/<tu-modulo>
+```
+
+O desde el espejo local (misma ruta, sin pasar por `sigeb-prod`):
+
+```bash
+cp -r recreacion/sprint-N/<tu-nombre>/repo/apps/api/src/<tu-modulo> apps/api/src/
 ```
 
 Y confirma que no quedaron archivos raros:

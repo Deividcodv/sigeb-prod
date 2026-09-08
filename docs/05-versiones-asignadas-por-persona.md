@@ -8,9 +8,13 @@
 > y subirla en tu rama sin pisar a nadie. Pre-requisitos técnicos:
 > `02-git-github-conceptos-basicos.md` y `04-pr-paso-a-paso-por-persona.md`.
 >
+> ⭐ **Ya hicimos la descarga por ti:** el código de cada persona y sprint está listo en la carpeta
+> `recreacion/sprint-N/<tu-nombre>/repo/` (espejo de las rutas del repo, lista para copiar). Los
+> commits fuente de abajo son la referencia de fidelidad para verificar tu PR.
+>
 > **Versión final de referencia: CI #40 = commit `a720298`.**
 >
-> **Versión del prototipo (demo): hito personalizado `v0.1-prototipo-demo`** (tag en `sigeb-equipo`).
+> **Versión del prototipo (demo): hito personalizado `v0.1-prototipo-demo`** (tag en el repo del equipo).
 
 ---
 
@@ -27,14 +31,15 @@ existe un hito lineal** en `sigeb-prod` que sea "portal + login sin sistema inte
 1. Cada persona copia sus módulos desde el **commit fuente** en el que su módulo está en su mejor estado:
    | Módulo | Commit fuente |
    |---|---|
-   | API `auth/`, `users/`, `common/` | `4b0795f` |
-   | API `catalogos/`, `convocatorias/`, `storage/` | `85122d2` (CRUD) + `986fc89` (público/búsqueda) |
+   | API `auth/`, `users/`, `common/` | `85122d2` |
+   | API `catalogos/`, `convocatorias/` | `85122d2` (CRUD) + `986fc89` (público/búsqueda) |
+   | API `storage/` (adapter base) | `28ea376` |
    | API `solicitudes/` (SOLO el endpoint de consulta US-46) | `986fc89` |
    | WEB layout base / Design System | `ab66393` |
    | WEB portal público (US-41..48) | `986fc89` |
    | WEB login/registro + dashboard postulante (US-49/50) | `3dfa19a` |
 
-2. Al cierre del S3, **David crea un hito personalizado**: el tag `v0.1-prototipo-demo` en `sigeb-equipo`,
+2. Al cierre del S3, **David crea un hito personalizado**: el tag `v0.1-prototipo-demo` en el repo del equipo,
    que junta solo los módulos del prototipo y **excluye** `evaluaciones/`, `sesiones/`, `comites/`,
    `decisiones/`, `reportes/`, `asistente/`, `audit/` (y sus registros en `app.module.ts` y `prisma`),
    además de los paneles `admin` y `evaluador` de la web.
@@ -46,13 +51,13 @@ verificación se hace por módulo (como siempre), terminando en **CI #40 = `a720
 Resumen de la escalera:
 
 ```
-S1 → cimientos (auth + catálogos/convocatorias + CI)     fuente: 4b0795f, 85122d2
+S1 → cimientos (auth + catálogos/convocatorias + CI)     fuente: 85122d2, 28ea376
 S2 → portal público (US-41..48)                          fuente: 986fc89 (y ab66393 para layout)
 S3 → login/registro + dashboard (US-49/50)               fuente: 3dfa19a
-      └── Cierre de prototipo: tag v0.1-prototipo-demo (hito personalizado, solo en sigeb-equipo)
+      └── Cierre de prototipo: tag v0.1-prototipo-demo (hito personalizado, solo en el repo del equipo)
 S4 → evaluación (41285d4, 3cb58e9)
-S5 → reportes/auditoría/asistente/paneles (ab66393)
-S6 → sistema interno + constancia PDF (2e52a69, dcba851, e36ac2c)
+S5 → reportes/auditoría/asistente/paneles (ab66393, 1436e41, 2e52a69)
+S6 → sistema interno + constancia PDF (e36ac2c, dcba851)
 REMATE → CI #40 = a720298   (hotfixes de estabilización: specs, CI, reportes)
 ```
 
@@ -79,6 +84,17 @@ Luego, en **tu rama** `feature/...` (ver `04` para crear la rama), copia tus car
 git checkout <FUENTE> -- apps/api/src/<tu-modulo-1> apps/api/src/<tu-modulo-2>
 ```
 
+**Opcion A (rápida, recomendada):** ya tienes tu código descargado localmente en `recreacion/`:
+
+```bash
+# Copia el contenido de tu carpeta-repo a tu rama de trabajo (mismas rutas del repo)
+cp -r ../../recreacion/sprint-N/<tu-nombre>/repo/apps/api/src/<tu-modulo> apps/api/src/
+```
+
+> `recreacion/sprint-N/<tu-nombre>/repo/` es un **espejo** de las rutas del repo: puedes copiar su contenido
+> directo o usar su `README.md` (lista los comandos `git checkout <FUENTE> -- ...` exactos por persona).
+> La referencia de fidelidad siempre es el **commit fuente `<FUENTE>`**.
+
 Extra útil — ver qué cambió en tu sección entre fuentes (por ejemplo, Héctor entre `85122d2` y `986fc89`):
 ```bash
 git diff <FUENTE-ANTERIOR>..<FUENTE> -- apps/api/src/<tu-modulo>
@@ -94,7 +110,7 @@ git diff <FUENTE-ANTERIOR>..<FUENTE> -- apps/api/src/<tu-modulo>
 
 | Sprint | Fuente | Módulos (rutas) | Rama de ejemplo |
 |---|---|---|---|
-| S1 | `4b0795f` | API `auth/` (registro con CUI único, login JWT access+refresh, `GET /auth/perfil`), `users/`, `common/` (guards, decoradores, filtros, interceptores), guard de permisos (US-11), DTOs | `feature/auth-login`, `feature/auth-roles` |
+| S1 | `85122d2` | API `auth/` (registro con CUI único, login JWT access+refresh, `GET /auth/perfil`), `users/`, `common/` (guards, decoradores, filtros, interceptores), guard de permisos (US-11), DTOs | `feature/auth-login`, `feature/auth-roles` |
 | S3 | `3dfa19a` | API ajustes para la sesión web: expiración/refresh usados por el login de la web (solo si el planning lo marca; coordinar con Hamilton) | `feature/auth-web` |
 | S5 | `ab66393` | API `audit/` (registro de auditoría US-36) | `feature/auditoria-registro` |
 | Estab. (CI #35) | `88e7fc3` | API specs de `common/` (permissions.guard.spec) | `hotfix/specs-ci` |
@@ -104,7 +120,7 @@ git diff <FUENTE-ANTERIOR>..<FUENTE> -- apps/api/src/<tu-modulo>
 
 | Sprint | Fuente | Módulos (rutas) | Rama de ejemplo |
 |---|---|---|---|
-| S1 | `85122d2` | API `catalogos/` (género, nivel académico, departamento, municipio), `convocatorias/` (CRUD + máquina de estados + documentos requeridos), `storage/` (adapter base) | `feature/catalogos`, `feature/convocatorias-crud`, `feature/storage-documentos` |
+| S1 | `85122d2` + `28ea376` | API `catalogos/` (género, nivel académico, departamento, municipio), `convocatorias/` (CRUD + máquina de estados + documentos requeridos), `storage/` (adapter base, `28ea376`) | `feature/catalogos`, `feature/convocatorias-crud`, `feature/storage-documentos` |
 | S2 | `986fc89` | API `convocatorias/` público (US-44/45): `GET /convocatorias` con `?busqueda=`, `GET /convocatorias/:id` público | `feature/convocatorias-publicas` |
 | S4 | `41285d4` | API `convocatorias/` (soporte de tipos de documento para la evaluación) | `feature/tipos-documento` |
 
@@ -124,7 +140,7 @@ git diff <FUENTE-ANTERIOR>..<FUENTE> -- apps/api/src/<tu-modulo>
 | Sprint | Fuente | Módulos (rutas) | Rama de ejemplo |
 |---|---|---|---|
 | S2 | `ab66393` (layout) + `986fc89` (portal) | WEB `styles/` y `components/` base (Layout/Design System, home conectada al API US-40) + portal público US-41..48: hero, "Sobre SIGEB", "Cómo funciona", convocatorias con filtros, convocatoria individual, consulta de beca, nosotros, footer. **Sin panel admin** | `feature/layout-base`, `feature/portal-publico`, `feature/convocatorias-publicas` |
-| S5 | `ab66393` / `986fc89` | WEB panel admin (workbench por rol, header de acciones) US-54/55 | `feature/panel-admin`, `feature/header-acciones` |
+| S5 | `1436e41` | WEB panel admin (workbench por rol, header de acciones) US-54/55 | `feature/panel-admin`, `feature/header-acciones` |
 | S6 | `1436e41` / `e36ac2c` | WEB rediseño institucional final, páginas institucionales/footer, responsive total (US-57) e identidad dual (US-58) | `feature/identidad-dual`, `feature/panel-admin` |
 
 ### Hamilton — Frontend Sistema Interno + IA
@@ -133,15 +149,15 @@ git diff <FUENTE-ANTERIOR>..<FUENTE> -- apps/api/src/<tu-modulo>
 |---|---|---|---|
 | S3 | `3dfa19a` | WEB auth (US-49): login/registro conectados, `AuthContext`, `ProtectedRoute`, `UserMenu`, `api-auth`/`lib/auth`, sesión persistente + dashboard postulante (US-50). Script `npm run dev`. **Sin paneles admin/evaluador** (van en S5/S6) | `feature/web-login`, `feature/dashboard-postulante` |
 | S4 | `3cb58e9` | WEB flujo de evaluación (asignar evaluadores, comités, sesiones) | `feature/web-evaluacion` |
-| S5 | `0a05250` + `dab4fcd` | API `asistente/` (base de conocimiento US-37/39, proveedor LLM US-38) + widget web del chat | `feature/asistente-ia`, `feature/asistente-llm` |
-| S6 | `2e52a69` + `dcba851` | WEB sistema interno: formulario multi-step (US-51), gestión de documentos (US-52), panel evaluador (US-53), chat IA (US-56), identidad dual del sistema interno | `feature/sistema-interno`, `feature/chat-ia` |
+| S5 | `ab66393` + `2e52a69` | API `asistente/` (base de conocimiento US-37/39, proveedor LLM US-38; `ab66393`) + widget web del chat (`2e52a69`) | `feature/asistente-ia`, `feature/asistente-llm` |
+| S6 | `e36ac2c` + `dcba851` | WEB sistema interno (estado final en `e36ac2c`, con raíz en `dcba851`): formulario multi-step (US-51), gestión de documentos (US-52), panel evaluador (US-53), chat IA (US-56), identidad dual del sistema interno | `feature/sistema-interno`, `feature/chat-ia` |
 
 ### David — Base, CI, hito personalizado y aprobación
 
 | Sprint | Fuente | Qué entrega |
 |---|---|---|
 | Base | 28356e3 | Scaffold del monorepo (Sprint 0): estructura NestJS/Next.js/Prisma/Docker + migración base |
-| S1 | `4b0795f` + `85122d2` | `prisma/schema.prisma` + `migrations/` con los modelos del prototipo (auth, catálogos, convocatorias, solicitudes mínimas); `.github/workflows/ci.yml` base (smoke del prototipo) |
+| S1 | `85122d2` | `prisma/schema.prisma` + `migrations/` con los modelos del prototipo (auth, catálogos, convocatorias, solicitudes mínimas); `.github/workflows/ci.yml` base (smoke del prototipo) |
 | S2 | `986fc89` | Registro de módulos del prototipo en `app.module.ts`/`main.ts`; smoke del portal |
 | S3 | `3dfa19a` | Archivos compartidos del arranque web (script `npm run dev` `890c423`, CORS) y **crea el tag `v0.1-prototipo-demo`** (hito personalizado) excluyendo evaluaciones/sesiones/comités/decisiones/reportes/asistente/audit y paneles admin/evaluador |
 | S6 | `e36ac2c`/`1436e41` | Revisión final de módulos compartidos; paneles y constancia integrados |
@@ -162,7 +178,7 @@ git diff <FUENTE-ANTERIOR>..<FUENTE> -- apps/api/src/<tu-modulo>
 > revisión rechazará el PR.
 >
 > **Importante en el prototipo:** al cierre del S3 David arma `v0.1-prototipo-demo` como **hito personalizado**
-> (tag) en `sigeb-equipo`. Nadie más crea tags ni toca el `app.module.ts` para registrar módulos fuera del
+> (tag) en el repo del equipo. Nadie más crea tags ni toca el `app.module.ts` para registrar módulos fuera del
 > alcance del prototipo.
 
 ---
@@ -199,6 +215,9 @@ Verificación de fidelidad contra el commit fuente (por módulo):
 git diff <FUENTE> -- apps/api/src/<tu-modulo>   # en sigeb-prod: debe salir exactamente lo que enviaste
 ```
 
+> Puedes confirmar contra la carpeta `recreacion/sprint-N/<tu-nombre>/repo/`: compara que lo que
+> enviaste en tu rama sea idéntico a lo que hay en ese espejo local.
+
 En el prototipo (S1–S3) la referencia es tu **commit fuente**; el tag `v0.1-prototipo-demo` solo existe en
-`sigeb-equipo`, no tiene que coincidir con ningún commit de `sigeb-prod`. La verificación **final** (S6) sí
+el repo del equipo, no tiene que coincidir con ningún commit de `sigeb-prod`. La verificación **final** (S6) sí
 se hace contra **`a720298`**: `git diff a720298 -- apps/api/src apps/web/src`.

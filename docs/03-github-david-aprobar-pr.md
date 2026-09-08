@@ -9,7 +9,7 @@
 
 ## 1. Tu rol y tus privilegios
 
-- Eres **Owner/admin** del repositorio `sigeb-equipo`.
+- Eres **Owner/admin** del repositorio del equipo `proyecto-analisis-Sigeb`.
 - Tienes permiso para: crear el repo, invitar colaboradores, configurar ramas protegidas, **dar revisión y
   aprobar PRs**, hacer merge (squash), y crear releases.
 - Los devs tienen permiso **Write** (solo para empujar sus ramas `feature/*` y abrir PRs). No pueden
@@ -20,8 +20,8 @@
 ## 2. Antes de empezar: clonar y preparar tu entorno local
 
 ```bash
-git clone git@github.com:<David>/sigeb-equipo.git
-cd sigeb-equipo
+git clone https://github.com/Deividcodv/proyecto-analisis-Sigeb.git
+cd proyecto-analisis-Sigeb
 npm ci                 # instala dependencias (suele tardar ~1 min)
 ```
 
@@ -160,7 +160,7 @@ Al cierre de cada sprint, `develop` = incremento del sprint. Para dejar "versió
 ## 8. Verificación de fidelidad contra el original (cada sprint)
 
 Comprueba que la sección de cada dev en `develop` sea **exactamente** la que está en `sigeb-prod` en su
-**commit fuente** del sprint:
+**commit fuente** del sprint (también espejada localmente en `recreacion/sprint-N/<miembro>/repo/`):
 
 ```bash
 git fetch sigeb-prod
@@ -168,12 +168,14 @@ git fetch sigeb-prod
 git diff 85122d2..986fc89 -- apps/api/src/convocatorias
 ```
 
-Compara con lo que hay en `develop` del repo nuevo para esa misma carpeta. Si falta/sobra algo,
+Compara con lo que hay en `develop` del repo nuevo para esa misma carpeta (o contra
+`recreacion/sprint-N/<miembro>/repo/`). Si falta/sobra algo,
 manda un PR menor (o `hotfix/`) para corregirlo antes del viernes.
 
 **Prototipo (S1–S3):** en los primeros 3 sprints la verificación es **por módulo** contra el **commit fuente**
-(la sección de cada dev debe igualar exactamente el contenido del commit fuente en su carpeta). David además,
-al cierre del S3, crea el **hito personalizado `v0.1-prototipo-demo`** en `sigeb-equipo` (tag) con solo los
+(la sección de cada dev debe igualar exactamente el contenido del commit fuente en su carpeta; referencia
+local equivalente: `recreacion/sprint-N/<miembro>/repo/`). David además,
+al cierre del S3, crea el **hito personalizado `v0.1-prototipo-demo`** en el repo del equipo (tag) con solo los
 módulos del prototipo y **sin** `evaluaciones/`, `sesiones/`, `comites/`, `decisiones/`, `reportes/`,
 `asistente/`, `audit/` (y sus registros en `app.module.ts`/`prisma`) ni paneles `admin`/`evaluador`. Ese tag
 no tiene por qué coincidir con un commit de `sigeb-prod`.

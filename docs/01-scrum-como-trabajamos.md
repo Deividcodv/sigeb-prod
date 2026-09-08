@@ -129,12 +129,12 @@ vs. planificados) se registran en `review.md`.
 
 | Sprint | Semana | Tema principal | Fuente (de dónde copia su módulo) | Quiénes entregan |
 |---|---|---|---|---|
-| **S1** | 07–09 sep | Cimientos: monorepo, auth API (JWT, roles, permisos), catálogos/convocatorias backend, CI base | `4b0795f`, `85122d2` | Marcos, Héctor, David |
+| **S1** | 07–09 sep | Cimientos: monorepo, auth API (JWT, roles, permisos), catálogos/convocatorias backend, CI base | `85122d2`, `28ea376` | Marcos, Héctor, David |
 | **S2** | 09–11/12 sep | **Portal público** (US-41..48): layout/Design System, home, convocatorias públicas, detalle, consulta, nosotros, footer | `986fc89` (+ `ab66393` layout) | Yemerson, Héctor, José, David |
 | **S3** | 14–16/18 sep | **Login/registro web + dashboard postulante** (US-49/50) → cierre del prototipo (`v0.1-prototipo-demo`) | `3dfa19a` | Hamilton, Marcos, Yemerson, David |
 | **S4** | 21–25 sep | Evaluación: evaluadores, puntajes, comités, sesiones, decisiones | `41285d4`, `3cb58e9` | José, Marcos, Hamilton, David |
-| **S5** | 28 sep–02 oct | Reportes (CSV), auditoría, asistente IA, paneles admin | `ab66393`, `0a05250`, `dab4fcd` | José, Marcos, Hamilton, Yemerson |
-| **S6** | 05–16 oct | Sistema interno y paneles completos, constancia PDF, rediseño | `2e52a69`, `dcba851`, `1436e41`, `e36ac2c` | Hamilton, Yemerson, José |
+| **S5** | 28 sep–02 oct | Reportes (CSV), auditoría, asistente IA, paneles admin | `ab66393`, `1436e41`, `2e52a69` | José, Marcos, Hamilton, Yemerson |
+| **S6** | 05–16 oct | Sistema interno y paneles completos, constancia PDF, rediseño | `e36ac2c`, `dcba851` | Hamilton, Yemerson, José |
 | **Estabilización** | 05–16 oct | Hotfixes de specs, CI y reportes (CI #35-40) | **`a720298` (CI #40)** | David, Marcos, José |
 
 > **Recordatorio:** el objetivo final es que el repositorio nuevo llegue al **estado CI #40 (`a720298`)**,

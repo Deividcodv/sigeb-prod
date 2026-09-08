@@ -105,16 +105,19 @@ gh auth login
 
 ---
 
-## 6. Tu primer clon (ejemplo con el repo nuevo `sigeb-equipo`)
+## 6. Tu primer clon (ejemplo con el repo del equipo `proyecto-analisis-Sigeb`)
 
 Abre **Git Bash** donde quieras trabajar (crea una carpeta `C:\proyectos`):
 
 ```bash
 cd /c/proyectos
-git clone git@github.com:<David>/sigeb-equipo.git
-cd sigeb-equipo
-git remote -v        # verás: origin → tu repo
+git clone https://github.com/Deividcodv/proyecto-analisis-Sigeb.git
+cd proyecto-analisis-Sigeb
+git branch -a          # verás develop y main (integración y producción)
+git remote -v          # verás: origin → el repo del equipo
 ```
+
+> En el repo del equipo **no se permite push directo a `develop`/`main`**: todo entra por Pull Request.
 
 Si en algún momento necesitas *ver* el código del proyecto original (solo lectura), agrega un segundo remote:
 
