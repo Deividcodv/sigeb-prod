@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation';
 import { Container } from '@/components/ui/Container';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { BotonPostular } from '@/components/convocatorias/BotonPostular';
+import { CuentaRegresiva } from '@/components/convocatorias/CuentaRegresiva';
 import {
   fetcher,
   formatearFecha,
@@ -12,6 +14,15 @@ import {
 
 interface Props {
   params: { id: string };
+}
+
+function codigoConvocatoria(convocatoria: ConvocatoriaDetalle): string {
+  const anio = convocatoria.fechaApertura
+    ? new Date(convocatoria.fechaApertura).getFullYear()
+    : new Date().getFullYear();
+  const hex = convocatoria.id.replace(/[^0-9a-f]/gi, '').slice(0, 4) || '0000';
+  const numero = parseInt(hex, 16) % 10000;
+  return `CONV-${anio}-${String(numero).padStart(4, '0')}`;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -37,6 +48,8 @@ export default async function ConvocatoriaDetallePage({ params }: Props) {
     return notFound();
   }
 
+  const abierta = convocatoria.estado === 'ABIERTA';
+  const codigo = codigoConvocatoria(convocatoria);
   const docs = convocatoria.documentosRequeridos ?? [];
   const criterios = convocatoria.beca?.criteriosEvaluacion ?? [];
 
@@ -51,14 +64,22 @@ export default async function ConvocatoriaDetallePage({ params }: Props) {
             ← Volver a convocatorias
           </Link>
           <div className="flex flex-wrap items-center gap-3">
+            <span className="tabular font-mono text-xs font-bold uppercase tracking-[0.15em] text-brutal-gold">
+              {codigo}
+            </span>
             <Badge estado={convocatoria.estado} />
             <span className="brut-label font-mono text-xs font-bold uppercase text-brutal-gold">
               {convocatoria.beca.nombre}
             </span>
           </div>
-          <h1 className="text-mega mt-3 text-3xl font-black md:text-5xl">
+          <h1 className="text-mega mt-3 max-w-4xl text-3xl font-black md:text-5xl">
             {convocatoria.nombre}
           </h1>
+          {abierta && (
+            <div className="mt-5">
+              <CuentaRegresiva fecha={convocatoria.fechaCierre} />
+            </div>
+          )}
         </Container>
       </section>
 
@@ -110,6 +131,10 @@ export default async function ConvocatoriaDetallePage({ params }: Props) {
                 </h2>
                 <dl className="space-y-2 font-mono text-sm text-brutal-tinta/70">
                   <div className="flex justify-between">
+                    <dt>Código</dt>
+                    <dd className="tabular font-bold text-brutal-tinta">{codigo}</dd>
+                  </div>
+                  <div className="flex justify-between">
                     <dt>Apertura</dt>
                     <dd className="font-bold text-brutal-tinta">
                       {formatearFecha(convocatoria.fechaApertura)}
@@ -121,6 +146,14 @@ export default async function ConvocatoriaDetallePage({ params }: Props) {
                       {formatearFecha(convocatoria.fechaCierre)}
                     </dd>
                   </div>
+                  {abierta && (
+                    <div className="flex items-center justify-between gap-3 border-t-2 border-brutal-tinta/20 pt-3">
+                      <dt className="font-bold uppercase text-brutal-tinta">Cierra en</dt>
+                      <dd>
+                        <CuentaRegresiva fecha={convocatoria.fechaCierre} />
+                      </dd>
+                    </div>
+                  )}
                 </dl>
               </div>
 
@@ -148,16 +181,11 @@ export default async function ConvocatoriaDetallePage({ params }: Props) {
                 </div>
               )}
 
-              <Button href="/registro" className="w-full text-center">
-                Postularme
+              <BotonPostular convocatoriaId={convocatoria.id} abierta={abierta} />
+
+              <Button href="/consulta" variant="ghost" className="w-full text-center">
+                Consultar mi solicitud
               </Button>
-              <p className="text-center font-mono text-xs text-brutal-tinta/80">
-                Crear una cuenta para iniciar tu postulación.{' '}
-                <Link href="/login" className="font-brut font-bold text-brutal-cyan hover:bg-brutal-cyan/20">
-                  Inicia sesión
-                </Link>{' '}
-                si ya tienes una.
-              </p>
             </div>
           </div>
         </Container>
@@ -165,4 +193,3 @@ export default async function ConvocatoriaDetallePage({ params }: Props) {
     </main>
   );
 }
-

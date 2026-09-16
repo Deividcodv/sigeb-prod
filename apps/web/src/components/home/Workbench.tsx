@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { Container } from '@/components/ui/Container';
+import { KpisPanel } from '@/components/home/KpisPanel';
 import { nombreRol } from '@/lib/rol';
 import { accionesPorRol } from '@/lib/acciones';
 
@@ -28,6 +29,8 @@ export function Workbench() {
         <p className="mt-2 max-w-2xl font-mono text-sm text-brutal-papel/80">
           Estas son las acciones que puedes realizar según tu rol en EDUVIAGT.
         </p>
+
+        <KpisPanel />
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {acciones.map((accion) => (

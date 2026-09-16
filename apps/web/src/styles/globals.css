@@ -92,4 +92,9 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+
+  /* Números de ancho fijo (conteos, códigos, countdown) */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
 }

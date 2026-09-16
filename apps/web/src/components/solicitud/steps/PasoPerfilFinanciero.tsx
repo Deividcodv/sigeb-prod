@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchConToken } from '@/lib/api-auth';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Spinner } from '@/components/ui/Spinner';
+import type { SolicitudDetalle } from '@/lib/api';
 
 export function PasoPerfilFinanciero({
   solicitudId,
@@ -16,12 +17,45 @@ export function PasoPerfilFinanciero({
   onError: (msg: string) => void;
 }) {
   const [enviando, setEnviando] = useState(false);
+  const [cargandoPrevia, setCargandoPrevia] = useState(true);
   const [form, setForm] = useState({
     ingresoFamiliar: '',
     numeroDependientes: '',
     becasAnteriores: false,
     descripcionSituacion: '',
   });
+
+  useEffect(() => {
+    let activo = true;
+    setCargandoPrevia(true);
+    fetchConToken<SolicitudDetalle>(`/solicitudes/${solicitudId}`)
+      .then((solicitud) => {
+        if (!activo) return;
+        const perfil = solicitud.perfilFinanciero;
+        if (!perfil) return;
+        setForm({
+          ingresoFamiliar:
+            perfil.ingresoFamiliar === null
+              ? ''
+              : String(perfil.ingresoFamiliar),
+          numeroDependientes:
+            perfil.numeroDependientes === null
+              ? ''
+              : String(perfil.numeroDependientes),
+          becasAnteriores: perfil.becasAnteriores,
+          descripcionSituacion: perfil.descripcionSituacion ?? '',
+        });
+      })
+      .catch(() => {
+        if (activo) onError('No se pudo cargar el perfil financiero previo.');
+      })
+      .finally(() => {
+        if (activo) setCargandoPrevia(false);
+      });
+    return () => {
+      activo = false;
+    };
+  }, [solicitudId, onError]);
 
   const guardar = async () => {
     setEnviando(true);
@@ -51,6 +85,14 @@ export function PasoPerfilFinanciero({
       setEnviando(false);
     }
   };
+
+  if (cargandoPrevia) {
+    return (
+      <div className="flex items-center gap-3 py-10 font-mono text-sm font-bold text-brutal-tinta/70">
+        <Spinner /> Cargando tu perfil previamente guardado…
+      </div>
+    );
+  }
 
   return (
     <div>

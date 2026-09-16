@@ -1,6 +1,30 @@
+import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { Convocatorias } from '@/components/home/Convocatorias';
+
+const ESTADISTICAS = [
+  { valor: String(new Date().getFullYear()), etiqueta: 'Ciclo vigente' },
+  { valor: '100%', etiqueta: 'Proceso digital' },
+  { valor: '06', etiqueta: 'Pasos del proceso' },
+  { valor: '01', etiqueta: 'Plataforma oficial' },
+];
+
+const REQUISITOS = [
+  'Ser guatemalteco(a) de nacimiento o naturalizado',
+  'Cumplir el rango de edad establecido por el programa',
+  'Promedio mínimo de 80 puntos en los últimos estudios',
+  'No contar con otra beca financiada por el Estado',
+  'Disponibilidad para cursar los estudios de tiempo completo',
+];
+
+const DOCUMENTOS = [
+  'DPI / Código Único de Identificación',
+  'Certificado de nacimiento',
+  'Historias de calificaciones o cierre de pensum',
+  'Constancia de la institución educativa',
+  'Carta de compromiso',
+];
 
 export function LandingPublico() {
   return (
@@ -17,19 +41,43 @@ export function LandingPublico() {
           <p className="mt-6 max-w-2xl font-mono text-base text-brutal-papel/80 md:text-lg">
             Encuentra programas de becas del Ministerio de Educación de Guatemala
             y realiza tu proceso de postulación de forma sencilla, segura y
-            transparente.
+            transparente. Todo tu expediente, un solo lugar.
           </p>
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
             <Button href="/convocatorias">Explorar becas</Button>
-            <Button href="/consulta" variant="secondary">
-              Consultar mi solicitud
+            <Button href="/registro" variant="secondary">
+              Crear mi cuenta
             </Button>
+          </div>
+          <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[11px] font-bold uppercase tracking-[0.15em] text-brutal-papel/70">
+            <span>● Proceso 100 % digital</span>
+            <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-brutal-gold" />
+            <span>● Seguimiento auditable</span>
+            <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-brutal-gold" />
+            <span>● Gratuito</span>
           </div>
         </Container>
       </section>
 
+      {/* Cinta de estadísticas */}
+      <section className="grid grid-cols-2 border-b-[3px] border-brutal-tinta bg-brutal-blanco md:grid-cols-4">
+        {ESTADISTICAS.map((stat) => (
+          <div
+            key={stat.etiqueta}
+            className="flex flex-col items-center gap-1 border-r-[3px] border-brutal-tinta px-4 py-8 last:border-r-0"
+          >
+            <div className="text-mega text-3xl font-black text-brutal-cyan md:text-4xl">
+              {stat.valor}
+            </div>
+            <div className="brut-label text-center text-[10px] font-bold uppercase text-brutal-tinta/70">
+              {stat.etiqueta}
+            </div>
+          </div>
+        ))}
+      </section>
+
       {/* Convocatorias abiertas (datos reales desde el API) */}
-      <section className="border-y-[3px] border-brutal-tinta bg-brutal-papel py-16">
+      <section className="border-b-[3px] border-brutal-tinta bg-brutal-papel py-16">
         <Container>
           <div className="mb-12 flex flex-col items-start gap-2 md:flex-row md:items-end md:justify-between">
             <div>
@@ -43,6 +91,44 @@ export function LandingPublico() {
             </span>
           </div>
           <Convocatorias />
+        </Container>
+      </section>
+
+      {/* Misión / Visión */}
+      <section className="border-b-[3px] border-brutal-tinta bg-brutal-blanco py-16">
+        <Container>
+          <p className="brut-label text-xs font-bold text-brutal-gold">// Institucional</p>
+          <h2 className="text-mega mb-10 text-3xl font-black text-brutal-tinta md:text-5xl">
+            Misión y visión
+          </h2>
+          <div className="grid gap-6 lg:grid-cols-[1fr_1fr_auto] lg:items-stretch">
+            <div className="rounded-brutal border-[3px] border-brutal-tinta border-t-[10px] border-t-brutal-gold bg-brutal-papel p-6 shadow-brutal-sm">
+              <p className="brut-label mb-3 font-mono text-xs font-bold text-brutal-gold">
+                // Misión
+              </p>
+              <p className="text-sm leading-relaxed text-brutal-tinta/80">
+                Ampliar el acceso a la educación superior mediante el
+                otorgamiento de becas a estudiantes guatemaltecos de escasos
+                recursos, en el marco de la transparencia, la equidad y la
+                excelencia académica.
+              </p>
+            </div>
+            <div className="rounded-brutal border-[3px] border-brutal-tinta border-t-[10px] border-t-brutal-cyan bg-brutal-papel p-6 shadow-brutal-sm">
+              <p className="brut-label mb-3 font-mono text-xs font-bold text-brutal-cyan">
+                // Visión
+              </p>
+              <p className="text-sm leading-relaxed text-brutal-tinta/80">
+                Ser el programa de becas más confiable y transparente de
+                Guatemala, donde cada quetzal invertido se traduzca en
+                oportunidades reales de transformación educativa.
+              </p>
+            </div>
+            <div className="flex items-end">
+              <Button href="/nosotros" variant="ghost" className="w-full">
+                Conocer más →
+              </Button>
+            </div>
+          </div>
         </Container>
       </section>
 
@@ -80,7 +166,7 @@ export function LandingPublico() {
       </section>
 
       {/* Cómo solicitar */}
-      <section className="bg-brutal-papel py-16">
+      <section className="border-b-[3px] border-brutal-tinta bg-brutal-papel py-16">
         <Container>
           <p className="brut-label text-xs font-bold text-brutal-cyan">// Proceso</p>
           <h2 className="text-mega mb-12 text-3xl font-black text-brutal-tinta md:text-5xl">
@@ -108,6 +194,78 @@ export function LandingPublico() {
                 <p className="text-sm text-brutal-tinta/70">{paso.texto}</p>
               </div>
             ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* Requisitos */}
+      <section className="border-b-[3px] border-brutal-tinta bg-brutal-blanco py-16">
+        <Container>
+          <div className="grid gap-12 lg:grid-cols-2">
+            <div>
+              <p className="brut-label text-xs font-bold text-brutal-cyan">// Requisitos</p>
+              <h2 className="text-mega mb-8 text-3xl font-black text-brutal-tinta md:text-5xl">
+                Requisitos generales
+              </h2>
+              <ul className="space-y-3">
+                {REQUISITOS.map((req) => (
+                  <li key={req} className="flex items-start gap-3">
+                    <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-brutal border-2 border-brutal-tinta bg-brutal-gold text-xs font-black text-brutal-tinta">
+                      ✓
+                    </span>
+                    <span className="font-mono text-sm leading-relaxed text-brutal-tinta/80">
+                      {req}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <p className="brut-label text-xs font-bold text-brutal-gold">// Documentos</p>
+              <h2 className="text-mega mb-8 text-3xl font-black text-brutal-tinta md:text-5xl">
+                Documentación
+              </h2>
+              <div className="flex flex-wrap gap-3">
+                {DOCUMENTOS.map((doc) => (
+                  <span
+                    key={doc}
+                    className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-cyan/15 px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-wide text-brutal-tinta"
+                  >
+                    {doc}
+                  </span>
+                ))}
+              </div>
+              <p className="mt-6 max-w-xl font-mono text-sm leading-relaxed text-brutal-tinta/60">
+                La lista exacta de documentos se define para cada convocatoria.
+                Revisa los detalles del programa antes de postularte.
+              </p>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* Cinta final de acción */}
+      <section className="bg-brutal-papel py-16">
+        <Container>
+          <div className="flex flex-col items-center gap-6 border-[3px] border-brutal-tinta bg-brutal-gold px-6 py-14 text-center shadow-brutal">
+            <h2 className="text-mega text-3xl font-black text-brutal-tinta md:text-5xl">
+              Tu oportunidad empieza hoy
+            </h2>
+            <p className="max-w-xl font-mono text-sm text-brutal-tinta/80">
+              Crea tu cuenta y postúlate a las convocatorias abiertas. El proceso
+              es gratuito, digital y totalmente auditable.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Button href="/registro">Crear mi cuenta</Button>
+              <Button href="/login" variant="ghost">
+                Acceso al sistema
+              </Button>
+            </div>
+            <p className="font-mono text-[11px] font-bold uppercase tracking-wide text-brutal-tinta/60">
+              <Link href="/consulta" className="underline decoration-brutal-tinta underline-offset-4 hover:bg-brutal-tinta/10">
+                ¿Ya te postulaste? Consulta tu solicitud por código →
+              </Link>
+            </p>
           </div>
         </Container>
       </section>

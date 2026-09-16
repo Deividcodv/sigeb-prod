@@ -11,6 +11,7 @@ import {
   type Genero,
   type NivelAcademico,
   type Departamento,
+  type SolicitudDetalle,
 } from '@/lib/api';
 
 export function PasoPerfilAcademico({
@@ -23,6 +24,7 @@ export function PasoPerfilAcademico({
   onError: (msg: string) => void;
 }) {
   const [enviando, setEnviando] = useState(false);
+  const [cargandoPrevia, setCargandoPrevia] = useState(true);
   const [generos, setGeneros] = useState<Genero[]>([]);
   const [niveles, setNiveles] = useState<NivelAcademico[]>([]);
   const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
@@ -52,12 +54,74 @@ export function PasoPerfilAcademico({
     );
   }, []);
 
+  useEffect(() => {
+    let activo = true;
+    setCargandoPrevia(true);
+    fetchConToken<SolicitudDetalle>(`/solicitudes/${solicitudId}`)
+      .then((solicitud) => {
+        if (!activo) return;
+        const perfil = solicitud.perfilAcademico;
+        if (!perfil) return;
+        setForm(() => ({
+          generoId: perfil.generoId ?? (perfil.generoOtro ? '__otro__' : ''),
+          generoOtro: perfil.generoOtro ?? '',
+          nivelId:
+            perfil.nivelAcademicoId ?? (perfil.nivelAcademicoOtro ? '__otro__' : ''),
+          nivelOtro: perfil.nivelAcademicoOtro ?? '',
+          departamentoId:
+            perfil.departamentoId ?? (perfil.departamentoOtro ? '__otro__' : ''),
+          departamentoOtro: perfil.departamentoOtro ?? '',
+          municipioId: perfil.municipioId ?? (perfil.municipioOtro ? '__otro__' : ''),
+          municipioOtro: perfil.municipioOtro ?? '',
+          institucion: perfil.institucion ?? '',
+          carrera: perfil.carrera ?? '',
+          promedio: perfil.promedio === null ? '' : String(perfil.promedio),
+        }));
+      })
+      .catch(() => {
+        if (activo) onError('No se pudo cargar el perfil académico previo.');
+      })
+      .finally(() => {
+        if (activo) setCargandoPrevia(false);
+      });
+    return () => {
+      activo = false;
+    };
+  }, [solicitudId, onError]);
+
   const departamento = departamentos.find(
     (d) => d.id === form.departamentoId,
   );
   const municipios = departamento?.municipios ?? [];
 
+  const validar = (): string | null => {
+    if (form.generoId === '__otro__' && !form.generoOtro.trim()) {
+      return 'Escribe una opción en «Género (otro)».';
+    }
+    if (form.nivelId === '__otro__' && !form.nivelOtro.trim()) {
+      return 'Escribe una opción en «Nivel académico (otro)».';
+    }
+    if (form.departamentoId === '__otro__' && !form.departamentoOtro.trim()) {
+      return 'Escribe una opción en «Departamento (otro)».';
+    }
+    if (form.municipioId === '__otro__' && !form.municipioOtro.trim()) {
+      return 'Escribe una opción en «Municipio (otro)».';
+    }
+    if (form.promedio !== '') {
+      const promedio = Number(form.promedio);
+      if (Number.isNaN(promedio) || promedio < 0 || promedio > 100) {
+        return 'El promedio debe estar entre 0 y 100.';
+      }
+    }
+    return null;
+  };
+
   const guardar = async () => {
+    const errorValidacion = validar();
+    if (errorValidacion) {
+      onError(errorValidacion);
+      return;
+    }
     setEnviando(true);
     try {
       const body = {
@@ -106,6 +170,14 @@ export function PasoPerfilAcademico({
       setEnviando(false);
     }
   };
+
+  if (cargandoPrevia) {
+    return (
+      <div className="flex items-center gap-3 py-10 font-mono text-sm font-bold text-brutal-tinta/70">
+        <Spinner /> Cargando tu perfil previamente guardado…
+      </div>
+    );
+  }
 
   return (
     <div>

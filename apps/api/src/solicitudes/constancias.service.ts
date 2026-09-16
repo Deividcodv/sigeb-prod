@@ -66,7 +66,7 @@ export class ConstanciasService {
   }
 
   private renderHtml(solicitud: SolicitudConstancia): string {
-    const codigo = `SIGEB-${solicitud.id.slice(0, 8).toUpperCase()}`;
+    const codigo = `EDUVIAGT-${solicitud.id.slice(0, 8).toUpperCase()}`;
     const fechaResolucion =
       solicitud.decision?.fecha ?? solicitud.updatedAt ?? new Date();
 
@@ -180,7 +180,7 @@ export class ConstanciasService {
       <strong>Ministerio de Educación</strong>
       <span>Dirección General de Becas</span>
     </div>
-    <div class="sigeb">SIGEB<br />Sistema Integral de Gestión de Becas</div>
+    <div class="sigeb">EDUVIAGT<br />Sistema Integral de Gestión de Becas</div>
   </div>
 
   <h1 class="titulo-doc">Constancia de Beca</h1>
@@ -214,7 +214,7 @@ export class ConstanciasService {
   <p class="texto">
     La presente constancia se emite en cumplimiento del Reglamento de Becas del
     Ministerio de Educación y de la resolución adoptada por el comité evaluador,
-    según lo registrado en el Sistema Integral de Gestión de Becas (SIGEB). La
+    según lo registrado en el Sistema Integral de Gestión de Becas (EDUVIAGT). La
     información contenida puede ser verificada por cualquier interesado a través
     de la página oficial del sistema.
   </p>
@@ -226,7 +226,7 @@ export class ConstanciasService {
   </div>
 
   <div class="pie">
-    <span>Documento generado electrónicamente por SIGEB</span>
+    <span>Documento generado electrónicamente por EDUVIAGT</span>
     <span>${escapeHtml(codigo)} · ${escapeHtml(this.formatearFecha(new Date()))}</span>
   </div>
 </body>

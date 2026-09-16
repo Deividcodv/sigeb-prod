@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { fetchConToken } from '@/lib/api-auth';
 import { Container } from '@/components/ui/Container';
 import { Stepper } from '@/components/ui/Stepper';
 import { InternalPageHeader } from '@/components/ui/InternalPageHeader';
+import { BarraCompletitud } from '@/components/solicitud/BarraCompletitud';
 import {
   PasoConvocatoria,
   PasoPerfilAcademico,
@@ -36,6 +37,15 @@ function NuevaSolicitudContent() {
   const [paso, setPaso] = useState(1);
   const [solicitudId, setSolicitudId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [convocatoriaPreseleccionada, setConvocatoriaPreseleccionada] = useState<
+    string | null
+  >(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('convocatoriaId');
+    if (id) setConvocatoriaPreseleccionada(id);
+  }, []);
 
   const avanzar = () => setPaso((p) => Math.min(p + 1, PASOS.length));
   const terminar = () => {
@@ -54,7 +64,8 @@ function NuevaSolicitudContent() {
       />
 
       <Container className="py-8">
-        <div className="mb-8">
+        <div className="mb-8 space-y-6">
+          {solicitudId && <BarraCompletitud solicitudId={solicitudId} />}
           <Stepper pasos={PASOS} actual={paso} />
         </div>
 
@@ -66,6 +77,7 @@ function NuevaSolicitudContent() {
 
         {paso === 1 && (
           <PasoConvocatoria
+            preseleccionadaId={convocatoriaPreseleccionada ?? undefined}
             onSeleccionar={async (id) => {
               setError(null);
               try {
@@ -74,6 +86,7 @@ function NuevaSolicitudContent() {
                   { method: 'POST', body: { convocatoriaId: id } },
                 );
                 setSolicitudId(creada.id);
+                setConvocatoriaPreseleccionada(null);
                 avanzar();
               } catch (e) {
                 setError(
