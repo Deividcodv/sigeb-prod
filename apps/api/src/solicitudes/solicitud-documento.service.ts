@@ -79,6 +79,7 @@ export class SolicitudDocumentoService {
         documentoTipoId: tipoId,
         archivoUrl: stored.url,
         estado: DOCUMENTO_ESTADO.CARGADO,
+        comentarioRechazo: null,
         version: (anterior?.version ?? 0) + 1,
       },
       include: { documentoTipo: true },
@@ -122,6 +123,7 @@ export class SolicitudDocumentoService {
     id: string,
     tipoId: string,
     estado: 'RECHAZADO',
+    comentario: string | undefined,
     usuario: AuthenticatedUser,
   ) {
     const esRevisor =
@@ -151,7 +153,10 @@ export class SolicitudDocumentoService {
 
     const actualizado = await this.prisma.solicitudDocumento.update({
       where: { id: doc.id },
-      data: { estado },
+      data: {
+        estado,
+        comentarioRechazo: comentario?.trim() ? comentario.trim() : null,
+      },
       include: { documentoTipo: true },
     });
 
@@ -160,7 +165,12 @@ export class SolicitudDocumentoService {
       accion: 'cambiar-estado-documento',
       entidad: 'documento',
       entidadId: id,
-      detalle: { tipoId, estado, version: doc.version },
+      detalle: {
+        tipoId,
+        estado,
+        version: doc.version,
+        comentario: actualizado.comentarioRechazo,
+      },
     });
 
     return actualizado;

@@ -59,12 +59,16 @@ export class SolicitudChecklistService {
     const documentos = solicitud.convocatoria.documentosRequeridos.map(
       (dr) => {
         const ultimo = ultimosPorTipo.get(dr.documentoTipoId);
-        const cargado = Boolean(ultimo && ultimo.estado === DOCUMENTO_ESTADO.CARGADO);
+        const estado = ultimo?.estado ?? DOCUMENTO_ESTADO.PENDIENTE;
+        const cargado = estado === DOCUMENTO_ESTADO.CARGADO;
         return {
           documentoTipoId: dr.documentoTipoId,
           nombre: dr.documentoTipo.nombre,
           obligatorio: dr.obligatorio,
           cargado,
+          estado,
+          version: ultimo?.version ?? 0,
+          comentarioRechazo: ultimo?.comentarioRechazo ?? null,
           archivoUrl: cargado ? ultimo!.archivoUrl : null,
         };
       },
@@ -78,7 +82,12 @@ export class SolicitudChecklistService {
       pendientes.push('Perfil financiero incompleto (ingreso familiar requerido)');
     }
     for (const documento of documentos) {
-      if (documento.obligatorio && !documento.cargado) {
+      if (!documento.obligatorio) continue;
+      if (documento.estado === DOCUMENTO_ESTADO.RECHAZADO && documento.comentarioRechazo) {
+        pendientes.push(
+          `Documento "${documento.nombre}" rechazado: ${documento.comentarioRechazo}`,
+        );
+      } else if (!documento.cargado) {
         pendientes.push(`Documento "${documento.nombre}" pendiente`);
       }
     }

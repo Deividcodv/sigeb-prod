@@ -196,6 +196,7 @@ export class SolicitudesController {
       id,
       tipoId,
       dto.estado,
+      dto.comentario,
       usuario,
     );
   }

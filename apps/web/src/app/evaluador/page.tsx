@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
 import { Input } from '@/components/ui/Input';
 import { InternalPageHeader } from '@/components/ui/InternalPageHeader';
+import { GraficaDona } from '@/components/reportes/GraficaDona';
 
 interface Criterio {
   id: string;
@@ -128,7 +129,27 @@ function EvaluadorContent() {
           </Card>
         ) : (
           <div className="space-y-6">
-            {evaluaciones.map((ev) => (
+            {evaluaciones.map((ev) => {
+              let sumPonderado = 0;
+              let sumPesos = 0;
+              let ingresados = 0;
+              ev.criterios.forEach((criterio) => {
+                const raw = marcas[criterio.id]?.puntaje ?? '';
+                if (raw.trim() === '') return;
+                const num = Number(raw);
+                if (Number.isNaN(num) || num < 0 || num > 100) return;
+                sumPonderado += criterio.peso * num;
+                sumPesos += criterio.peso;
+                ingresados += 1;
+              });
+              const preview =
+                sumPesos > 0 ? Math.round((sumPonderado / sumPesos) * 100) / 100 : null;
+              const pctProgreso =
+                ev.totalCriterios > 0
+                  ? Math.round((ingresados / ev.totalCriterios) * 100)
+                  : 0;
+
+              return (
               <Card key={ev.solicitudId}>
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                   <div>
@@ -146,9 +167,42 @@ function EvaluadorContent() {
                       {ev.solicitud.usuario.cui})
                     </p>
                   </div>
-                  <span className="text-sm font-bold text-brutal-tinta">
-                    {ev.completados}/{ev.totalCriterios} completados
-                  </span>
+                  <div className="text-right">
+                    <span className="font-mono text-sm font-bold text-brutal-tinta">
+                      {ev.completados}/{ev.totalCriterios} completados
+                    </span>
+                    {preview !== null && (
+                      <p className="mt-1 font-mono text-sm font-bold text-brutal-tinta">
+                        Puntaje ponderado:{' '}
+                        <span className="rounded-brutal border-2 border-brutal-tinta bg-brutal-gold px-2 py-0.5 text-brutal-tinta">
+                          {preview}/100
+                        </span>
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="mb-4 grid gap-4 md:grid-cols-[1fr_220px]">
+                  <div>
+                    <div className="mb-1 flex justify-between font-mono text-xs font-bold text-brutal-tinta">
+                      <span>Avance de evaluación</span>
+                      <span>{pctProgreso}%</span>
+                    </div>
+                    <div className="h-3 w-full rounded-brutal border-[3px] border-brutal-tinta bg-brutal-papel">
+                      <div
+                        className={`h-full rounded-brutal ${pctProgreso === 100 ? 'bg-brutal-lima' : 'bg-sigeb-blue'} transition-all`}
+                        style={{ width: `${pctProgreso}%` }}
+                      />
+                    </div>
+                  </div>
+                  <div className="h-[220px]">
+                    <GraficaDona
+                      data={[
+                        { estado: 'Completados', cantidad: ingresados },
+                        { estado: 'Pendientes', cantidad: Math.max(0, ev.totalCriterios - ingresados) },
+                      ]}
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-3">
@@ -216,7 +270,8 @@ function EvaluadorContent() {
                   })}
                 </div>
               </Card>
-            ))}
+              );
+            })}
           </div>
         )}
       </Container>

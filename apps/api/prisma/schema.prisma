@@ -319,14 +319,15 @@ model SolicitudPerfilFinanciero {
 }
 
 model SolicitudDocumento {
-  id              String                    @id @default(uuid())
-  solicitudId     String
-  documentoTipoId String
-  archivoUrl      String
-  estado          SolicitudDocumentoEstado  @default(PENDIENTE)
-  version         Int                       @default(1)
-  createdAt       DateTime                  @default(now())
-  updatedAt       DateTime                  @updatedAt
+  id                 String                   @id @default(uuid())
+  solicitudId        String
+  documentoTipoId    String
+  archivoUrl         String
+  estado             SolicitudDocumentoEstado @default(PENDIENTE)
+  version            Int                      @default(1)
+  comentarioRechazo  String?
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @updatedAt
 
   solicitud     Solicitud     @relation(fields: [solicitudId], references: [id], onDelete: Cascade)
   documentoTipo DocumentoTipo @relation(fields: [documentoTipoId], references: [id])

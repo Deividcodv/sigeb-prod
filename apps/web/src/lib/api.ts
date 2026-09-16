@@ -90,6 +90,7 @@ export interface SolicitudDetalle extends Solicitud {
     archivoUrl: string;
     estado: string;
     version: number;
+    comentarioRechazo?: string | null;
     documentoTipo: DocumentoTipo;
   }[];
   historial?: HistorialEstado[];
@@ -100,6 +101,9 @@ export interface SolicitudChecklistDocumento {
   nombre: string;
   obligatorio: boolean;
   cargado: boolean;
+  estado: string;
+  version: number;
+  comentarioRechazo: string | null;
   archivoUrl: string | null;
 }
 
@@ -185,6 +189,8 @@ export interface Sesion {
   updatedAt: string;
   comite?: { id: string; nombre: string };
   _count?: { agenda?: number; votos?: number };
+  miembros?: number;
+  votantes?: number;
 }
 
 export interface SesionVoto {

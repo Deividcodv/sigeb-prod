@@ -9,6 +9,8 @@ import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { LineaTemporal } from '@/components/solicitud/LineaTemporal';
 import {
   formatearFecha,
   type SolicitudDetalle,
@@ -34,6 +36,11 @@ function SolicitudDetalleContent() {
   const [subiendo, setSubiendo] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
   const [exito, setExito] = useState<string | null>(null);
+  const [confirmTipo, setConfirmTipo] = useState<{
+    tipoId: string;
+    accion: 'eliminar' | 'reemplazar';
+    archivo?: File;
+  } | null>(null);
 
   const cargar = useCallback(async () => {
     try {
@@ -129,7 +136,25 @@ function SolicitudDetalleContent() {
     );
   }
 
-  const puedeEnviar = solicitud.estado === 'BORRADOR' || solicitud.estado === 'CORRECCION';
+  const puedeEnviar = solicitud.estado === 'BORRADOR';
+  const enCorreccion = solicitud.estado === 'CORRECCION';
+
+  const corregir = async () => {
+    setEnviando(true);
+    setError(null);
+    try {
+      await fetchConToken(`/solicitudes/${id}/transicion`, {
+        method: 'POST',
+        body: { accion: 'corregir', comentario: 'Postulante aplica correcciones solicitadas' },
+      });
+      await cargar();
+      setExito('Correcciones aplicadas. Revisa y vuelve a enviar tu solicitud.');
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'No se pudieron aplicar las correcciones');
+    } finally {
+      setEnviando(false);
+    }
+  };
 
   const descargarPdf = async () => {
     setError(null);
@@ -195,7 +220,9 @@ function SolicitudDetalleContent() {
               documentos={checklist?.documentos ?? []}
               subiendo={subiendo}
               onSubir={subir}
-              onQuitar={quitar}
+              onConfirmar={(tipoId, accion, archivo) =>
+                setConfirmTipo({ tipoId, accion, archivo })
+              }
             />
 
             <Card>
@@ -203,21 +230,7 @@ function SolicitudDetalleContent() {
                 Historial de la solicitud
               </h2>
               {solicitud.historial && solicitud.historial.length > 0 ? (
-                <ol className="space-y-3 border-l-[3px] border-brutal-tinta pl-4">
-                  {solicitud.historial.map((h, i) => (
-                    <li key={i}>
-                      <p className="flex flex-wrap items-center gap-2 font-mono">
-                        <Badge estado={h.estado} />
-                        <span className="text-xs text-brutal-tinta/75">
-                          {formatearFecha(h.fecha)}
-                        </span>
-                      </p>
-                      {h.comentario && (
-                        <p className="mt-1 font-mono text-sm text-brutal-tinta/80">{h.comentario}</p>
-                      )}
-                    </li>
-                  ))}
-                </ol>
+                <LineaTemporal historial={solicitud.historial} />
               ) : (
                 <p className="text-sm text-brutal-tinta/75">Sin movimientos registrados.</p>
               )}
@@ -285,6 +298,27 @@ function SolicitudDetalleContent() {
               )}
             </Card>
 
+            {enCorreccion && (
+              <Card className="border-brutal-rojo bg-red-50/40">
+                <h2 className="mb-2 text-lg font-black text-brutal-tinta">
+                  Correcciones requeridas
+                </h2>
+                <p className="mb-4 text-sm text-brutal-tinta/70">
+                  El comité solicitó cambios en tu solicitud. Aplica las
+                  correcciones y vuelve a enviarla para continuar con la
+                  evaluación.
+                </p>
+                <Button
+                  onClick={corregir}
+                  disabled={enviando}
+                  className="w-full"
+                  variant="danger"
+                >
+                  {enviando ? <Spinner /> : 'Aplicar correcciones'}
+                </Button>
+              </Card>
+            )}
+
             {puedeEnviar && (
               <Card>
                 <h2 className="mb-2 text-lg font-black text-brutal-tinta">
@@ -309,6 +343,33 @@ function SolicitudDetalleContent() {
           </div>
         </div>
       </Container>
+
+      <ConfirmDialog
+        open={confirmTipo !== null}
+        title={
+          confirmTipo?.accion === 'eliminar'
+            ? 'Eliminar documento'
+            : 'Reemplazar documento'
+        }
+        description={
+          confirmTipo?.accion === 'eliminar'
+            ? 'Se eliminará el archivo subido. Esta acción no se puede deshacer.'
+            : 'El archivo actual será reemplazado por el nuevo.'
+        }
+        confirmLabel="Confirmar"
+        tone={confirmTipo?.accion === 'eliminar' ? 'danger' : 'primary'}
+        onConfirm={() => {
+          if (!confirmTipo) return;
+          const { tipoId, accion, archivo } = confirmTipo;
+          setConfirmTipo(null);
+          if (accion === 'eliminar') {
+            void quitar(tipoId);
+          } else if (archivo) {
+            void subir(tipoId, archivo);
+          }
+        }}
+        onCancel={() => setConfirmTipo(null)}
+      />
     </>
   );
 }
@@ -317,18 +378,25 @@ function DocsSection({
   documentos,
   subiendo,
   onSubir,
-  onQuitar,
+  onConfirmar,
 }: {
   documentos: {
     documentoTipoId: string;
     nombre: string;
     obligatorio: boolean;
     cargado: boolean;
+    estado: string;
+    version: number;
+    comentarioRechazo: string | null;
     archivoUrl: string | null;
   }[];
   subiendo: string | null;
   onSubir: (tipoId: string, file: File) => void;
-  onQuitar: (tipoId: string) => void;
+  onConfirmar: (
+    tipoId: string,
+    accion: 'eliminar' | 'reemplazar',
+    archivo?: File,
+  ) => void;
 }) {
   return (
     <Card>
@@ -339,48 +407,86 @@ function DocsSection({
         <p className="font-mono text-sm text-brutal-tinta/75">No se requieren documentos para esta solicitud.</p>
       ) : (
         <div className="space-y-3">
-          {documentos.map((doc) => (
-            <div
-              key={doc.documentoTipoId}
-              className="flex flex-col gap-2 rounded-brutal border-[3px] border-brutal-tinta bg-brutal-papel p-3 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <div>
-                <p className="font-brut text-sm font-bold uppercase tracking-wide text-brutal-tinta">{doc.nombre}</p>
-                <p className="font-mono text-xs text-brutal-tinta/75">
-                  {doc.obligatorio ? 'Obligatorio' : 'Opcional'}
-                </p>
+          {documentos.map((doc) => {
+            const rechazado = doc.estado === 'RECHAZADO';
+            return (
+              <div
+                key={doc.documentoTipoId}
+                className={`flex flex-col gap-2 rounded-brutal border-[3px] p-3 sm:flex-row sm:items-center sm:justify-between ${
+                  rechazado
+                    ? 'border-brutal-rojo bg-red-50/40'
+                    : 'border-brutal-tinta bg-brutal-papel'
+                }`}
+              >
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-brut text-sm font-bold uppercase tracking-wide text-brutal-tinta">{doc.nombre}</p>
+                    <Badge estado={doc.estado} />
+                    {doc.version > 0 && (
+                      <span className="font-mono text-xs text-brutal-tinta/60">v{doc.version}</span>
+                    )}
+                  </div>
+                  <p className="font-mono text-xs text-brutal-tinta/75">
+                    {doc.obligatorio ? 'Obligatorio' : 'Opcional'}
+                  </p>
+                  {rechazado && (
+                    <p className="mt-1 rounded-brutal border-2 border-brutal-rojo bg-brutal-rojo/10 px-3 py-1.5 font-mono text-xs font-bold text-brutal-tinta">
+                      Documento rechazado
+                      {doc.comentarioRechazo
+                        ? `: ${doc.comentarioRechazo}`
+                        : '. Revisa el archivo y vuelve a subirlo.'}
+                    </p>
+                  )}
+                </div>
+                <div className="flex items-center gap-3">
+                  {doc.cargado ? (
+                    <>
+                      <label className="cursor-pointer rounded-brutal border-[3px] border-brutal-tinta bg-brutal-cyan px-4 py-1.5 font-brut text-sm font-bold uppercase tracking-wide text-brutal-tinta shadow-brutal-sm transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none">
+                        {subiendo === doc.documentoTipoId
+                          ? 'Subiendo...'
+                          : rechazado
+                            ? 'Subir de nuevo'
+                            : 'Reemplazar'}
+                        <input
+                          type="file"
+                          accept=".pdf,.jpg,.jpeg,.png"
+                          className="hidden"
+                          disabled={subiendo === doc.documentoTipoId}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) onConfirmar(doc.documentoTipoId, 'reemplazar', file);
+                            e.target.value = '';
+                          }}
+                        />
+                      </label>
+                      <Button
+                        variant="ghost"
+                        onClick={() => onConfirmar(doc.documentoTipoId, 'eliminar')}
+                        disabled={subiendo === doc.documentoTipoId}
+                      >
+                        Eliminar
+                      </Button>
+                    </>
+                  ) : (
+                    <label className="cursor-pointer rounded-brutal border-[3px] border-brutal-tinta bg-brutal-cyan px-4 py-1.5 font-brut text-sm font-bold uppercase tracking-wide text-brutal-tinta shadow-brutal-sm transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none">
+                      {subiendo === doc.documentoTipoId ? 'Subiendo...' : 'Subir'}
+                      <input
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        className="hidden"
+                        disabled={subiendo === doc.documentoTipoId}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) onSubir(doc.documentoTipoId, file);
+                          e.target.value = '';
+                        }}
+                      />
+                    </label>
+                  )}
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                {doc.cargado ? (
-                  <>
-                    <span className="rounded-brutal border-2 border-brutal-tinta bg-brutal-lima px-2 py-0.5 font-brut text-xs font-bold text-brutal-tinta">✓ Cargado</span>
-                    <Button
-                      variant="ghost"
-                      onClick={() => onQuitar(doc.documentoTipoId)}
-                      disabled={subiendo === doc.documentoTipoId}
-                    >
-                      {subiendo === doc.documentoTipoId ? '...' : 'Quitar'}
-                    </Button>
-                  </>
-                ) : (
-                  <label className="cursor-pointer rounded-brutal border-[3px] border-brutal-tinta bg-brutal-cyan px-4 py-1.5 font-brut text-sm font-bold uppercase tracking-wide text-brutal-tinta shadow-brutal-sm transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none">
-                    {subiendo === doc.documentoTipoId ? 'Subiendo...' : 'Subir'}
-                    <input
-                      type="file"
-                      accept=".pdf,.jpg,.jpeg,.png"
-                      className="hidden"
-                      disabled={subiendo === doc.documentoTipoId}
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) onSubir(doc.documentoTipoId, file);
-                        e.target.value = '';
-                      }}
-                    />
-                  </label>
-                )}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </Card>

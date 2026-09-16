@@ -266,9 +266,10 @@ export class SolicitudesService {
     id: string,
     tipoId: string,
     estado: 'RECHAZADO',
+    comentario: string | undefined,
     usuario: AuthenticatedUser,
   ) {
-    return this.documentos.marcarEstado(id, tipoId, estado, usuario);
+    return this.documentos.marcarEstado(id, tipoId, estado, comentario, usuario);
   }
 
   async obtenerChecklist(id: string, usuario: AuthenticatedUser) {

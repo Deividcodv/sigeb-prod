@@ -109,6 +109,12 @@ export class MarcarEstadoDocumentoDto {
   @ApiProperty({ description: 'Estado a asignar al documento más reciente del tipo (retro S3)' })
   @IsIn(['RECHAZADO'])
   estado!: 'RECHAZADO';
+
+  @ApiPropertyOptional({ description: 'Motivo/comentario del rechazo (se muestra al postulante)' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  comentario?: string;
 }
 
 export class PerfilFinancieroDto {

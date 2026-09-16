@@ -89,13 +89,38 @@ export class SesionesService {
   }
 
   async listarSesiones() {
-    return this.prisma.sesion.findMany({
+    const sesiones = await this.prisma.sesion.findMany({
       include: {
         comite: { select: { id: true, nombre: true } },
+        votos: { select: { usuarioId: true } },
         _count: { select: { agenda: true, votos: true } },
       },
       orderBy: { fecha: 'desc' },
     });
+
+    const miembrosPorComite = await this.prisma.comiteMiembro.groupBy({
+      by: ['comiteId'],
+      where: { activo: true },
+      _count: { _all: true },
+    });
+    const miembrosMap = new Map(
+      miembrosPorComite.map((m) => [m.comiteId, m._count._all]),
+    );
+
+    return sesiones.map((s) => ({
+      id: s.id,
+      comiteId: s.comiteId,
+      fecha: s.fecha,
+      lugar: s.lugar,
+      estado: s.estado,
+      quorumMinimo: s.quorumMinimo,
+      createdAt: s.createdAt,
+      updatedAt: s.updatedAt,
+      comite: s.comite,
+      _count: s._count,
+      miembros: miembrosMap.get(s.comiteId) ?? 0,
+      votantes: new Set(s.votos.map((v) => v.usuarioId)).size,
+    }));
   }
 
   async obtenerSesion(id: string) {
@@ -129,7 +154,14 @@ export class SesionesService {
       throw new NotFoundException(`Sesión con id ${id} no encontrada`);
     }
 
-    return sesion;
+    const miembros = await this.prisma.comiteMiembro.count({
+      where: { comiteId: sesion.comiteId, activo: true },
+    });
+
+    return {
+      ...sesion,
+      miembros,
+    };
   }
 
   async registrarVoto(
