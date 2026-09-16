@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import { Container } from '@/components/ui/Container';
 
 export const metadata: Metadata = {
-  title: 'Transparencia | SIGEB',
+  title: 'Transparencia | EDUVIAGT',
   description:
-    'SIGEB garantiza un proceso de gestión de becas transparente y auditable: cada acción queda documentada y verificable.',
+    'EDUVIAGT garantiza un proceso de gestión de becas transparente y auditable: cada acción queda documentada y verificable.',
 };
 
 const principios = [
@@ -42,7 +42,7 @@ export default function TransparenciaPage() {
           <p className="brut-label text-xs font-bold text-brutal-gold">// Transparencia</p>
           <h1 className="text-mega text-3xl font-black md:text-5xl">Acceso a la información</h1>
           <p className="mt-2 max-w-2xl font-mono text-sm text-brutal-papel/80">
-            Cómo SIGEB garantiza que cada decisión en el otorgamiento de becas sea
+            Cómo EDUVIAGT garantiza que cada decisión en el otorgamiento de becas sea
             documentada, verificable y pública.
           </p>
         </Container>

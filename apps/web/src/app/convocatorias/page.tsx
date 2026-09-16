@@ -6,7 +6,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { fetcher, type Convocatoria, type ListaResponse } from '@/lib/api';
 
 export const metadata: Metadata = {
-  title: 'Convocatorias | SIGEB',
+  title: 'Convocatorias | EDUVIAGT',
   description:
     'Explora las convocatorias abiertas de becas del Ministerio de Educación de Guatemala.',
 };
@@ -75,3 +75,4 @@ export default async function ConvocatoriasPage({ searchParams }: Props) {
     </main>
   );
 }
+

@@ -340,10 +340,10 @@ async function main() {
 
   await prisma.usuario.upsert({
     where: { cui: '1234567890123' },
-    update: {},
+    update: { nombres: 'Administrador EDUVIAGT' },
     create: {
       cui: '1234567890123',
-      nombres: 'Administrador SIGEB',
+      nombres: 'Administrador EDUVIAGT',
       email: 'admin@sigeb.gov.gt',
       passwordHash: hashedPassword,
       rolId: adminRoleData!.id,
@@ -426,7 +426,7 @@ async function main() {
   const conocimiento = [
     {
       titulo: '¿Qué es una beca?',
-      contenido: 'Una beca es un apoyo económico otorgado al estudiante para cubrir gastos de estudios, como matrícula, colegiatura o materiales. En SIGEB el Ministerio de Educación administra las becas mediante convocatorias públicas.',
+      contenido: 'Una beca es un apoyo económico otorgado al estudiante para cubrir gastos de estudios, como matrícula, colegiatura o materiales. En EDUVIAGT el Ministerio de Educación administra las becas mediante convocatorias públicas.',
       tags: ['beca', 'definicion', 'que es'],
     },
     {
@@ -435,7 +435,7 @@ async function main() {
       tags: ['requisitos', 'postular', 'documentos', 'CUI'],
     },
     {
-      titulo: 'Cómo crear una cuenta en SIGEB',
+      titulo: 'Cómo crear una cuenta en EDUVIAGT',
       contenido: 'El proceso comienza en el módulo de Registro. Debes ingresar tu número de CUI (13 dígitos), nombres completos según DPI y un correo electrónico activo. Con esos datos el sistema te asigna el rol POSTULANTE y podrás iniciar sesión en la plataforma.',
       tags: ['registro', 'crear cuenta', 'cui', 'usuario'],
     },
@@ -446,7 +446,7 @@ async function main() {
     },
     {
       titulo: 'Proceso de postulación paso a paso',
-      contenido: 'El proceso de postulación en SIGEB es: 1) Registrarse e iniciar sesión como postulante. 2) Seleccionar una convocatoria ABIERTA. 3) Crear la solicitud (inicia en BORRADOR). 4) Completar el perfil académico y financiero. 5) Cargar los documentos requeridos. 6) Revisar el checklist y enviar la solicitud. 7) Esperar la evaluación.',
+      contenido: 'El proceso de postulación en EDUVIAGT es: 1) Registrarse e iniciar sesión como postulante. 2) Seleccionar una convocatoria ABIERTA. 3) Crear la solicitud (inicia en BORRADOR). 4) Completar el perfil académico y financiero. 5) Cargar los documentos requeridos. 6) Revisar el checklist y enviar la solicitud. 7) Esperar la evaluación.',
       tags: ['proceso', 'postulación', 'pasos', 'solicitud', 'como postular'],
     },
     {
@@ -501,7 +501,7 @@ async function main() {
     },
     {
       titulo: 'Cómo consultar el estado de mi solicitud',
-      contenido: 'Inicia sesión en SIGEB y entra a tus solicitudes. Ahí verás el estado actual (BORRADOR, ENVIADA, EN_REVISION, EVALUADA, APROBADA o RECHAZADA) y el historial de cambios.',
+      contenido: 'Inicia sesión en EDUVIAGT y entra a tus solicitudes. Ahí verás el estado actual (BORRADOR, ENVIADA, EN_REVISION, EVALUADA, APROBADA o RECHAZADA) y el historial de cambios.',
       tags: ['consultar estado', 'seguimiento', 'estado'],
     },
     {
@@ -546,17 +546,17 @@ async function main() {
     },
     {
       titulo: 'Soporte y contactos',
-      contenido: 'Para dudas sobre tu postulación contacta al equipo de SIGEB del Ministerio de Educación durante horario de atención. El sistema registra cada acción sensible para auditoría.',
+      contenido: 'Para dudas sobre tu postulación contacta al equipo de EDUVIAGT del Ministerio de Educación durante horario de atención. El sistema registra cada acción sensible para auditoría.',
       tags: ['soporte', 'contacto', 'ayuda', 'atencion'],
     },
     {
       titulo: 'Seguridad de datos',
-      contenido: 'SIGEB protege tus datos personales: las contraseñas se guardan encriptadas, los accesos se registran y cada transición sensible queda en el registro de auditoría.',
+      contenido: 'EDUVIAGT protege tus datos personales: las contraseñas se guardan encriptadas, los accesos se registran y cada transición sensible queda en el registro de auditoría.',
       tags: ['seguridad', 'datos', 'privacidad', 'auditoria'],
     },
     {
       titulo: 'Roles del sistema',
-      contenido: 'SIGEB tiene los roles ADMIN, POSTULANTE, EVALUADOR, COORDINADOR_COMITE y MIEMBRO_COMITE. Cada rol tiene permisos asignados; el ADMIN gestiona roles y permisos.',
+      contenido: 'EDUVIAGT tiene los roles ADMIN, POSTULANTE, EVALUADOR, COORDINADOR_COMITE y MIEMBRO_COMITE. Cada rol tiene permisos asignados; el ADMIN gestiona roles y permisos.',
       tags: ['roles', 'permisos', 'admin', 'evaluador', 'coordinador', 'miembro'],
     },
     {

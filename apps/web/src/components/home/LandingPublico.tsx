@@ -46,14 +46,14 @@ export function LandingPublico() {
         </Container>
       </section>
 
-      {/* Sobre SIGEB */}
+      {/* Sobre EDUVIAGT */}
       <section className="border-b-[3px] border-brutal-tinta bg-sigeb-blue-dark py-16 text-brutal-papel">
         <Container>
           <div className="mx-auto max-w-4xl">
-            <p className="brut-label text-xs font-bold text-brutal-gold">// Sobre SIGEB</p>
+            <p className="brut-label text-xs font-bold text-brutal-gold">// Sobre EDUVIAGT</p>
             <h2 className="text-mega text-3xl font-black md:text-5xl">Transparencia total</h2>
             <p className="mt-4 font-mono text-base text-brutal-papel/80">
-              SIGEB es la plataforma para la gestión integral de programas de
+              EDUVIAGT es la plataforma para la gestión integral de programas de
               becas del Ministerio de Educación de Guatemala. Cada paso queda
               documentado y auditable.
             </p>

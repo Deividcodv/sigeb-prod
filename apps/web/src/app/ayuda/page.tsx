@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import { Container } from '@/components/ui/Container';
 
 export const metadata: Metadata = {
-  title: 'Centro de ayuda | SIGEB',
+  title: 'Centro de ayuda | EDUVIAGT',
   description:
-    'Centro de ayuda de SIGEB: guías, preguntas frecuentes, requisitos y soporte para tu proceso de becas.',
+    'Centro de ayuda de EDUVIAGT: guías, preguntas frecuentes, requisitos y soporte para tu proceso de becas.',
 };
 
 const recursos = [
@@ -38,7 +38,7 @@ const recursos = [
   },
   {
     titulo: 'Transparencia',
-    texto: 'Conoce cómo SIGEB garantiza procesos auditable y verificables.',
+    texto: 'Conoce cómo EDUVIAGT garantiza procesos auditable y verificables.',
     href: '/transparencia',
     icono: '◉',
     acento: 'bg-brutal-indigo',
@@ -62,7 +62,7 @@ export default function AyudaPage() {
             Centro de ayuda
           </h1>
           <p className="mt-2 max-w-2xl font-mono text-sm text-brutal-papel/80">
-            Todo lo que necesitas para navegar tu proceso de becas en SIGEB.
+            Todo lo que necesitas para navegar tu proceso de becas en EDUVIAGT.
           </p>
         </Container>
       </section>
@@ -99,7 +99,7 @@ export default function AyudaPage() {
                 Soporte y asistente
               </h2>
               <p className="mt-1 text-sm text-brutal-papel/80">
-                Habla con el asistente virtual de SIGEB para resolver tus dudas al
+                Habla con el asistente virtual de EDUVIAGT para resolver tus dudas al
                 instante.
               </p>
             </a>

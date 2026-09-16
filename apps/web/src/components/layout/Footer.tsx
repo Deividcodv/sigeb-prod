@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Container } from '@/components/ui/Container';
 
 const columnas = [
@@ -6,7 +7,7 @@ const columnas = [
     titulo: 'Institucional',
     enlaces: [
       { href: '/', label: 'Inicio' },
-      { href: '/nosotros', label: 'Sobre SIGEB' },
+      { href: '/nosotros', label: 'Sobre EDUVIAGT' },
       { href: '/transparencia', label: 'Transparencia' },
       { href: '/contacto', label: 'Contacto' },
     ],
@@ -35,8 +36,9 @@ export function Footer() {
       <Container>
         <div className="grid gap-8 md:grid-cols-4">
           <div>
-            <div className="mb-4 inline-block border-[3px] border-brutal-tinta bg-brutal-gold px-3 py-1 font-brut text-xl font-black uppercase text-brutal-tinta shadow-brutal-sm">
-              SIGEB
+            <div className="mb-4 inline-flex items-center gap-2 rounded-md border-[3px] border-brutal-tinta bg-brutal-gold px-3 py-1 font-brut text-xl font-black uppercase text-brutal-tinta shadow-brutal-sm">
+              <Image src="/marca.svg" alt="" width={28} height={28} className="object-cover" />
+              EDUVIAGT
             </div>
             <p className="text-sm text-brutal-papel/85">
               Sistema Integral de Gestión de Becas

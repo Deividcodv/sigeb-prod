@@ -61,7 +61,7 @@ export function MiniAsistente() {
       <div className="flex items-center justify-between border-b-[3px] border-brutal-tinta bg-brutal-tinta px-5 py-4 text-brutal-papel">
         <div>
           <p className="font-brut font-black uppercase tracking-wide text-brutal-gold">
-            Asistente virtual SIGEB
+            Asistente virtual EDUVIAGT
           </p>
           <p className="text-xs text-brutal-papel/75">
             Respuestas acotadas a la base de conocimiento del Ministerio
@@ -76,7 +76,7 @@ export function MiniAsistente() {
         {mensajes.length === 0 ? (
           <div className="my-auto">
             <p className="mb-4 font-mono text-sm text-brutal-tinta/80">
-              ¡Hola! Soy el asistente de SIGEB. ¿En qué puedo ayudarte? Por
+              ¡Hola! Soy el asistente de EDUVIAGT. ¿En qué puedo ayudarte? Por
               ejemplo:
             </p>
             <div className="flex flex-wrap gap-2">

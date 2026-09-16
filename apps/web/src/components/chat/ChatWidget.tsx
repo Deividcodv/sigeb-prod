@@ -27,7 +27,7 @@ export function ChatWidget() {
         {
           rol: 'asistente',
           contenido:
-            '¡Hola! Soy el asistente de SIGEB. Puedo ayudarte con preguntas sobre convocatorias, becas y el proceso de postulación.',
+            '¡Hola! Soy el asistente de EDUVIAGT. Puedo ayudarte con preguntas sobre convocatorias, becas y el proceso de postulación.',
         },
       ]);
     }
@@ -76,7 +76,7 @@ export function ChatWidget() {
         <div className="fixed bottom-24 right-5 z-50 flex h-[28rem] w-[22rem] max-w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl">
           <div className="flex items-center justify-between bg-sigeb-blue px-4 py-3 text-white">
             <div>
-              <p className="font-semibold">Asistente SIGEB</p>
+              <p className="font-semibold">Asistente EDUVIAGT</p>
               <p className="text-xs text-sigeb-white/80">
                 Respuestas acotadas a la base de conocimiento
               </p>

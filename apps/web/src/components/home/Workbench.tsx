@@ -26,7 +26,7 @@ export function Workbench() {
           Hola, {primerNombre}
         </h1>
         <p className="mt-2 max-w-2xl font-mono text-sm text-brutal-papel/80">
-          Estas son las acciones que puedes realizar según tu rol en SIGEB.
+          Estas son las acciones que puedes realizar según tu rol en EDUVIAGT.
         </p>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

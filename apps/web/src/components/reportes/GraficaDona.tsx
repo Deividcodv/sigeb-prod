@@ -23,7 +23,7 @@ export function GraficaDona({
             {
               data: valores,
               backgroundColor: labels.map((_, i) => COLORS_BRUTAL[i % COLORS_BRUTAL.length]),
-              borderColor: '#141414',
+              borderColor: '#18233A',
               borderWidth: 2,
               hoverOffset: 8,
             },
@@ -39,7 +39,7 @@ export function GraficaDona({
                 boxWidth: 12,
                 boxHeight: 12,
                 font: { family: 'monospace', size: 11, weight: 'bold' },
-                color: '#141414',
+                color: '#18233A',
               },
             },
           },

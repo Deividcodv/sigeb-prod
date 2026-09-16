@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import { Container } from '@/components/ui/Container';
 
 export const metadata: Metadata = {
-  title: 'Nosotros | SIGEB',
+  title: 'Nosotros | EDUVIAGT',
   description:
-    'Conoce al Ministerio de Educación de Guatemala, su misión, visión y los programas de becas gestionados a través de SIGEB.',
+    'Conoce al Ministerio de Educación de Guatemala, su misión, visión y los programas de becas gestionados a través de EDUVIAGT.',
 };
 
 const bloques = [
@@ -77,7 +77,7 @@ export default function NosotrosPage() {
                 Transparencia
               </h2>
               <p className="text-brutal-tinta/80">
-                SIGEB publica los resultados de cada convocatoria y mantiene un
+                EDUVIAGT publica los resultados de cada convocatoria y mantiene un
                 registro auditable de todas las acciones del proceso, asegurando
                 que cada decisión sea documentada y verificable.
               </p>

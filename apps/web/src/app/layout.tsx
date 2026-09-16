@@ -25,10 +25,15 @@ const mono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'SIGEB - Sistema Integral de Gestión de Becas',
+  title: 'EDUVIAGT - Sistema Integral de Gestión de Becas',
   description:
-    'Plataforma para que el Ministerio de Educación administre el ciclo completo de una beca: publicación de convocatorias, postulación de estudiantes, carga y revisión de documentos, evaluación, decisión de comités evaluadores y consulta de estado.',
-  keywords: ['becas', 'MINEDUC', 'Guatemala', 'educación', 'postulación'],
+    'EDUVIAGT es la plataforma del Ministerio de Educación de Guatemala para administrar el ciclo completo de una beca: publicación de convocatorias, postulación de estudiantes, carga y revisión de documentos, evaluación, decisión de comités evaluadores y consulta de estado.',
+  keywords: ['becas', 'MINEDUC', 'Guatemala', 'educación', 'postulación', 'EDUVIAGT'],
+  icons: {
+    icon: '/marca.svg',
+    shortcut: '/marca.svg',
+    apple: '/marca.svg',
+  },
 };
 
 export default function RootLayout({

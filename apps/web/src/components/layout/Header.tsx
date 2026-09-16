@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
 import { Container } from '@/components/ui/Container';
 import { MobileMenu } from '@/components/layout/MobileMenu';
@@ -21,12 +22,12 @@ export function Header() {
     <header className="sticky top-0 z-40 border-b-[3px] border-brutal-tinta bg-brutal-tinta">
       <Container className="flex items-center justify-between py-3">
         <Link href="/" className="group flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center border-[3px] border-brutal-tinta bg-brutal-gold font-brut text-2xl font-black text-brutal-tinta shadow-brutal-sm transition-transform group-hover:-rotate-6">
-            S
+          <div className="h-11 w-11 overflow-hidden rounded-md border-[3px] border-brutal-tinta shadow-brutal-sm transition-transform group-hover:-rotate-6">
+            <Image src="/marca.svg" alt="EDUVIAGT" width={44} height={44} className="h-full w-full object-cover" />
           </div>
           <div>
             <p className="font-brut text-lg font-black uppercase leading-tight tracking-wide text-brutal-papel">
-              SIGEB
+              EDUVIAGT
             </p>
             <p className="brut-label text-[10px] leading-tight text-brutal-cyan">
               Sistema Integral de Gestión de Becas

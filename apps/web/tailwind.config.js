@@ -8,28 +8,29 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // SIGEB Brand Colors
+        // EDUVIA GT Brand Colors — paleta institucional (Ministerio de Educación de Guatemala)
         sigeb: {
-          blue: '#0057B8',
-          'blue-dark': '#003B73',
-          light: '#4DA3D9',
-          white: '#FFFFFF',
+          blue: '#3D8EC7', // azul celeste bandera — transparencia, confianza, cielo de Guatemala
+          'blue-dark': '#0F3D63', // azul institucional MINEDUC — rigor, gobierno
+          light: '#7FB4DF', // celeste claro
+          white: '#FFFFFF', // transparencia, paz
           gray: '#F4F7FA',
-          gold: '#D4A72C',
+          gold: '#D4A72C', // oro quetzal — oportunidades, excelencia académica
+          green: '#2E9E4F', // verde quetzal — educación, crecimiento, esperanza
         },
-        // Brutalista / maximalismo
+        // Brutalista / maximalismo (tonalidad institucional)
         brutal: {
-          tinta: '#141414',
-          papel: '#F4F1EA',
+          tinta: '#18233A', // tinta azul-gris institucional
+          papel: '#F5F7FA', // blanco institucional frío — transparencia documental
           blanco: '#FFFFFF',
-          cian: '#00C2FF',
-          rojo: '#FF4D4D',
-          naranja: '#FF7A00',
-          lima: '#9ACD32',
-          rosa: '#FF5FA2',
-          indigo: '#6366F1',
-          teal: '#14B8A6',
-          gold: '#D4A72C',
+          cian: '#3D8EC7', // azul celeste bandera (acentos)
+          rojo: '#E5484D', // error
+          naranja: '#F06C1F', // warning
+          lima: '#4CAF6D', // éxito / educación
+          rosa: '#E8669C',
+          indigo: '#5A5CD8',
+          teal: '#2A9D8F',
+          gold: '#D4A72C', // oro quetzal
         },
       },
       fontFamily: {
@@ -43,9 +44,9 @@ module.exports = {
         brutalcard: '6px',
       },
       boxShadow: {
-        brutal: '6px 6px 0 0 #141414',
-        'brutal-sm': '4px 4px 0 0 #141414',
-        'brutal-cyan': '6px 6px 0 0 #00C2FF',
+        brutal: '6px 6px 0 0 #18233A',
+        'brutal-sm': '4px 4px 0 0 #18233A',
+        'brutal-cyan': '6px 6px 0 0 #3D8EC7',
         'brutal-gold': '6px 6px 0 0 #D4A72C',
       },
       borderWidth: {

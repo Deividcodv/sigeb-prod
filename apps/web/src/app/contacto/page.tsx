@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import { Container } from '@/components/ui/Container';
 
 export const metadata: Metadata = {
-  title: 'Contacto | SIGEB',
+  title: 'Contacto | EDUVIAGT',
   description:
-    'Contacta al Ministerio de Educación de Guatemala para resolver dudas sobre el proceso de becas gestionado a través de SIGEB.',
+    'Contacta al Ministerio de Educación de Guatemala para resolver dudas sobre el proceso de becas gestionado a través de EDUVIAGT.',
 };
 
 const canales = [
@@ -104,7 +104,7 @@ export default function ContactoPage() {
                   acento: 'bg-brutal-gold',
                 },
                 {
-                  titulo: 'Sobre SIGEB',
+                  titulo: 'Sobre EDUVIAGT',
                   texto:
                     'Conoce la misión, visión y objetivos del sistema de becas.',
                   href: '/nosotros',

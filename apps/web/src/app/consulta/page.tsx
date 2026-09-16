@@ -3,7 +3,7 @@ import { Container } from '@/components/ui/Container';
 import { ConsultaForm } from '@/components/consulta/ConsultaForm';
 
 export const metadata: Metadata = {
-  title: 'Consultar solicitud | SIGEB',
+  title: 'Consultar solicitud | EDUVIAGT',
   description:
     'Consulta el estado de tu solicitud de beca sin necesidad de iniciar sesión.',
 };
@@ -32,3 +32,4 @@ export default function ConsultaPage() {
     </main>
   );
 }
+

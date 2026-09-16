@@ -19,10 +19,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     convocatoria = await fetcher<ConvocatoriaDetalle>(`/convocatorias/${params.id}`);
   } catch {
-    return { title: 'Convocatoria | SIGEB' };
+    return { title: 'Convocatoria | EDUVIAGT' };
   }
   return {
-    title: `${convocatoria.nombre} | SIGEB`,
+    title: `${convocatoria.nombre} | EDUVIAGT`,
     description: convocatoria.descripcion ?? undefined,
   };
 }
@@ -165,3 +165,4 @@ export default async function ConvocatoriaDetallePage({ params }: Props) {
     </main>
   );
 }
+

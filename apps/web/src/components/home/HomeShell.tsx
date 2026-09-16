@@ -11,7 +11,7 @@ export function HomeShell() {
     return (
       <section className="brut-cinta border-b-[3px] border-brutal-tinta bg-brutal-tinta py-24 text-brutal-papel">
         <p className="brut-label text-center text-xs font-bold text-brutal-gold">
-          // Cargando SIGEB…
+          // Cargando EDUVIAGT…
         </p>
       </section>
     );

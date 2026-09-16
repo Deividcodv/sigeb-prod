@@ -2,21 +2,21 @@ import type { Metadata } from 'next';
 import { Container } from '@/components/ui/Container';
 
 export const metadata: Metadata = {
-  title: 'Preguntas frecuentes | SIGEB',
+  title: 'Preguntas frecuentes | EDUVIAGT',
   description:
-    'Respuestas a las preguntas más frecuentes sobre el proceso de becas del Ministerio de Educación de Guatemala en SIGEB.',
+    'Respuestas a las preguntas más frecuentes sobre el proceso de becas del Ministerio de Educación de Guatemala en EDUVIAGT.',
 };
 
 const faqs = [
   {
-    pregunta: '¿Cómo me registro en SIGEB?',
+    pregunta: '¿Cómo me registro en EDUVIAGT?',
     respuesta:
       'Ve a la página de registro y completa tus datos personales, incluyendo tu número de CUI. Una cuenta por persona; tu CUI será tu identidad en el sistema.',
   },
   {
     pregunta: '¿Qué tipos de beca se gestionan?',
     respuesta:
-      'SIGEB gestiona programas de becas de excelencia académica, inspiración cívica y apoyo a la formación técnica y profesional del Ministerio de Educación.',
+      'EDUVIAGT gestiona programas de becas de excelencia académica, inspiración cívica y apoyo a la formación técnica y profesional del Ministerio de Educación.',
   },
   {
     pregunta: '¿Cuáles son los requisitos para postularme?',
@@ -56,7 +56,7 @@ const faqs = [
   {
     pregunta: '¿Necesito enviar documentación física?',
     respuesta:
-      'No. Todo el proceso es digital a través de SIGEB. Solo en casos específicos el Ministerio puede solicitar la verificación presencial del original.',
+      'No. Todo el proceso es digital a través de EDUVIAGT. Solo en casos específicos el Ministerio puede solicitar la verificación presencial del original.',
   },
 ];
 

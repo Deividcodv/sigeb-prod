@@ -3,9 +3,9 @@ import { Container } from '@/components/ui/Container';
 import { MiniAsistente } from '@/components/soporte/MiniAsistente';
 
 export const metadata: Metadata = {
-  title: 'Soporte | SIGEB',
+  title: 'Soporte | EDUVIAGT',
   description:
-    'Soporte y asistente virtual de SIGEB: resuelve tus dudas sobre becas, convocatorias y tu solicitud.',
+    'Soporte y asistente virtual de EDUVIAGT: resuelve tus dudas sobre becas, convocatorias y tu solicitud.',
 };
 
 const canales = [

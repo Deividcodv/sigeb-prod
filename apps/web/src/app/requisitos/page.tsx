@@ -2,14 +2,14 @@ import type { Metadata } from 'next';
 import { Container } from '@/components/ui/Container';
 
 export const metadata: Metadata = {
-  title: 'Requisitos | SIGEB',
+  title: 'Requisitos | EDUVIAGT',
   description:
-    'Requisitos generales para postularte a las becas del Ministerio de Educación de Guatemala a través de SIGEB.',
+    'Requisitos generales para postularte a las becas del Ministerio de Educación de Guatemala a través de EDUVIAGT.',
 };
 
 const generales = [
   {
-    titulo: 'Cuenta en SIGEB',
+    titulo: 'Cuenta en EDUVIAGT',
     texto:
       'Crear una cuenta personal usando tu número de CUI. Es la identidad con la que presentarás y darás seguimiento a tu solicitud.',
   },

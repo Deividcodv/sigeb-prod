@@ -22,12 +22,12 @@ export function GraficaTendencia({ data }: { data: TendenciaData }) {
             {
               label: 'Solicitudes',
               data: data.solicitudes,
-              borderColor: '#00C2FF',
-              backgroundColor: '#00C2FF',
+              borderColor: '#3D8EC7',
+              backgroundColor: '#3D8EC7',
               tension: 0.3,
               borderWidth: 3,
               pointRadius: 4,
-              pointBackgroundColor: '#00C2FF',
+              pointBackgroundColor: '#3D8EC7',
               pointBorderColor: TINTA,
               pointBorderWidth: 2,
             },
@@ -53,12 +53,12 @@ export function GraficaTendencia({ data }: { data: TendenciaData }) {
           },
           scales: {
             x: {
-              grid: { color: 'rgba(20,20,20,0.08)' },
+              grid: { color: 'rgba(24,35,58,0.08)' },
               ticks: { color: TINTA, font: { family: 'monospace', size: 10 } },
             },
             y: {
               beginAtZero: true,
-              grid: { color: 'rgba(20,20,20,0.08)' },
+              grid: { color: 'rgba(24,35,58,0.08)' },
               ticks: { color: TINTA, font: { family: 'monospace', size: 11 } },
             },
           },
