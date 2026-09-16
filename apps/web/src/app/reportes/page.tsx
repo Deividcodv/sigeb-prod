@@ -14,6 +14,8 @@ import { MarcoBrutal } from '@/components/reportes/MarcoBrutal';
 import { GraficaDona } from '@/components/reportes/GraficaDona';
 import { GraficaBarras } from '@/components/reportes/GraficaBarras';
 import { GraficaTendencia, TendenciaData } from '@/components/reportes/GraficaTendencia';
+import { ComparativaConvocatorias } from '@/components/reportes/ComparativaConvocatorias';
+import { ExportarReporte } from '@/components/reportes/ExportarReporte';
 
 const ROLES_EMPLEADOS = ['ADMIN', 'EVALUADOR', 'COORDINADOR_COMITE', 'MIEMBRO_COMITE'];
 
@@ -237,9 +239,14 @@ function ReportesContent() {
               </div>
             </section>
 
+            <section>
+              <p className="brut-label mb-4 text-xs font-bold text-brutal-gold">// Comparativa de convocatorias</p>
+              <ComparativaConvocatorias />
+            </section>
+
             {rol === 'ADMIN' && (
-              <section>
-                <p className="brut-label mb-4 text-xs font-bold text-brutal-gold">// Exportar datos</p>
+              <section className="space-y-4">
+                <p className="brut-label mb-1 text-xs font-bold text-brutal-gold">// Exportar datos</p>
                 <div className="flex flex-wrap gap-3">
                   <Button onClick={() => descargarCsv('solicitudes-por-estado')} variant="ghost">
                     ↓ CSV Solicitudes
@@ -251,6 +258,7 @@ function ReportesContent() {
                     ↓ CSV Evaluaciones
                   </Button>
                 </div>
+                <ExportarReporte />
               </section>
             )}
           </div>

@@ -21,12 +21,20 @@ const TIPOS_VALIDOS: TipoReporte[] = [
   'evaluaciones',
 ];
 
+interface RangoFecha {
+  gte?: Date;
+  lte?: Date;
+}
+
 @Injectable()
 export class ReportesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async solicitudesPorEstado(convocatoriaId?: string) {
-    const where = convocatoriaId ? { convocatoriaId } : {};
+  async solicitudesPorEstado(convocatoriaId?: string, rango?: RangoFecha) {
+    const where = {
+      ...(convocatoriaId ? { convocatoriaId } : {}),
+      ...(rango ? { createdAt: rango } : {}),
+    };
 
     const porEstado = await this.prisma.solicitud.groupBy({
       by: ['estado'],
@@ -66,13 +74,15 @@ export class ReportesService {
     };
   }
 
-  async convocatorias() {
+  async convocatorias(rango?: RangoFecha) {
     const porEstado = await this.prisma.convocatoria.groupBy({
       by: ['estado'],
+      where: rango ? { createdAt: rango } : {},
       _count: { _all: true },
     });
 
     const convocatorias = await this.prisma.convocatoria.findMany({
+      where: rango ? { createdAt: rango } : {},
       orderBy: { createdAt: 'desc' },
       include: {
         beca: { select: { nombre: true } },
@@ -102,7 +112,7 @@ export class ReportesService {
     };
   }
 
-  async evaluaciones() {
+  async evaluaciones(rango?: RangoFecha) {
     const convocatorias = await this.prisma.convocatoria.findMany({
       orderBy: { createdAt: 'desc' },
       include: {
@@ -114,7 +124,10 @@ export class ReportesService {
 
     const solicitadesPorConvocatoria = await this.prisma.solicitud.groupBy({
       by: ['convocatoriaId', 'estado'],
-      where: { convocatoriaId: { in: convocatoriaIds } },
+      where: {
+        convocatoriaId: { in: convocatoriaIds },
+        ...(rango ? { createdAt: rango } : {}),
+      },
       _count: { _all: true },
     });
 
@@ -123,6 +136,7 @@ export class ReportesService {
         where: {
           convocatoriaId: { in: convocatoriaIds },
           estado: SOLICITUD_ESTADO.EVALUADA,
+          ...(rango ? { createdAt: rango } : {}),
         },
         select: { id: true, convocatoriaId: true },
       });
@@ -146,10 +160,16 @@ export class ReportesService {
 
     const decisiones = convocatoriaIds.length
       ? await this.prisma.decision.findMany({
-          where: { solicitud: { convocatoriaId: { in: convocatoriaIds } } },
+          where: {
+            solicitud: { convocatoriaId: { in: convocatoriaIds } },
+            ...(rango ? { fecha: rango } : {}),
+          },
           select: {
             resultado: true,
-            solicitud: { select: { convocatoriaId: true } },
+            fecha: true,
+            solicitud: {
+              select: { convocatoriaId: true, createdAt: true },
+            },
           },
         })
       : [];
@@ -217,6 +237,28 @@ export class ReportesService {
             ) / 100
           : null;
 
+      const decisionesConv = decisiones.filter(
+        (d) => d.solicitud?.convocatoriaId === c.id,
+      );
+
+      const diasResolucion: number[] = [];
+      for (const d of decisionesConv) {
+        if (!d.fecha || !d.solicitud?.createdAt) continue;
+        const ms =
+          new Date(d.fecha).getTime() -
+          new Date(d.solicitud.createdAt).getTime();
+        if (!Number.isFinite(ms) || ms <= 0) continue;
+        diasResolucion.push(ms / 86400000);
+      }
+      const tiempoPromedioResolucionDias =
+        diasResolucion.length > 0
+          ? Math.round(
+              (diasResolucion.reduce((a, b) => a + b, 0) /
+                diasResolucion.length) *
+                10,
+            ) / 10
+          : null;
+
       return {
         id: c.id,
         nombre: c.nombre,
@@ -224,16 +266,14 @@ export class ReportesService {
         solicitudesEvaluadas: solicitudes.length,
         conScore,
         scorePromedio,
-        aprobadas: decisiones.filter(
-          (d) =>
-            d.solicitud.convocatoriaId === c.id &&
-            d.resultado === DECISION_RESULTADO.APROBADA,
+        aprobadas: decisionesConv.filter(
+          (d) => d.resultado === DECISION_RESULTADO.APROBADA,
         ).length,
-        rechazadas: decisiones.filter(
-          (d) =>
-            d.solicitud.convocatoriaId === c.id &&
-            d.resultado === DECISION_RESULTADO.RECHAZADA,
+        rechazadas: decisionesConv.filter(
+          (d) => d.resultado === DECISION_RESULTADO.RECHAZADA,
         ).length,
+        totalDecisiones: decisionesConv.length,
+        tiempoPromedioResolucionDias,
         pendientes: pendientes + enRevision,
       };
     });
@@ -455,15 +495,21 @@ export class ReportesService {
     };
   }
 
-  async generarCsv(tipo: TipoReporte): Promise<string> {
+  async generarCsv(
+    tipo: TipoReporte,
+    desde?: string,
+    hasta?: string,
+  ): Promise<string> {
     if (!TIPOS_VALIDOS.includes(tipo)) {
       throw new BadRequestException(
         `Tipo de reporte inválido. Válidos: ${TIPOS_VALIDOS.join(', ')}`,
       );
     }
 
+    const rango = this.parseRango(desde, hasta);
+
     if (tipo === 'solicitudes-por-estado') {
-      const data = await this.solicitudesPorEstado();
+      const data = await this.solicitudesPorEstado(undefined, rango);
       const filas: Record<string, unknown>[] = data.porConvocatoria.flatMap((c) =>
         c.porEstado.map((e) => ({
           convocatoria: c.nombre,
@@ -484,7 +530,7 @@ export class ReportesService {
     }
 
     if (tipo === 'convocatorias') {
-      const data = await this.convocatorias();
+      const data = await this.convocatorias(rango);
       return aCsv(
         data.detalle.map((c) => ({
           convocatoria: c.nombre,
@@ -496,7 +542,7 @@ export class ReportesService {
       );
     }
 
-    const data = await this.evaluaciones();
+    const data = await this.evaluaciones(rango);
     return aCsv(
       data.porConvocatoria.map((c) => ({
         convocatoria: c.nombre,
@@ -506,8 +552,31 @@ export class ReportesService {
         scorePromedio: c.scorePromedio ?? '',
         aprobadas: c.aprobadas,
         rechazadas: c.rechazadas,
+        totalDecisiones: c.totalDecisiones,
+        tiempoPromedioResolucionDias: c.tiempoPromedioResolucionDias ?? '',
         pendientes: c.pendientes,
       })),
     );
+  }
+
+  private parseRango(desde?: string, hasta?: string): RangoFecha | undefined {
+    if (!desde && !hasta) return undefined;
+    const rango: RangoFecha = {};
+    if (desde) {
+      const d = new Date(desde);
+      if (Number.isNaN(d.getTime())) {
+        throw new BadRequestException('La fecha "desde" no es válida');
+      }
+      rango.gte = d;
+    }
+    if (hasta) {
+      const h = new Date(hasta);
+      if (Number.isNaN(h.getTime())) {
+        throw new BadRequestException('La fecha "hasta" no es válida');
+      }
+      h.setHours(23, 59, 59, 999);
+      rango.lte = h;
+    }
+    return rango;
   }
 }

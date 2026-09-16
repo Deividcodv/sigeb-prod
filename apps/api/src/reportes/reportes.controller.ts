@@ -90,11 +90,15 @@ export class ReportesController {
   @Get(':tipo/csv')
   @Permisos('reporte:ver')
   @ApiOperation({ summary: 'Exportar reporte a CSV (UTF-8 con BOM para Excel)' })
+  @ApiQuery({ name: 'desde', required: false, type: String, description: 'Filtrar desde (ISO date)' })
+  @ApiQuery({ name: 'hasta', required: false, type: String, description: 'Filtrar hasta (ISO date)' })
   async exportarCsv(
     @Param('tipo') tipo: TipoReporte,
     @Res() res: Response,
+    @Query('desde') desde?: string,
+    @Query('hasta') hasta?: string,
   ) {
-    const csv = await this.reportesService.generarCsv(tipo);
+    const csv = await this.reportesService.generarCsv(tipo, desde, hasta);
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader(
       'Content-Disposition',

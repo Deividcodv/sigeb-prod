@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { httpData } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 
 interface Mensaje {
   rol: 'usuario' | 'asistente';
@@ -13,7 +14,30 @@ interface Respuesta {
   fuentes?: string[];
 }
 
+const ROLES_EQUIPO = ['ADMIN', 'COORDINADOR_COMITE', 'MIEMBRO_COMITE', 'EVALUADOR'];
+
+const SUGERENCIAS_PUBLICAS = [
+  '¿Cómo me registro?',
+  '¿Qué requisitos necesito?',
+  '¿Cómo consulto mi solicitud?',
+  '¿Qué convocatorias están abiertas?',
+];
+
+const SUGERENCIAS_POSTULANTE = [
+  '¿Cómo consulto el estado de mi solicitud?',
+  '¿Qué documentos necesito cargar?',
+  '¿Cómo funciona la evaluación?',
+];
+
+const SUGERENCIAS_EQUIPO = [
+  '¿Cuántas convocatorias están abiertas?',
+  '¿Qué solicitudes están en revisión?',
+  'Resumen del avance de las evaluaciones',
+  'Explica el proceso de decisión de un comité',
+];
+
 export function ChatWidget() {
+  const { usuario } = useAuth();
   const [abierto, setAbierto] = useState(false);
   const [mensajes, setMensajes] = useState<Mensaje[]>([]);
   const [texto, setTexto] = useState('');
@@ -21,33 +45,42 @@ export function ChatWidget() {
   const [error, setError] = useState<string | null>(null);
   const finRef = useRef<HTMLDivElement | null>(null);
 
+  const rol = (usuario?.rol ?? '').toUpperCase();
+  const esEquipo = ROLES_EQUIPO.includes(rol);
+  const sugerencias = esEquipo
+    ? SUGERENCIAS_EQUIPO
+    : rol === 'POSTULANTE'
+      ? SUGERENCIAS_POSTULANTE
+      : SUGERENCIAS_PUBLICAS;
+
   useEffect(() => {
     if (abierto && mensajes.length === 0) {
       setMensajes([
         {
           rol: 'asistente',
-          contenido:
-            '¡Hola! Soy el asistente de EDUVIAGT. Puedo ayudarte con preguntas sobre convocatorias, becas y el proceso de postulación.',
+          contenido: esEquipo
+            ? '¡Hola! Soy el asistente de EDUVIAGT. Puedo ayudarte a analizar el avance de las convocatorias, las solicitudes en revisión y el proceso de evaluación de los comités.'
+            : '¡Hola! Soy el asistente de EDUVIAGT. Puedo ayudarte con preguntas sobre convocatorias, becas y el proceso de postulación.',
         },
       ]);
     }
-  }, [abierto, mensajes.length]);
+  }, [abierto, mensajes.length, esEquipo]);
 
   useEffect(() => {
     finRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [mensajes, pensando]);
 
-  const enviar = async () => {
-    const pregunta = texto.trim();
-    if (!pregunta || pensando) return;
+  const enviar = async (pregunta?: string) => {
+    const contenido = (pregunta ?? texto).trim();
+    if (!contenido || pensando) return;
     setTexto('');
     setError(null);
-    setMensajes((m) => [...m, { rol: 'usuario', contenido: pregunta }]);
+    setMensajes((m) => [...m, { rol: 'usuario', contenido }]);
     setPensando(true);
     try {
       const res = await httpData<Respuesta>('/asistente/preguntar', {
         method: 'POST',
-        body: { pregunta },
+        body: { pregunta: contenido },
       });
       setMensajes((m) => [
         ...m,
@@ -91,6 +124,21 @@ export function ChatWidget() {
           </div>
 
           <div className="flex-1 space-y-3 overflow-y-auto bg-sigeb-gray p-4">
+            {mensajes.length === 0 && (
+              <div className="space-y-2">
+                {sugerencias.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => enviar(s)}
+                    disabled={pensando}
+                    className="block w-full rounded-lg border border-sigeb-blue/40 bg-white px-3 py-2 text-left text-xs font-semibold text-sigeb-blue transition-colors hover:bg-sigeb-blue hover:text-white disabled:opacity-50"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            )}
             {mensajes.map((m, i) => (
               <div
                 key={i}
@@ -104,8 +152,11 @@ export function ChatWidget() {
               </div>
             ))}
             {pensando && (
-              <div className="max-w-[85%] rounded-2xl bg-white px-3 py-2 text-sm text-brutal-tinta/70 shadow-sm">
-                Escribiendo...
+              <div className="flex max-w-[85%] items-center gap-2 rounded-2xl bg-white px-3 py-2 text-sm text-brutal-tinta/70 shadow-sm">
+                <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-sigeb-blue" />
+                {esEquipo
+                  ? 'Analizando expediente...'
+                  : 'Analizando convocatorias...'}
               </div>
             )}
             {error && (

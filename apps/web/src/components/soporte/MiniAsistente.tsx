@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { httpData } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 
 interface Mensaje {
   rol: 'usuario' | 'asistente';
@@ -13,19 +14,33 @@ interface Respuesta {
   fuentes?: string[];
 }
 
-const SUGERENCIAS = [
+const ROLES_EQUIPO = ['ADMIN', 'COORDINADOR_COMITE', 'MIEMBRO_COMITE', 'EVALUADOR'];
+
+const SUGERENCIAS_PUBLICAS = [
   '¿Cómo me registro?',
   '¿Qué requisitos necesito?',
   '¿Cómo consulto mi solicitud?',
   'Estado de mi convocatoria',
 ];
 
+const SUGERENCIAS_EQUIPO = [
+  '¿Cuántas convocatorias están abiertas?',
+  '¿Qué solicitudes están en revisión?',
+  'Resumen del avance de las evaluaciones',
+  'Explica el proceso de decisión de un comité',
+];
+
 export function MiniAsistente() {
+  const { usuario } = useAuth();
   const [mensajes, setMensajes] = useState<Mensaje[]>([]);
   const [texto, setTexto] = useState('');
   const [pensando, setPensando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const finRef = useRef<HTMLDivElement | null>(null);
+
+  const rol = (usuario?.rol ?? '').toUpperCase();
+  const esEquipo = ROLES_EQUIPO.includes(rol);
+  const sugerencias = esEquipo ? SUGERENCIAS_EQUIPO : SUGERENCIAS_PUBLICAS;
 
   useEffect(() => {
     finRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -80,7 +95,7 @@ export function MiniAsistente() {
               ejemplo:
             </p>
             <div className="flex flex-wrap gap-2">
-              {SUGERENCIAS.map((s) => (
+              {sugerencias.map((s) => (
                 <button
                   key={s}
                   type="button"
@@ -108,8 +123,9 @@ export function MiniAsistente() {
           ))
         )}
         {pensando && (
-          <div className="self-start rounded-brutal border-2 border-brutal-tinta bg-brutal-blanco px-4 py-2 text-sm text-brutal-tinta/70">
-            Escribiendo…
+          <div className="self-start flex items-center gap-2 rounded-brutal border-2 border-brutal-tinta bg-brutal-blanco px-4 py-2 text-sm text-brutal-tinta/70">
+            <span className="h-2 w-2 animate-pulse rounded-full bg-brutal-cyan" />
+            {esEquipo ? 'Analizando expediente…' : 'Analizando convocatorias…'}
           </div>
         )}
         {error && (
