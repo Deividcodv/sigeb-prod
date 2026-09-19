@@ -453,7 +453,7 @@ describe('EvaluacionesService', () => {
         solicitudId: 's1',
         evaluadorId: 'u-eval2',
         completada: false,
-        puntaje: null,
+        puntaje: null as unknown as number,
         criterioEvaluacion: { id: 'c1', nombre: 'Situación socioeconómica', peso: 0.4 },
         evaluador: { id: 'u-eval2', nombres: 'Evaluador 2' },
       });
@@ -461,7 +461,7 @@ describe('EvaluacionesService', () => {
         solicitudId: 's1',
         evaluadorId: 'u-eval2',
         completada: false,
-        puntaje: null,
+        puntaje: null as unknown as number,
         criterioEvaluacion: { id: 'c2', nombre: 'Trayectoria académica', peso: 0.6 },
         evaluador: { id: 'u-eval2', nombres: 'Evaluador 2' },
       });

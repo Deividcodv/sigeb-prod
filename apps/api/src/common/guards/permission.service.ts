@@ -3,6 +3,8 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { buildPermissionChain } from './permission-chain';
 import { PermissionDecision } from './permission-chain';
 
+export type { PermissionDecision } from './permission-chain';
+
 export const PERMISSION_SERVICE = 'PERMISSION_SERVICE';
 
 export interface IPermissionService {

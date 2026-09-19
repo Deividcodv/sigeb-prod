@@ -108,7 +108,7 @@ describe('ConstanciasService (US-F7)', () => {
     expect(html).toContain('Permanencia');
     expect(html).toContain('Ingeniería');
     expect(html).toContain('USAC');
-    expect(html).toContain('SIGEB-SOL-1234');
+    expect(html).toContain('EDUVIAGT-SOL-1234');
   });
 
   it('un admin también puede generar la constancia', async () => {

@@ -408,14 +408,26 @@ describe('SolicitudesService', () => {
 
     it('postulante no puede rechazar documentos', async () => {
       await expect(
-        service.marcarEstadoDocumento('s1', 't-cert', 'RECHAZADO', postulante),
+        service.marcarEstadoDocumento(
+          's1',
+          't-cert',
+          'RECHAZADO',
+          undefined,
+          postulante,
+        ),
       ).rejects.toThrow(ForbiddenException);
     });
 
     it('rechaza solicitud inexistente', async () => {
       prisma.solicitud.findUnique.mockResolvedValue(null);
       await expect(
-        service.marcarEstadoDocumento('s1', 't-cert', 'RECHAZADO', admin),
+        service.marcarEstadoDocumento(
+          's1',
+          't-cert',
+          'RECHAZADO',
+          undefined,
+          admin,
+        ),
       ).rejects.toThrow('no encontrada');
     });
 
@@ -423,7 +435,13 @@ describe('SolicitudesService', () => {
       prisma.solicitud.findUnique.mockResolvedValue({ id: 's1', estado: 'EN_REVISION' });
       prisma.solicitudDocumento.findFirst.mockResolvedValue(null);
       await expect(
-        service.marcarEstadoDocumento('s1', 't-cert', 'RECHAZADO', admin),
+        service.marcarEstadoDocumento(
+          's1',
+          't-cert',
+          'RECHAZADO',
+          undefined,
+          admin,
+        ),
       ).rejects.toThrow('No hay documento cargado');
     });
 
@@ -440,13 +458,14 @@ describe('SolicitudesService', () => {
         's1',
         't-cert',
         'RECHAZADO',
+        undefined,
         coordinador,
       );
 
       expect(result.estado).toBe('RECHAZADO');
       expect(prisma.solicitudDocumento.update).toHaveBeenCalledWith({
         where: { id: 'd1' },
-        data: { estado: 'RECHAZADO' },
+        data: { estado: 'RECHAZADO', comentarioRechazo: null },
         include: { documentoTipo: true },
       });
       expect(prisma.solicitudDocumento.findFirst).toHaveBeenCalledWith({
