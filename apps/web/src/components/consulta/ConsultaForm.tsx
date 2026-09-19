@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
 import { httpData, type ConsultaSolicitud } from '@/lib/api';
+import { etiquetaEstado } from '@/lib/etiquetas';
+import { traducirError } from '@/lib/mensajes-error';
 
 export function ConsultaForm() {
   const [codigo, setCodigo] = useState('');
@@ -28,11 +30,7 @@ export function ConsultaForm() {
       );
       setResultado(data);
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'No se pudo consultar la solicitud.',
-      );
+      setError(traducirError(err, 'No se pudo consultar la solicitud.'));
     } finally {
       setCargando(false);
     }
@@ -50,7 +48,7 @@ export function ConsultaForm() {
             name="codigo"
             value={codigo}
             onChange={(e) => setCodigo(e.target.value)}
-            placeholder="Ej. 8f7e2c... (código recibido al postular)"
+            placeholder="Escribe tu número de solicitud"
             disabled={cargando}
           />
         </div>
@@ -106,7 +104,7 @@ function ResultadoConsulta({ resultado }: { resultado: ConsultaSolicitud }) {
               coloresEstado[resultado.estado] ?? 'bg-brutal-papel text-brutal-tinta'
             }`}
           >
-            {resultado.estado}
+            {etiquetaEstado(resultado.estado)}
           </span>
         </div>
       </div>
@@ -137,7 +135,7 @@ function ResultadoConsulta({ resultado }: { resultado: ConsultaSolicitud }) {
                 <li key={i} className="relative">
                   <span className="absolute -left-[27px] top-1 h-4 w-4 rounded-brutal border-2 border-brutal-tinta bg-brutal-gold" />
                   <p className="font-brut text-sm font-bold uppercase text-brutal-tinta">
-                    {hito.estado}
+                    {etiquetaEstado(hito.estado)}
                   </p>
                   {hito.comentario && (
                     <p className="text-xs text-brutal-tinta/80">{hito.comentario}</p>

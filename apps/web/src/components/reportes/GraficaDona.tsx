@@ -2,6 +2,7 @@
 
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
+import { etiquetaEstado } from '@/lib/etiquetas';
 import { COLORS_BRUTAL } from './paleta';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -11,7 +12,7 @@ export function GraficaDona({
 }: {
   data: { estado: string; cantidad: number }[];
 }) {
-  const labels = data.map((d) => d.estado);
+  const labels = data.map((d) => etiquetaEstado(d.estado));
   const valores = data.map((d) => d.cantidad);
 
   return (

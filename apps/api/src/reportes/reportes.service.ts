@@ -451,6 +451,234 @@ export class ReportesService {
     };
   }
 
+  async embudo(convocatoriaId?: string, desde?: string, hasta?: string) {
+    const rango = this.parseRango(desde, hasta);
+    const where = {
+      ...(convocatoriaId ? { convocatoriaId } : {}),
+      ...(rango ? { createdAt: rango } : {}),
+    };
+
+    const porEstado = await this.prisma.solicitud.groupBy({
+      by: ['estado'],
+      where,
+      _count: { _all: true },
+    });
+
+    const contar = (estados: string[]) =>
+      porEstado
+        .filter((f) => estados.includes(f.estado))
+        .reduce((acc, f) => acc + f._count._all, 0);
+
+    const total = porEstado.reduce((acc, f) => acc + f._count._all, 0);
+    const decididas = contar([
+      SOLICITUD_ESTADO.APROBADA,
+      SOLICITUD_ESTADO.RECHAZADA,
+    ]);
+
+    const etapas = [
+      { clave: 'RECIBIDAS', etiqueta: 'Solicitudes recibidas', cantidad: total },
+      {
+        clave: 'ENVIADAS',
+        etiqueta: 'Enviadas (sin borradores)',
+        cantidad: total - contar([SOLICITUD_ESTADO.BORRADOR]),
+      },
+      {
+        clave: 'EVALUADAS',
+        etiqueta: 'Evaluadas',
+        cantidad: contar([
+          SOLICITUD_ESTADO.EVALUADA,
+          SOLICITUD_ESTADO.APROBADA,
+          SOLICITUD_ESTADO.RECHAZADA,
+        ]),
+      },
+      {
+        clave: 'DECIDIDAS',
+        etiqueta: 'Con decisión del comité',
+        cantidad: decididas,
+      },
+      {
+        clave: 'APROBADAS',
+        etiqueta: 'Aprobadas',
+        cantidad: contar([SOLICITUD_ESTADO.APROBADA]),
+      },
+    ].map((e) => ({
+      ...e,
+      porcentaje:
+        total > 0 ? Math.round((e.cantidad / total) * 1000) / 10 : 0,
+    }));
+
+    const conversion = (i: number): number | null => {
+      const prev = etapas[i - 1]?.cantidad ?? 0;
+      if (prev <= 0) return null;
+      return Math.round((etapas[i].cantidad / prev) * 1000) / 10;
+    };
+
+    return {
+      total,
+      etapas,
+      conversion: {
+        envio: conversion(1),
+        evaluacion: conversion(2),
+        decision: conversion(3),
+        aprobacion: conversion(4),
+      },
+    };
+  }
+
+  async detalle(convocatoriaId?: string, desde?: string, hasta?: string) {
+    const rango = this.parseRango(desde, hasta);
+
+    const convocatorias = await this.prisma.convocatoria.findMany({
+      where: convocatoriaId ? { id: convocatoriaId } : {},
+      orderBy: { createdAt: 'desc' },
+      include: { beca: { select: { nombre: true } } },
+    });
+
+    const ids = convocatorias.map((c) => c.id);
+
+    const grupos = ids.length
+      ? await this.prisma.solicitud.groupBy({
+          by: ['convocatoriaId', 'estado'],
+          where: {
+            convocatoriaId: { in: ids },
+            ...(rango ? { createdAt: rango } : {}),
+          },
+          _count: { _all: true },
+        })
+      : [];
+
+    const decisiones = ids.length
+      ? await this.prisma.decision.findMany({
+          where: {
+            solicitud: { convocatoriaId: { in: ids } },
+            ...(rango ? { fecha: rango } : {}),
+          },
+          select: {
+            resultado: true,
+            fecha: true,
+            solicitud: {
+              select: { convocatoriaId: true, createdAt: true },
+            },
+          },
+        })
+      : [];
+
+    const contarEstado = (convId: string, estado: string) =>
+      grupos.find((g) => g.convocatoriaId === convId && g.estado === estado)
+        ?._count._all ?? 0;
+
+    const filas = convocatorias.map((c) => {
+      const borradores = contarEstado(c.id, SOLICITUD_ESTADO.BORRADOR);
+      const enRevision =
+        contarEstado(c.id, SOLICITUD_ESTADO.EN_REVISION) +
+        contarEstado(c.id, SOLICITUD_ESTADO.CORRECCION);
+      const evaluadas =
+        contarEstado(c.id, SOLICITUD_ESTADO.EVALUADA) +
+        contarEstado(c.id, SOLICITUD_ESTADO.APROBADA) +
+        contarEstado(c.id, SOLICITUD_ESTADO.RECHAZADA);
+      const total =
+        borradores +
+        contarEstado(c.id, SOLICITUD_ESTADO.ENVIADA) +
+        enRevision +
+        evaluadas;
+
+      const decisionesConv = decisiones.filter(
+        (d) => d.solicitud?.convocatoriaId === c.id,
+      );
+      const aprobadas = decisionesConv.filter(
+        (d) => d.resultado === DECISION_RESULTADO.APROBADA,
+      ).length;
+      const rechazadas = decisionesConv.filter(
+        (d) => d.resultado === DECISION_RESULTADO.RECHAZADA,
+      ).length;
+
+      const dias: number[] = [];
+      for (const d of decisionesConv) {
+        if (!d.fecha || !d.solicitud?.createdAt) continue;
+        const ms =
+          new Date(d.fecha).getTime() -
+          new Date(d.solicitud.createdAt).getTime();
+        if (!Number.isFinite(ms) || ms <= 0) continue;
+        dias.push(ms / 86400000);
+      }
+
+      return {
+        id: c.id,
+        nombre: c.nombre,
+        beca: c.beca.nombre,
+        estado: c.estado,
+        total,
+        borradores,
+        enviadas: Math.max(0, total - borradores),
+        enRevision,
+        evaluadas,
+        aprobadas,
+        rechazadas,
+        totalDecisiones: decisionesConv.length,
+        completitud:
+          total > 0
+            ? Math.round(((total - borradores) / total) * 1000) / 10
+            : null,
+        tasaAprobacion:
+          aprobadas + rechazadas > 0
+            ? Math.round((aprobadas / (aprobadas + rechazadas)) * 1000) / 10
+            : null,
+        tiempoPromedioResolucionDias:
+          dias.length > 0
+            ? Math.round(
+                (dias.reduce((a, b) => a + b, 0) / dias.length) * 10,
+              ) / 10
+            : null,
+      };
+    });
+
+    const sumar = (clave: keyof (typeof filas)[number]): number =>
+      filas.reduce((acc, f) => acc + Number(f[clave] ?? 0), 0);
+
+    const totalAprobadas = sumar('aprobadas');
+    const totalRechazadas = sumar('rechazadas');
+    const diasValidos = filas
+      .map((f) => f.tiempoPromedioResolucionDias)
+      .filter((d): d is number => d != null);
+    const totalFilas = sumar('total');
+    const totalBorradores = sumar('borradores');
+
+    return {
+      totales: {
+        convocatorias: filas.length,
+        total: totalFilas,
+        borradores: totalBorradores,
+        enviadas: sumar('enviadas'),
+        enRevision: sumar('enRevision'),
+        evaluadas: sumar('evaluadas'),
+        aprobadas: totalAprobadas,
+        rechazadas: totalRechazadas,
+        totalDecisiones: sumar('totalDecisiones'),
+        completitud:
+          totalFilas > 0
+            ? Math.round(
+                ((totalFilas - totalBorradores) / totalFilas) * 1000,
+              ) / 10
+            : null,
+        tasaAprobacion:
+          totalAprobadas + totalRechazadas > 0
+            ? Math.round(
+                (totalAprobadas / (totalAprobadas + totalRechazadas)) * 1000,
+              ) / 10
+            : null,
+        tiempoPromedioResolucionDias:
+          diasValidos.length > 0
+            ? Math.round(
+                (diasValidos.reduce((a, b) => a + b, 0) /
+                  diasValidos.length) *
+                  10,
+              ) / 10
+            : null,
+      },
+      filas,
+    };
+  }
+
   async tendencia(meses = 12) {
     const n = Math.max(1, Math.min(meses, 24));
     const ahora = new Date();

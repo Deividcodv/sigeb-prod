@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Container } from '@/components/ui/Container';
+import { Icon, type IconName } from '@/components/ui/Icon';
 
 export const metadata: Metadata = {
   title: 'Contacto | EDUVIAGT',
@@ -7,24 +8,28 @@ export const metadata: Metadata = {
     'Contacta al Ministerio de Educación de Guatemala para resolver dudas sobre el proceso de becas gestionado a través de EDUVIAGT.',
 };
 
-const canales = [
+const canales: {
+  icono: IconName;
+  titulo: string;
+  lineas: string[];
+}[] = [
   {
-    icono: '✉',
+    icono: 'correo',
     titulo: 'Correo',
     lineas: ['mesadeayuda@mineduc.gob.gt', 'becas@mineduc.gob.gt'],
   },
   {
-    icono: '☎',
+    icono: 'telefono',
     titulo: 'Teléfono',
     lineas: ['+502 2411-9595', '+502 2411-9596'],
   },
   {
-    icono: '⚲',
+    icono: 'reloj',
     titulo: 'Horario',
     lineas: ['Lunes a viernes', '8:00 a 16:00 horas'],
   },
   {
-    icono: '⌂',
+    icono: 'ubicacion',
     titulo: 'Dirección',
     lineas: [
       '5a. calle 6-56 zona 1',
@@ -64,8 +69,8 @@ export default function ContactoPage() {
                     key={c.titulo}
                     className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-papel p-5"
                   >
-                    <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-brutal border-2 border-brutal-tinta bg-brutal-gold">
-                      {c.icono}
+                    <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-brutal border-2 border-brutal-tinta bg-brutal-gold text-brutal-tinta">
+                      <Icon name={c.icono} className="h-5 w-5" />
                     </div>
                     <h3 className="font-brut font-black uppercase tracking-wide text-brutal-tinta">
                       {c.titulo}
@@ -117,9 +122,9 @@ export default function ContactoPage() {
                   className="group rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco p-6 shadow-brutal-sm transition-transform hover:-translate-y-1"
                 >
                   <div
-                    className={`mb-3 inline-flex h-10 w-10 items-center justify-center rounded-brutal border-2 border-brutal-tinta ${c.acento}`}
+                    className={`mb-3 inline-flex h-10 w-10 items-center justify-center rounded-brutal border-2 border-brutal-tinta text-brutal-tinta ${c.acento}`}
                   >
-                    ›
+                    <Icon name="chevron" className="h-4 w-4 -rotate-90" />
                   </div>
                   <h3 className="font-brut font-black uppercase tracking-wide text-brutal-tinta group-hover:text-brutal-cyan">
                     {c.titulo}

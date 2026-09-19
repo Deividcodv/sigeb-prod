@@ -7,8 +7,9 @@ import { Button } from '@/components/ui/Button';
 import { BotonPostular } from '@/components/convocatorias/BotonPostular';
 import { CuentaRegresiva } from '@/components/convocatorias/CuentaRegresiva';
 import {
-  fetcher,
+  httpData,
   formatearFecha,
+  ETIQUETA_COBERTURA,
   type ConvocatoriaDetalle,
 } from '@/lib/api';
 
@@ -28,7 +29,7 @@ function codigoConvocatoria(convocatoria: ConvocatoriaDetalle): string {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   let convocatoria: ConvocatoriaDetalle | null = null;
   try {
-    convocatoria = await fetcher<ConvocatoriaDetalle>(`/convocatorias/${params.id}`);
+    convocatoria = await httpData<ConvocatoriaDetalle>(`/convocatorias/${params.id}`);
   } catch {
     return { title: 'Convocatoria | EDUVIAGT' };
   }
@@ -41,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ConvocatoriaDetallePage({ params }: Props) {
   let convocatoria: ConvocatoriaDetalle;
   try {
-    convocatoria = await fetcher<ConvocatoriaDetalle>(
+    convocatoria = await httpData<ConvocatoriaDetalle>(
       `/convocatorias/${params.id}`,
     );
   } catch {
@@ -52,6 +53,7 @@ export default async function ConvocatoriaDetallePage({ params }: Props) {
   const codigo = codigoConvocatoria(convocatoria);
   const docs = convocatoria.documentosRequeridos ?? [];
   const criterios = convocatoria.beca?.criteriosEvaluacion ?? [];
+  const campos = convocatoria.formulario ?? [];
 
   return (
     <main>
@@ -122,6 +124,36 @@ export default async function ConvocatoriaDetallePage({ params }: Props) {
                   </table>
                 </div>
               )}
+              {campos.length > 0 && (
+                <div className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco p-6 shadow-brutal-sm">
+                  <h2 className="mb-3 font-brut text-xl font-black uppercase tracking-wide text-brutal-tinta">
+                    Información a completar
+                  </h2>
+                  <ul className="space-y-2 font-mono text-sm text-brutal-tinta/80">
+                    {campos.map((campo) => (
+                      <li key={campo.id} className="flex items-start justify-between gap-2">
+                        <span>
+                          {campo.etiqueta}
+                          {campo.ayuda ? (
+                            <span className="block text-xs text-brutal-tinta/50">
+                              {campo.ayuda}
+                            </span>
+                          ) : null}
+                        </span>
+                        {campo.requerido ? (
+                          <span className="shrink-0 rounded-brutal border-2 border-brutal-rojo bg-brutal-rojo/15 px-2 py-0.5 text-xs font-bold text-brutal-rojo">
+                            Obligatorio
+                          </span>
+                        ) : (
+                          <span className="shrink-0 rounded-brutal border-2 border-brutal-tinta bg-brutal-tinta/10 px-2 py-0.5 text-xs font-bold text-brutal-tinta">
+                            Opcional
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
 
             <div className="space-y-6">
@@ -146,6 +178,22 @@ export default async function ConvocatoriaDetallePage({ params }: Props) {
                       {formatearFecha(convocatoria.fechaCierre)}
                     </dd>
                   </div>
+                  {convocatoria.cobertura && (
+                    <div className="flex justify-between">
+                      <dt>Cobertura</dt>
+                      <dd className="font-bold text-brutal-tinta">
+                        {ETIQUETA_COBERTURA[convocatoria.cobertura]}
+                      </dd>
+                    </div>
+                  )}
+                  {convocatoria.nivelAcademico && (
+                    <div className="flex justify-between">
+                      <dt>Nivel</dt>
+                      <dd className="font-bold text-brutal-tinta">
+                        {convocatoria.nivelAcademico.nombre}
+                      </dd>
+                    </div>
+                  )}
                   {abierta && (
                     <div className="flex items-center justify-between gap-3 border-t-2 border-brutal-tinta/20 pt-3">
                       <dt className="font-bold uppercase text-brutal-tinta">Cierra en</dt>

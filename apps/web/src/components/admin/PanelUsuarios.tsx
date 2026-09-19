@@ -7,6 +7,7 @@ import { Select } from '@/components/ui/Select';
 import { Badge } from '@/components/ui/Badge';
 import { Spinner } from '@/components/ui/Spinner';
 import { Card } from '@/components/ui/Card';
+import { Icon } from '@/components/ui/Icon';
 import {
   listarUsuarios,
   listarRoles,
@@ -368,7 +369,7 @@ function MatrizPermisosUsuario({
         </Button>
       </div>
       <p className="mb-4 font-mono text-sm text-brutal-tinta/70">
-        Haz clic para alternar: vacío = heredar del rol · ✓ = PERMITIR · ✗ = DENEGAR.
+        Haz clic para alternar: vacío = heredar del rol, Permitir o Denegar.
       </p>
       <div className="overflow-x-auto rounded-brutal border-[3px] border-brutal-tinta">
         <table className="w-full text-left font-mono text-sm">
@@ -422,7 +423,10 @@ function PermisosPorModulo({
           colSpan={3}
           className="px-4 py-2 font-brut text-xs font-black uppercase tracking-wide text-brutal-tinta"
         >
-          ▸ {modulo}
+          <span className="inline-flex items-center gap-1">
+            <Icon name="chevron" className="h-3 w-3 -rotate-90" />
+            {modulo}
+          </span>
         </td>
       </tr>
       {permisos.map((permiso) => (
@@ -440,11 +444,19 @@ function PermisosPorModulo({
                     : 'border-brutal-tinta border-dashed bg-brutal-blanco text-brutal-tinta/80'
               }`}
             >
-              {estados[permiso.id] === 'PERMITIR'
-                ? '✓ PERMITIR'
-                : estados[permiso.id] === 'DENEGAR'
-                  ? '✗ DENEGAR'
-                  : '— Herencia'}
+              {estados[permiso.id] === 'PERMITIR' ? (
+                <>
+                  <Icon name="check" className="h-3.5 w-3.5" />
+                  Permitir
+                </>
+              ) : estados[permiso.id] === 'DENEGAR' ? (
+                <>
+                  <Icon name="cerrar" className="h-3.5 w-3.5" />
+                  Denegar
+                </>
+              ) : (
+                '— Herencia'
+              )}
             </button>
           </td>
         </tr>

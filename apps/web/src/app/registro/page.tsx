@@ -9,6 +9,7 @@ import { registrar } from '@/lib/auth';
 import { Container } from '@/components/ui/Container';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+import { Icon } from '@/components/ui/Icon';
 import { Spinner } from '@/components/ui/Spinner';
 
 const schema = z
@@ -61,8 +62,8 @@ export default function RegistroPage() {
     return (
       <Container className="flex min-h-[60vh] items-center justify-center py-16">
         <div className="w-full max-w-md rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco p-8 text-center shadow-brutal">
-          <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-brutal border-[3px] border-brutal-tinta bg-brutal-lima text-3xl font-black text-brutal-tinta">
-            ✓
+          <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-brutal border-[3px] border-brutal-tinta bg-brutal-lima text-brutal-tinta">
+            <Icon name="check" className="h-7 w-7" />
           </div>
           <h1 className="mb-2 font-brut text-2xl font-black uppercase tracking-wide text-brutal-tinta">
             ¡Cuenta creada!

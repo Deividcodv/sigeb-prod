@@ -5,12 +5,14 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { fetchConToken } from '@/lib/api-auth';
 import { Container } from '@/components/ui/Container';
 import { Card } from '@/components/ui/Card';
+import { Icon } from '@/components/ui/Icon';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
 import { Input } from '@/components/ui/Input';
 import { InternalPageHeader } from '@/components/ui/InternalPageHeader';
 import { GraficaDona } from '@/components/reportes/GraficaDona';
+import type { CampoFormulario } from '@/lib/api';
 
 interface Criterio {
   id: string;
@@ -26,12 +28,34 @@ interface Evaluacion {
   solicitud: {
     id: string;
     estado: string;
+    respuestas?: Record<string, Record<string, unknown>> | null;
+    formularioSnapshot?: CampoFormulario[] | null;
     convocatoria: { nombre: string; beca: { nombre: string } };
     usuario: { nombres: string; cui: string };
   };
   criterios: Criterio[];
   totalCriterios: number;
   completados: number;
+  imparcialidadConfirmada: boolean;
+}
+
+function respuestasVisibles(ev: Evaluacion): { etiqueta: string; valor: string }[] {
+  const campos = ev.solicitud.formularioSnapshot;
+  if (!campos || campos.length === 0) return [];
+  const valores: Record<string, unknown> = {};
+  for (const seccion of Object.values(ev.solicitud.respuestas ?? {})) {
+    if (seccion && typeof seccion === 'object') Object.assign(valores, seccion);
+  }
+  return campos
+    .map((campo) => {
+      const valor = valores[campo.id];
+      if (valor === undefined || valor === null || valor === '') return null;
+      return {
+        etiqueta: campo.etiqueta,
+        valor: typeof valor === 'boolean' ? (valor ? 'Sí' : 'No') : String(valor),
+      };
+    })
+    .filter((v): v is { etiqueta: string; valor: string } => v !== null);
 }
 
 export default function EvaluadorPage() {
@@ -72,6 +96,26 @@ function EvaluadorContent() {
   useEffect(() => {
     cargar();
   }, [cargar]);
+
+  const confirmarImparcialidad = async (solicitudId: string) => {
+    setGuardando(true);
+    setError(null);
+    setExito(null);
+    try {
+      await fetchConToken(`/solicitudes/${solicitudId}/imparcialidad`, {
+        method: 'PATCH',
+        body: { confirma: true },
+      });
+      await cargar();
+      setExito('Declaración de imparcialidad confirmada. Ya puedes puntuar.');
+    } catch (e) {
+      setError(
+        e instanceof Error ? e.message : 'No se pudo confirmar la imparcialidad',
+      );
+    } finally {
+      setGuardando(false);
+    }
+  };
 
   const puntuar = async (solicitudId: string, criterio: Criterio) => {
     const marca = marcas[criterio.id];
@@ -182,6 +226,26 @@ function EvaluadorContent() {
                   </div>
                 </div>
 
+                {(() => {
+                  const extra = respuestasVisibles(ev);
+                  if (extra.length === 0) return null;
+                  return (
+                    <div className="mb-4 rounded-brutal border-2 border-brutal-tinta/30 bg-brutal-papel/40 p-3">
+                      <p className="mb-2 font-brut text-xs font-bold uppercase tracking-wide text-brutal-tinta/70">
+                        Información adicional del postulante
+                      </p>
+                      <dl className="grid gap-1 font-mono text-xs text-brutal-tinta/80 sm:grid-cols-2">
+                        {extra.map((item) => (
+                          <div key={item.etiqueta} className="flex justify-between gap-2">
+                            <dt className="text-brutal-tinta/60">{item.etiqueta}</dt>
+                            <dd className="font-bold text-brutal-tinta">{item.valor}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </div>
+                  );
+                })()}
+
                 <div className="mb-4 grid gap-4 md:grid-cols-[1fr_220px]">
                   <div>
                     <div className="mb-1 flex justify-between font-mono text-xs font-bold text-brutal-tinta">
@@ -205,6 +269,25 @@ function EvaluadorContent() {
                   </div>
                 </div>
 
+                {!ev.imparcialidadConfirmada ? (
+                  <div className="mb-4 rounded-brutal border-[3px] border-brutal-rojo bg-red-50 p-3">
+                    <p className="mb-2 font-mono text-sm font-bold text-brutal-rojo">
+                      Antes de puntuar debes declarar que no tienes conflicto de
+                      interés con esta solicitud.
+                    </p>
+                    <Button
+                      onClick={() => confirmarImparcialidad(ev.solicitudId)}
+                      disabled={guardando}
+                    >
+                      Confirmar imparcialidad
+                    </Button>
+                  </div>
+                ) : (
+                  <p className="mb-4 rounded-brutal border-[3px] border-brutal-tinta bg-brutal-lima/30 px-3 py-2 font-mono text-sm font-bold text-brutal-tinta">
+                    Declaración de imparcialidad confirmada.
+                  </p>
+                )}
+
                 <div className="space-y-3">
                   {ev.criterios.map((criterio) => {
                     const marca = marcas[criterio.id];
@@ -223,8 +306,9 @@ function EvaluadorContent() {
                             </p>
                           </div>
                           {criterio.completada && (
-                            <span className="rounded-brutal border-2 border-brutal-tinta bg-brutal-lima px-2 py-0.5 font-brut text-xs font-bold text-brutal-tinta">
-                              ✓ Puntuado ({criterio.puntaje})
+                            <span className="inline-flex items-center gap-1 rounded-brutal border-2 border-brutal-tinta bg-brutal-lima px-2 py-0.5 font-brut text-xs font-bold text-brutal-tinta">
+                              <Icon name="check" className="h-3.5 w-3.5" />
+                              Puntuado ({criterio.puntaje})
                             </span>
                           )}
                         </div>
@@ -260,7 +344,7 @@ function EvaluadorContent() {
                           />
                           <Button
                             onClick={() => puntuar(ev.solicitudId, criterio)}
-                            disabled={guardando}
+                            disabled={guardando || !ev.imparcialidadConfirmada}
                           >
                             Guardar
                           </Button>

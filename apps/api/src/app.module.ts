@@ -12,6 +12,7 @@ import { EvaluacionesModule } from './evaluaciones/evaluaciones.module';
 import { ComitesModule } from './comites/comites.module';
 import { SesionesModule } from './sesiones/sesiones.module';
 import { ReportesModule } from './reportes/reportes.module';
+import { NotificacionesModule } from './notificaciones/notificaciones.module';
 import { AuditModule } from './audit/audit.module';
 import { AsistenteModule } from './asistente/asistente.module';
 
@@ -32,6 +33,7 @@ import { AsistenteModule } from './asistente/asistente.module';
     ComitesModule,
     SesionesModule,
     ReportesModule,
+    NotificacionesModule,
     AuditModule,
     AsistenteModule,
   ],

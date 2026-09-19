@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Container } from '@/components/ui/Container';
+import { Icon, type IconName } from '@/components/ui/Icon';
 
 export const metadata: Metadata = {
   title: 'Centro de ayuda | EDUVIAGT',
@@ -7,47 +8,53 @@ export const metadata: Metadata = {
     'Centro de ayuda de EDUVIAGT: guías, preguntas frecuentes, requisitos y soporte para tu proceso de becas.',
 };
 
-const recursos = [
+const recursos: {
+  titulo: string;
+  texto: string;
+  href: string;
+  icono: IconName;
+  acento: string;
+}[] = [
   {
     titulo: 'Preguntas frecuentes',
     texto: 'Respuestas a las dudas más comunes sobre el proceso de becas.',
     href: '/faq',
-    icono: '?',
+    icono: 'info',
     acento: 'bg-brutal-cyan',
   },
   {
     titulo: 'Requisitos',
     texto: 'Requisitos generales y documentos necesarios para postularte.',
     href: '/requisitos',
-    icono: '✓',
+    icono: 'check',
     acento: 'bg-brutal-lima',
   },
   {
     titulo: 'Consultar solicitud',
     texto: 'Consulta el estado de tu solicitud sin iniciar sesión.',
     href: '/consulta',
-    icono: '⚲',
+    icono: 'buscar',
     acento: 'bg-brutal-gold',
   },
   {
     titulo: 'Convocatorias',
     texto: 'Explora las becas abiertas y sus documentos requeridos.',
     href: '/convocatorias',
-    icono: '◎',
+    icono: 'becas',
     acento: 'bg-brutal-rosa',
   },
   {
     titulo: 'Transparencia',
     texto: 'Conoce cómo EDUVIAGT garantiza procesos auditable y verificables.',
     href: '/transparencia',
-    icono: '◉',
+    icono: 'escudo',
     acento: 'bg-brutal-indigo',
   },
   {
     titulo: 'Contacto',
     texto: 'Canales de atención del Ministerio de Educación.',
     href: '/contacto',
-    icono: '✉',
+    icono: 'correo',
     acento: 'bg-brutal-naranja',
   },
 ];
@@ -77,9 +84,9 @@ export default function AyudaPage() {
                 className="group rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco p-6 shadow-brutal-sm transition-transform hover:-translate-y-1"
               >
                 <div
-                  className={`mb-4 inline-flex h-12 w-12 items-center justify-center rounded-brutal border-[3px] border-brutal-tinta text-xl font-black text-brutal-tinta ${r.acento}`}
+                  className={`mb-4 inline-flex h-12 w-12 items-center justify-center rounded-brutal border-[3px] border-brutal-tinta text-brutal-tinta ${r.acento}`}
                 >
-                  {r.icono}
+                  <Icon name={r.icono} className="h-6 w-6" />
                 </div>
                 <h2 className="font-brut text-lg font-black uppercase tracking-wide text-brutal-tinta group-hover:text-brutal-cyan">
                   {r.titulo}
@@ -92,8 +99,8 @@ export default function AyudaPage() {
               href="/soporte"
               className="group rounded-brutal border-[3px] border-brutal-tinta bg-brutal-tinta p-6 text-brutal-papel shadow-brutal-sm transition-transform hover:-translate-y-1"
             >
-              <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-brutal border-[3px] border-brutal-tinta bg-brutal-gold text-xl font-black text-brutal-tinta">
-                💬
+              <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-brutal border-[3px] border-brutal-tinta bg-brutal-gold text-brutal-tinta">
+                <Icon name="chat" className="h-6 w-6" />
               </div>
               <h2 className="font-brut text-lg font-black uppercase tracking-wide text-brutal-gold">
                 Soporte y asistente

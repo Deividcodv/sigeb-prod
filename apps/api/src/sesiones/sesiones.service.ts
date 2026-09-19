@@ -10,6 +10,7 @@ import { CrearSesionDto, RegistrarVotoDto } from './sesiones.dto';
 import { AuthenticatedUser } from '../common/interfaces/authenticated-user.interface';
 import { SolicitudStateMachine } from '../solicitudes/solicitud-state-machine';
 import { ConvocatoriaStateMachine } from '../convocatorias/convocatoria-state-machine';
+import { NotificacionesService } from '../notificaciones/notificaciones.service';
 import {
   SOLICITUD_ESTADO,
   CONVOCATORIA_ESTADO,
@@ -22,6 +23,7 @@ export class SesionesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly audit: AuditService,
+    private readonly notificaciones: NotificacionesService,
   ) {}
 
   async crearSesion(dto: CrearSesionDto, usuario: AuthenticatedUser) {
@@ -243,7 +245,12 @@ export class SesionesService {
         agenda: {
           include: {
             solicitud: {
-              select: { id: true, estado: true, convocatoriaId: true },
+              select: {
+                id: true,
+                estado: true,
+                convocatoriaId: true,
+                usuarioId: true,
+              },
             },
           },
         },
@@ -280,6 +287,8 @@ export class SesionesService {
           .join(', ')} no están en EVALUADA`,
       );
     }
+
+    const avisos: { usuarioId: string; resultado: string }[] = [];
 
     const sesionFinal = await this.prisma.$transaction(async (tx) => {
       const decisiones = [];
@@ -319,6 +328,8 @@ export class SesionesService {
             },
           }),
         );
+
+        avisos.push({ usuarioId: solicitud.usuarioId, resultado });
       }
 
       const convocatoriaId = solicitudes[0]?.convocatoriaId;
@@ -376,6 +387,17 @@ export class SesionesService {
 
       return final;
     });
+
+    for (const aviso of avisos) {
+      const aprobada = aviso.resultado === DECISION_RESULTADO.APROBADA;
+      await this.notificaciones.notificarUsuario(aviso.usuarioId, {
+        tipo: aprobada ? 'SOLICITUD_APROBADA' : 'SOLICITUD_RECHAZADA',
+        titulo: aprobada
+          ? '¡Tu solicitud fue aprobada!'
+          : 'Tu solicitud no fue aprobada',
+        cuerpo: 'La decisión del comité está disponible.',
+      });
+    }
 
     return sesionFinal;
   }

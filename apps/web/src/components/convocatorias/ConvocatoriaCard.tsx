@@ -1,7 +1,11 @@
 import Link from 'next/link';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { formatearFecha, type Convocatoria } from '@/lib/api';
+import {
+  formatearFecha,
+  ETIQUETA_COBERTURA,
+  type Convocatoria,
+} from '@/lib/api';
 
 function diasRestantes(fechaCierre: string): number | null {
   const cierre = new Date(fechaCierre).getTime();
@@ -28,6 +32,20 @@ export function ConvocatoriaCard({
       <h3 className="mb-2 font-brut text-lg font-black uppercase leading-snug text-brutal-tinta">
         {convocatoria.nombre}
       </h3>
+      {(convocatoria.cobertura || convocatoria.nivelAcademico) && (
+        <div className="mb-3 flex flex-wrap gap-2">
+          {convocatoria.cobertura && (
+            <span className="rounded-brutal border-2 border-brutal-tinta bg-brutal-gold/30 px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-brutal-tinta">
+              {ETIQUETA_COBERTURA[convocatoria.cobertura]}
+            </span>
+          )}
+          {convocatoria.nivelAcademico && (
+            <span className="rounded-brutal border-2 border-brutal-tinta bg-brutal-lima/30 px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-brutal-tinta">
+              {convocatoria.nivelAcademico.nombre}
+            </span>
+          )}
+        </div>
+      )}
       {convocatoria.descripcion && (
         <p className="mb-4 line-clamp-3 text-sm text-brutal-tinta/70">
           {convocatoria.descripcion}

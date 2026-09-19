@@ -23,7 +23,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <input
           id={inputId}
           ref={ref}
-          className={`rounded-brutal border-[3px] px-3 py-2 text-sm transition-all focus:outline-none ${
+          className={`rounded-brutal border-[3px] px-3 py-2 text-sm text-brutal-tinta transition-all placeholder:text-brutal-tinta/50 focus:outline-none ${
             error
               ? 'border-brutal-rojo bg-red-50 text-brutal-tinta'
               : 'border-brutal-tinta bg-brutal-blanco text-brutal-tinta focus:bg-brutal-cyan/10'

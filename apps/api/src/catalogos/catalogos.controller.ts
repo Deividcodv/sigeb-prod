@@ -74,6 +74,20 @@ export class CatalogosController {
     return this.catalogosService.findAllBecas();
   }
 
+  @Get('instituciones')
+  @Public()
+  @ApiQuery({ name: 'nivel', required: false })
+  @ApiQuery({ name: 'busqueda', required: false })
+  @ApiOperation({
+    summary: 'Listar instituciones educativas (filtradas por nivel o búsqueda)',
+  })
+  findAllInstituciones(
+    @Query('nivel') nivel?: string,
+    @Query('busqueda') busqueda?: string,
+  ) {
+    return this.catalogosService.findAllInstituciones(nivel, busqueda);
+  }
+
   // ============ GENEROS (ADMIN) ============
   @Post('generos')
   @Permisos('permiso:editar')

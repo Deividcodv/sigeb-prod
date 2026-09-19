@@ -81,6 +81,25 @@ export class SolicitudChecklistService {
     if (!perfilFinancieroOk) {
       pendientes.push('Perfil financiero incompleto (ingreso familiar requerido)');
     }
+
+    const respuestas = (solicitud.respuestas as Record<
+      string,
+      Record<string, unknown>
+    > | null) ?? {};
+
+    const camposExtra = this.leerCampos(solicitud.formularioSnapshot);
+    for (const campo of camposExtra) {
+      if (!campo.requerido) continue;
+      const valor = respuestas?.[campo.seccion]?.[campo.id];
+      const vacio =
+        valor === undefined ||
+        valor === null ||
+        (typeof valor === 'string' && valor.trim() === '');
+      if (vacio) {
+        pendientes.push(`Campo "${campo.etiqueta}" pendiente`);
+      }
+    }
+
     for (const documento of documentos) {
       if (!documento.obligatorio) continue;
       if (documento.estado === DOCUMENTO_ESTADO.RECHAZADO && documento.comentarioRechazo) {
@@ -97,9 +116,40 @@ export class SolicitudChecklistService {
       estado: solicitud.estado,
       perfilAcademico: perfilAcademicoOk,
       perfilFinanciero: perfilFinancieroOk,
+      camposExtra,
       documentos,
       pendientes,
       completo: pendientes.length === 0,
     };
+  }
+
+  private leerCampos(snapshot: unknown): {
+    id: string;
+    seccion: string;
+    etiqueta: string;
+    tipo: string;
+    requerido: boolean;
+    opciones?: string[];
+    ayuda?: string;
+    documentoTipoId?: string;
+  }[] {
+    if (!Array.isArray(snapshot)) return [];
+    const items = snapshot as unknown as Record<string, unknown>[];
+    return items
+      .filter((c) => c && typeof c === 'object')
+      .map((c) => ({
+        id: String(c.id),
+        seccion: String(c.seccion ?? 'adicional'),
+        etiqueta: String(c.etiqueta ?? c.id),
+        tipo: String(c.tipo ?? 'texto'),
+        requerido: Boolean(c.requerido),
+        ...(Array.isArray(c.opciones)
+          ? { opciones: c.opciones.map((o) => String(o)) }
+          : {}),
+        ...(c.ayuda ? { ayuda: String(c.ayuda) } : {}),
+        ...(c.documentoTipoId
+          ? { documentoTipoId: String(c.documentoTipoId) }
+          : {}),
+      }));
   }
 }

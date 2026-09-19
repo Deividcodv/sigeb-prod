@@ -8,9 +8,10 @@ import { ConstanciasService } from './constancias.service';
 import { PDF_RENDERER } from './pdf/pdf-renderer.interface';
 import { PuppeteerPdfRenderer } from './pdf/puppeteer-pdf-renderer';
 import { PrismaModule } from '../prisma/prisma.module';
+import { NotificacionesModule } from '../notificaciones/notificaciones.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, NotificacionesModule],
   controllers: [SolicitudesController],
   providers: [
     SolicitudesService,

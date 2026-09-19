@@ -8,10 +8,12 @@ import { PrismaService } from '../prisma/prisma.service';
 import { AuditService } from '../audit/audit.service';
 import { AuthenticatedUser } from '../common/interfaces/authenticated-user.interface';
 import { AuthzService } from '../common/services/authz.service';
+import { NotificacionesService } from '../notificaciones/notificaciones.service';
 import { SOLICITUD_ESTADO } from '../common/constants/estados';
 import { ROL } from '../common/constants/roles';
 import {
   AsignarEvaluadoresDto,
+  ImparcialidadDto,
   RegistrarPuntajeDto,
 } from './evaluaciones.dto';
 
@@ -38,6 +40,9 @@ export interface ScoreSolicitudResult {
   solicitudId: string;
   score: number | null;
   completo: boolean;
+  evaluadoresMinimos: number;
+  evaluadoresCompletos: number;
+  minimoAlcanzado: boolean;
   evaluadores: EvaluadorScoreResult[];
 }
 
@@ -47,6 +52,7 @@ export class EvaluacionesService {
     private readonly prisma: PrismaService,
     private readonly audit: AuditService,
     private readonly authz: AuthzService,
+    private readonly notificaciones: NotificacionesService,
   ) {}
 
   async misEvaluaciones(usuario: AuthenticatedUser) {
@@ -69,6 +75,7 @@ export class EvaluacionesService {
     type GrupoEvaluacion = {
       solicitudId: string;
       solicitud: (typeof evaluaciones)[number]['solicitud'];
+      imparcialidadConfirmada: boolean;
       criterios: {
         id: string;
         nombre: string;
@@ -92,10 +99,13 @@ export class EvaluacionesService {
       };
       if (grupo) {
         grupo.criterios.push(criterio);
+        grupo.imparcialidadConfirmada =
+          grupo.imparcialidadConfirmada || ev.confirmImparcialidad;
       } else {
         porSolicitud.set(key, {
           solicitudId: key,
           solicitud: ev.solicitud,
+          imparcialidadConfirmada: ev.confirmImparcialidad,
           criterios: [criterio],
         });
       }
@@ -212,6 +222,14 @@ export class EvaluacionesService {
         entidadId: solicitudId,
         detalle: { evaluadorIds: dto.evaluadorIds },
       });
+
+      await this.notificaciones.crearParaVarios(dto.evaluadorIds, {
+        tipo: 'EVALUACION_ASIGNADA',
+        titulo: 'Nueva evaluación asignada',
+        cuerpo: `Se te asignó la evaluación de una solicitud de "${
+          solicitud.convocatoria?.beca?.nombre ?? 'beca'
+        }".`,
+      });
     }
 
     return {
@@ -254,6 +272,12 @@ export class EvaluacionesService {
       );
     }
 
+    if (!evaluacion.confirmImparcialidad) {
+      throw new BadRequestException(
+        'Debes confirmar la declaración de imparcialidad antes de registrar puntajes',
+      );
+    }
+
     return this.prisma.evaluacion.update({
       where: { id: evaluacion.id },
       data: {
@@ -265,9 +289,127 @@ export class EvaluacionesService {
     });
   }
 
+  async confirmarImparcialidad(
+    solicitudId: string,
+    dto: ImparcialidadDto,
+    usuario: AuthenticatedUser,
+  ) {
+    if (!dto.confirma) {
+      throw new BadRequestException(
+        'Debes aceptar la declaración de imparcialidad para poder evaluar',
+      );
+    }
+
+    const solicitud = await this.prisma.solicitud.findUnique({
+      where: { id: solicitudId },
+    });
+
+    if (!solicitud) {
+      throw new NotFoundException(
+        `Solicitud con id ${solicitudId} no encontrada`,
+      );
+    }
+
+    const evaluaciones = await this.prisma.evaluacion.findMany({
+      where: { solicitudId, evaluadorId: usuario.id },
+      select: { completada: true },
+    });
+
+    if (evaluaciones.length === 0) {
+      throw new ForbiddenException(
+        'No tienes una evaluación asignada para esta solicitud',
+      );
+    }
+
+    if (evaluaciones.some((e) => e.completada)) {
+      throw new BadRequestException(
+        'La declaración de imparcialidad ya no se puede modificar: registraste puntajes',
+      );
+    }
+
+    await this.prisma.evaluacion.updateMany({
+      where: { solicitudId, evaluadorId: usuario.id },
+      data: { confirmImparcialidad: true },
+    });
+
+    await this.audit.log({
+      usuarioId: usuario.id,
+      accion: 'confirmar-imparcialidad',
+      entidad: 'solicitud',
+      entidadId: solicitudId,
+    });
+
+    return { solicitudId, confirmada: true };
+  }
+
+  async quitarEvaluador(
+    solicitudId: string,
+    evaluadorId: string,
+    usuario: AuthenticatedUser,
+  ) {
+    this.authz.assertAdmin(
+      usuario,
+      'Solo los administradores pueden quitar evaluadores',
+    );
+
+    const solicitud = await this.prisma.solicitud.findUnique({
+      where: { id: solicitudId },
+    });
+
+    if (!solicitud) {
+      throw new NotFoundException(
+        `Solicitud con id ${solicitudId} no encontrada`,
+      );
+    }
+
+    if (solicitud.estado !== SOLICITUD_ESTADO.EN_REVISION) {
+      throw new BadRequestException(
+        'Solo se pueden quitar evaluadores de solicitudes en EN_REVISION',
+      );
+    }
+
+    const evaluaciones = await this.prisma.evaluacion.findMany({
+      where: { solicitudId, evaluadorId },
+      select: { id: true, completada: true },
+    });
+
+    if (evaluaciones.length === 0) {
+      throw new NotFoundException(
+        'El evaluador no está asignado a esta solicitud',
+      );
+    }
+
+    if (evaluaciones.some((e) => e.completada)) {
+      throw new BadRequestException(
+        'No se puede quitar a un evaluador que ya registró puntajes',
+      );
+    }
+
+    await this.prisma.evaluacion.deleteMany({
+      where: { solicitudId, evaluadorId },
+    });
+
+    await this.audit.log({
+      usuarioId: usuario.id,
+      accion: 'quitar-evaluador',
+      entidad: 'solicitud',
+      entidadId: solicitudId,
+      detalle: { evaluadorId },
+    });
+
+    await this.notificaciones.notificarUsuario(evaluadorId, {
+      tipo: 'EVALUACION_REMOVIDA',
+      titulo: 'Evaluación removida',
+      cuerpo: 'Ya no tienes asignada la evaluación de esta solicitud.',
+    });
+
+    return { solicitudId, evaluadorId, removido: true };
+  }
+
   async scoreSolicitud(solicitudId: string): Promise<ScoreSolicitudResult> {
     const solicitud = await this.prisma.solicitud.findUnique({
       where: { id: solicitudId },
+      include: { convocatoria: { select: { evaluadoresMinimos: true } } },
     });
 
     if (!solicitud) {
@@ -328,6 +470,8 @@ export class EvaluacionesService {
       .filter((e) => e.score !== null)
       .map((e) => e.score as number);
     const completo = evaluadores.length > 0 && evaluadores.every((e) => e.completo);
+    const evaluadoresMinimos = solicitud.convocatoria?.evaluadoresMinimos ?? 2;
+    const evaluadoresCompletos = evaluadores.filter((e) => e.completo).length;
 
     return {
       solicitudId,
@@ -335,6 +479,9 @@ export class EvaluacionesService {
         ? Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 100) / 100
         : null,
       completo,
+      evaluadoresMinimos,
+      evaluadoresCompletos,
+      minimoAlcanzado: evaluadoresCompletos >= evaluadoresMinimos,
       evaluadores,
     };
   }

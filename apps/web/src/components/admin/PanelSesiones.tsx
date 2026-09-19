@@ -173,7 +173,7 @@ export function PanelSesiones() {
             </p>
             {evaluadas.length === 0 ? (
               <p className="text-sm text-amber-700">
-                No hay solicitudes en estado EVALUADA para agregar a la agenda.
+                No hay solicitudes evaluadas para agregar a la agenda.
               </p>
             ) : (
               <div className="grid gap-2 sm:grid-cols-2">

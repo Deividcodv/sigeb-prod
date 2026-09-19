@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '@/context/AuthContext';
+import { rutaPorRol } from '@/lib/rol';
 import { Container } from '@/components/ui/Container';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
@@ -36,14 +37,7 @@ export default function LoginPage() {
     setEnviando(true);
     try {
       const usuario = await login(values.email, values.password);
-      const rol = (usuario.rol || '').toUpperCase();
-      if (rol === 'EVALUADOR') {
-        router.replace('/evaluador');
-      } else if (rol !== 'POSTULANTE') {
-        router.replace('/admin');
-      } else {
-        router.replace('/dashboard');
-      }
+      router.replace(rutaPorRol(usuario.rol));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'No se pudo iniciar sesión');
     } finally {

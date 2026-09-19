@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { SesionesService } from './sesiones.service';
+import { NotificacionesService } from '../notificaciones/notificaciones.service';
 import { AuthenticatedUser } from '../common/interfaces/authenticated-user.interface';
 
 const miembro: AuthenticatedUser = {
@@ -36,6 +37,18 @@ describe('SesionesService', () => {
       decision: { create: jest.fn() },
       historialEstado: { create: jest.fn() },
       convocatoria: { findUnique: jest.fn(), update: jest.fn() },
+      usuario: { findMany: jest.fn().mockResolvedValue([]) },
+      notificacion: {
+        create: jest.fn().mockResolvedValue({
+          id: 'n1',
+          usuarioId: 'u1',
+          tipo: 'SOLICITUD_APROBADA',
+          titulo: 'x',
+          cuerpo: null,
+          createdAt: new Date(),
+        }),
+        createMany: jest.fn().mockResolvedValue({ count: 0 }),
+      },
     };
     /* eslint-disable @typescript-eslint/no-explicit-any */
     prisma.$transaction = jest.fn(async (fn: (tx: any) => Promise<unknown>) =>
@@ -43,7 +56,11 @@ describe('SesionesService', () => {
       fn(prisma),
     );
     audit = { log: jest.fn() };
-    service = new SesionesService(prisma, audit);
+    service = new SesionesService(
+      prisma,
+      audit,
+      new NotificacionesService(prisma),
+    );
   });
 
   describe('crearSesion (US-31)', () => {

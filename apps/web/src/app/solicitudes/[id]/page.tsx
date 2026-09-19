@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { fetchConToken, descargarConstancia } from '@/lib/api-auth';
+import { traducirError } from '@/lib/mensajes-error';
 import { Container } from '@/components/ui/Container';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -13,6 +14,7 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { LineaTemporal } from '@/components/solicitud/LineaTemporal';
 import {
   formatearFecha,
+  type CampoFormulario,
   type SolicitudDetalle,
   type SolicitudChecklist,
 } from '@/lib/api';
@@ -52,9 +54,7 @@ function SolicitudDetalleContent() {
       setChecklist(chk);
       setError(null);
     } catch (e) {
-      setError(
-        e instanceof Error ? e.message : 'No se pudo cargar la solicitud',
-      );
+      setError(traducirError(e, 'No se pudo cargar la postulación'));
     }
   }, [id]);
 
@@ -76,7 +76,7 @@ function SolicitudDetalleContent() {
       await cargar();
       setExito('Documento subido correctamente.');
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'No se pudo subir el documento');
+      setError(traducirError(e, 'No se pudo subir el documento'));
     } finally {
       setSubiendo(null);
     }
@@ -92,7 +92,7 @@ function SolicitudDetalleContent() {
       await cargar();
       setExito('Documento eliminado.');
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'No se pudo eliminar el documento');
+      setError(traducirError(e, 'No se pudo eliminar el documento'));
     } finally {
       setSubiendo(null);
     }
@@ -107,9 +107,9 @@ function SolicitudDetalleContent() {
         body: { accion: 'enviar', comentario: 'Solicitud enviada por el postulante' },
       });
       await cargar();
-      setExito('Solicitud enviada.');
+      setExito('Postulación enviada.');
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'No se pudo enviar la solicitud');
+      setError(traducirError(e, 'No se pudo enviar la postulación'));
     } finally {
       setEnviando(false);
     }
@@ -148,9 +148,9 @@ function SolicitudDetalleContent() {
         body: { accion: 'corregir', comentario: 'Postulante aplica correcciones solicitadas' },
       });
       await cargar();
-      setExito('Correcciones aplicadas. Revisa y vuelve a enviar tu solicitud.');
+      setExito('Correcciones aplicadas. Revisa y vuelve a enviar tu postulación.');
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'No se pudieron aplicar las correcciones');
+      setError(traducirError(e, 'No se pudieron aplicar las correcciones'));
     } finally {
       setEnviando(false);
     }
@@ -160,9 +160,9 @@ function SolicitudDetalleContent() {
     setError(null);
     try {
       await descargarConstancia(solicitud.id);
-      setExito('Constancia descargada.');
+      setExito('Comprobante descargado.');
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'No se pudo descargar la constancia');
+      setError(traducirError(e, 'No se pudo descargar el comprobante'));
     }
   };
 
@@ -177,7 +177,7 @@ function SolicitudDetalleContent() {
             ← Volver al dashboard
           </button>
           <p className="mb-2 inline-block rounded-brutal border-[3px] border-brutal-tinta bg-brutal-gold px-3 py-1 font-brut text-xs font-bold uppercase tracking-wide text-brutal-tinta">
-            Sistema interno
+            Mi postulación
           </p>
           <div className="flex flex-wrap items-center gap-3">
             <Badge estado={solicitud.estado} />
@@ -196,7 +196,15 @@ function SolicitudDetalleContent() {
               onClick={descargarPdf}
               className="mt-5"
             >
-              Descargar constancia (PDF)
+              Descargar comprobante (PDF)
+            </Button>
+          )}
+          {(puedeEnviar || enCorreccion) && (
+            <Button
+              href={`/convocatorias/${solicitud.convocatoria.id}/aplicar`}
+              className="mt-5"
+            >
+              Continuar postulación
             </Button>
           )}
         </Container>
@@ -297,6 +305,11 @@ function SolicitudDetalleContent() {
                 <p className="text-sm text-brutal-tinta/70">No completado.</p>
               )}
             </Card>
+
+            <RespuestasExtra
+              campos={solicitud.formularioSnapshot}
+              respuestas={solicitud.respuestas}
+            />
 
             {enCorreccion && (
               <Card className="border-brutal-rojo bg-red-50/40">
@@ -500,5 +513,48 @@ function PerfilItem({ label, value }: { label: string; value?: string | null }) 
       <dt className="text-brutal-tinta/70">{label}</dt>
       <dd className="font-medium text-brutal-tinta">{value}</dd>
     </div>
+  );
+}
+
+function formatearRespuesta(valor: unknown): string | null {
+  if (valor === undefined || valor === null || valor === '') return null;
+  if (typeof valor === 'boolean') return valor ? 'Sí' : 'No';
+  return String(valor);
+}
+
+function RespuestasExtra({
+  campos,
+  respuestas,
+}: {
+  campos?: CampoFormulario[] | null;
+  respuestas?: Record<string, Record<string, unknown>> | null;
+}) {
+  if (!campos || campos.length === 0) return null;
+
+  const valores: Record<string, unknown> = {};
+  for (const seccion of Object.values(respuestas ?? {})) {
+    if (seccion && typeof seccion === 'object') Object.assign(valores, seccion);
+  }
+
+  const conValor = campos.filter(
+    (campo) => formatearRespuesta(valores[campo.id]) !== null,
+  );
+  if (conValor.length === 0) return null;
+
+  return (
+    <Card>
+      <h2 className="mb-3 text-lg font-black text-brutal-tinta">
+        Información adicional
+      </h2>
+      <dl className="space-y-1 text-sm text-brutal-tinta/70">
+        {conValor.map((campo) => (
+          <PerfilItem
+            key={campo.id}
+            label={campo.etiqueta}
+            value={formatearRespuesta(valores[campo.id])}
+          />
+        ))}
+      </dl>
+    </Card>
   );
 }

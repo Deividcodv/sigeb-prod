@@ -113,6 +113,62 @@ describe('ReportesService', () => {
     });
   });
 
+  describe('embudo (S4)', () => {
+    it('calcula etapas acumuladas y conversiones', async () => {
+      prisma.solicitud.groupBy.mockResolvedValue([
+        { estado: 'BORRADOR', _count: { _all: 2 } },
+        { estado: 'ENVIADA', _count: { _all: 3 } },
+        { estado: 'EN_REVISION', _count: { _all: 1 } },
+        { estado: 'EVALUADA', _count: { _all: 2 } },
+        { estado: 'APROBADA', _count: { _all: 1 } },
+        { estado: 'RECHAZADA', _count: { _all: 1 } },
+      ]);
+
+      const r = await service.embudo();
+
+      expect(r.total).toBe(10);
+      expect(r.etapas.map((e) => e.cantidad)).toEqual([10, 8, 4, 2, 1]);
+      expect(r.etapas[0].porcentaje).toBe(100);
+      expect(r.etapas[2].porcentaje).toBe(40);
+      expect(r.conversion.envio).toBe(80);
+      expect(r.conversion.aprobacion).toBe(50);
+    });
+  });
+
+  describe('detalle (S4)', () => {
+    it('agrega columnas por convocatoria y una fila de totales', async () => {
+      prisma.convocatoria.findMany.mockResolvedValue([
+        { id: 'c1', nombre: 'Beca CI', estado: 'ABIERTA', beca: { nombre: 'P' } },
+      ]);
+      prisma.solicitud.groupBy.mockResolvedValue([
+        { convocatoriaId: 'c1', estado: 'BORRADOR', _count: { _all: 1 } },
+        { convocatoriaId: 'c1', estado: 'EVALUADA', _count: { _all: 1 } },
+        { convocatoriaId: 'c1', estado: 'APROBADA', _count: { _all: 1 } },
+      ]);
+      prisma.decision.findMany.mockResolvedValue([
+        {
+          resultado: 'APROBADA',
+          fecha: new Date('2026-02-10T00:00:00.000Z'),
+          solicitud: {
+            convocatoriaId: 'c1',
+            createdAt: new Date('2026-02-01T00:00:00.000Z'),
+          },
+        },
+      ]);
+
+      const r = await service.detalle();
+
+      expect(r.filas).toHaveLength(1);
+      expect(r.filas[0].total).toBe(3);
+      expect(r.filas[0].borradores).toBe(1);
+      expect(r.filas[0].evaluadas).toBe(2);
+      expect(r.filas[0].tasaAprobacion).toBe(100);
+      expect(r.filas[0].tiempoPromedioResolucionDias).toBe(9);
+      expect(r.totales.aprobadas).toBe(1);
+      expect(r.totales.tasaAprobacion).toBe(100);
+    });
+  });
+
   describe('generarCsv (US-35)', () => {
     it('rechaza tipos inválidos', async () => {
       /* eslint-disable @typescript-eslint/no-explicit-any */

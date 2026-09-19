@@ -1,3 +1,5 @@
+import { etiquetaEstado } from '@/lib/etiquetas';
+
 interface BadgeProps {
   estado: string;
   className?: string;
@@ -30,11 +32,13 @@ const colores: Record<string, string> = {
 };
 
 export function Badge({ estado, className = '' }: BadgeProps) {
+  const clave = (estado || '').toUpperCase();
+
   return (
     <span
-      className={`inline-block rounded-brutal border-2 border-brutal-tinta px-3 py-1 font-brut text-xs font-bold uppercase tracking-wide ${colores[estado] ?? 'bg-gray-300 text-brutal-tinta border-brutal-tinta'} ${className}`}
+      className={`inline-block rounded-brutal border-2 border-brutal-tinta px-3 py-1 font-brut text-xs font-bold uppercase tracking-wide ${colores[clave] ?? 'bg-gray-300 text-brutal-tinta border-brutal-tinta'} ${className}`}
     >
-      {estado}
+      {etiquetaEstado(estado)}
     </span>
   );
 }

@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import { fetchConToken } from '@/lib/api-auth';
 import { Container } from '@/components/ui/Container';
 import { Card } from '@/components/ui/Card';
+import { Icon } from '@/components/ui/Icon';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
 import { InternalPageHeader } from '@/components/ui/InternalPageHeader';
@@ -15,6 +16,8 @@ import { GraficaDona } from '@/components/reportes/GraficaDona';
 import { GraficaBarras } from '@/components/reportes/GraficaBarras';
 import { GraficaTendencia, TendenciaData } from '@/components/reportes/GraficaTendencia';
 import { ComparativaConvocatorias } from '@/components/reportes/ComparativaConvocatorias';
+import { EmbudoConversion } from '@/components/reportes/EmbudoConversion';
+import { TablaDetalle } from '@/components/reportes/TablaDetalle';
 import { ExportarReporte } from '@/components/reportes/ExportarReporte';
 
 const ROLES_EMPLEADOS = ['ADMIN', 'EVALUADOR', 'COORDINADOR_COMITE', 'MIEMBRO_COMITE'];
@@ -64,6 +67,7 @@ function ReportesContent() {
   const [misEvaluaciones, setMisEvaluaciones] = useState<ReporteMisEvaluaciones | null>(null);
   const [misComites, setMisComites] = useState<ReporteMisComites | null>(null);
   const [misSesiones, setMisSesiones] = useState<ReporteMisSesiones | null>(null);
+  const [meses, setMeses] = useState(12);
   const [error, setError] = useState<string | null>(null);
 
   const rol = (usuario?.rol ?? '').toUpperCase();
@@ -72,7 +76,7 @@ function ReportesContent() {
     try {
       const [g, tr, cv] = await Promise.all([
         fetchConToken<ReporteGeneral>('/reportes/general'),
-        fetchConToken<TendenciaData>('/reportes/tendencia'),
+        fetchConToken<TendenciaData>(`/reportes/tendencia?meses=${meses}`),
         fetchConToken<ConvocatoriasDetalle>('/reportes/convocatorias'),
       ]);
       setGeneral(g);
@@ -94,7 +98,7 @@ function ReportesContent() {
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Error cargando reportes');
     }
-  }, [rol]);
+  }, [rol, meses]);
 
   useEffect(() => { cargar(); }, [cargar]);
 
@@ -234,7 +238,40 @@ function ReportesContent() {
 
               <div className="mt-6">
                 <MarcoBrutal titulo="Tendencia mensual (solicitudes vs evaluaciones)">
-                  <GraficaTendencia data={tendencia} />
+                  <div className="mb-4 flex flex-wrap items-center gap-2">
+                    <span className="brut-label text-[10px] font-bold uppercase text-brutal-tinta/60">
+                      Rango:
+                    </span>
+                    {[6, 12, 24].map((n) => (
+                      <button
+                        key={n}
+                        type="button"
+                        onClick={() => setMeses(n)}
+                        className={`rounded-brutal border-2 border-brutal-tinta px-2 py-1 font-mono text-[11px] font-bold transition-colors ${
+                          meses === n
+                            ? 'bg-brutal-tinta text-brutal-papel'
+                            : 'bg-brutal-papel text-brutal-tinta hover:bg-brutal-cyan/30'
+                        }`}
+                      >
+                        {n} meses
+                      </button>
+                    ))}
+                  </div>
+                  <div className="h-72">
+                    <GraficaTendencia data={tendencia} />
+                  </div>
+                </MarcoBrutal>
+              </div>
+
+              <div className="mt-6">
+                <MarcoBrutal titulo="Embudo de conversión">
+                  <EmbudoConversion />
+                </MarcoBrutal>
+              </div>
+
+              <div className="mt-6">
+                <MarcoBrutal titulo="Detalle por convocatoria y totales">
+                  <TablaDetalle />
                 </MarcoBrutal>
               </div>
             </section>
@@ -271,8 +308,8 @@ function ReportesContent() {
 function KpiCard({ label, value, acento }: { label: string; value: number | string; acento: string }) {
   return (
     <Card className="p-4">
-      <div className={`mb-2 inline-flex h-8 w-8 items-center justify-center rounded-brutal border-2 border-brutal-tinta text-sm font-black text-brutal-tinta ${acento}`}>
-        ◆
+      <div className={`mb-2 inline-flex h-8 w-8 items-center justify-center rounded-brutal border-2 border-brutal-tinta text-brutal-tinta ${acento}`}>
+        <Icon name="grafica" className="h-4 w-4" />
       </div>
       <p className="text-mega text-3xl font-black text-brutal-tinta">{value}</p>
       <p className="brut-label mt-1 text-[10px] font-bold uppercase text-brutal-tinta/60">{label}</p>

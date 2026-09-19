@@ -62,8 +62,39 @@ export class ReportesController {
   @Get('tendencia')
   @Permisos('reporte:ver')
   @ApiOperation({ summary: 'Tendencia mensual de solicitudes y evaluaciones completadas' })
-  tendencia() {
-    return this.reportesService.tendencia();
+  @ApiQuery({ name: 'meses', required: false, type: Number, description: 'Meses a mostrar (1-24, por defecto 12)' })
+  tendencia(@Query('meses') meses?: string) {
+    return this.reportesService.tendencia(meses ? Number(meses) : 12);
+  }
+
+  @Get('embudo')
+  @Permisos('reporte:ver')
+  @ApiOperation({ summary: 'Embudo de conversión del proceso de postulación' })
+  @ApiQuery({ name: 'convocatoriaId', required: false, type: String })
+  @ApiQuery({ name: 'desde', required: false, type: String })
+  @ApiQuery({ name: 'hasta', required: false, type: String })
+  embudo(
+    @Query('convocatoriaId', new ParseUUIDPipe({ optional: true }))
+    convocatoriaId?: string,
+    @Query('desde') desde?: string,
+    @Query('hasta') hasta?: string,
+  ) {
+    return this.reportesService.embudo(convocatoriaId, desde, hasta);
+  }
+
+  @Get('detalle')
+  @Permisos('reporte:ver')
+  @ApiOperation({ summary: 'Tabla detallada de solicitudes por convocatoria con totales' })
+  @ApiQuery({ name: 'convocatoriaId', required: false, type: String })
+  @ApiQuery({ name: 'desde', required: false, type: String })
+  @ApiQuery({ name: 'hasta', required: false, type: String })
+  detalle(
+    @Query('convocatoriaId', new ParseUUIDPipe({ optional: true }))
+    convocatoriaId?: string,
+    @Query('desde') desde?: string,
+    @Query('hasta') hasta?: string,
+  ) {
+    return this.reportesService.detalle(convocatoriaId, desde, hasta);
   }
 
   @Get('mis-evaluaciones')

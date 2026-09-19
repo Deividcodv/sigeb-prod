@@ -5,6 +5,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { fetchConToken } from '@/lib/api-auth';
 import { Container } from '@/components/ui/Container';
 import { Card } from '@/components/ui/Card';
+import { Icon } from '@/components/ui/Icon';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -216,8 +217,9 @@ function ComiteContent() {
                               <p className="font-mono text-xs text-brutal-tinta/75">CUI {item.solicitud.usuario.cui}</p>
                             </div>
                             {votado ? (
-                              <span className="rounded-brutal border-2 border-brutal-tinta bg-brutal-lima px-2 py-0.5 font-brut text-xs font-bold text-brutal-tinta">
-                                ✓ Votado · {VOTO_LABEL[miVoto(item.solicitud.id) as OpcionVoto] ?? miVoto(item.solicitud.id)}
+                              <span className="inline-flex items-center gap-1 rounded-brutal border-2 border-brutal-tinta bg-brutal-lima px-2 py-0.5 font-brut text-xs font-bold text-brutal-tinta">
+                                <Icon name="check" className="h-3.5 w-3.5" />
+                                Votado · {VOTO_LABEL[miVoto(item.solicitud.id) as OpcionVoto] ?? miVoto(item.solicitud.id)}
                               </span>
                             ) : (
                               <span className="rounded-brutal border-2 border-brutal-tinta bg-gray-200 px-2 py-0.5 font-brut text-xs font-bold text-brutal-tinta">

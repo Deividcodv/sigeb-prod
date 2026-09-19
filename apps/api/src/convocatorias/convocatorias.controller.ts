@@ -9,6 +9,7 @@ import {
   ParseUUIDPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { BecaCobertura } from '@prisma/client';
 import { ConvocatoriasService } from './convocatorias.service';
 import {
   CreateConvocatoriaDto,
@@ -31,10 +32,18 @@ export class ConvocatoriasController {
   @ApiOperation({ summary: 'Listar convocatorias abiertas (público)' })
   @ApiResponse({ status: 200, description: 'Lista de convocatorias ABIERTA' })
   @ApiQuery({ name: 'busqueda', required: false, description: 'Buscar por nombre de convocatoria o beca' })
+  @ApiQuery({ name: 'nivelAcademicoId', required: false, description: 'Filtrar por nivel académico' })
+  @ApiQuery({ name: 'cobertura', required: false, enum: BecaCobertura, description: 'Filtrar por cobertura' })
   findAllPublic(
     @Query('busqueda') busqueda?: string,
+    @Query('nivelAcademicoId') nivelAcademicoId?: string,
+    @Query('cobertura') cobertura?: BecaCobertura,
   ) {
-    return this.convocatoriasService.findAllPublic({ busqueda });
+    return this.convocatoriasService.findAllPublic({
+      busqueda,
+      nivelAcademicoId,
+      cobertura,
+    });
   }
 
   @Get('todas')
@@ -43,6 +52,16 @@ export class ConvocatoriasController {
   @ApiOperation({ summary: 'Listar todas las convocatorias (admin)' })
   findAll() {
     return this.convocatoriasService.findAll();
+  }
+
+  @Get(':id/mi-solicitud')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Obtener la solicitud del usuario para la convocatoria (o null)' })
+  miSolicitud(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() usuario: AuthenticatedUser,
+  ) {
+    return this.convocatoriasService.miSolicitud(id, usuario);
   }
 
   @Get(':id')

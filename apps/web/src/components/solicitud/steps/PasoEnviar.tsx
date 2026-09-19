@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { fetchConToken } from '@/lib/api-auth';
+import { traducirError } from '@/lib/mensajes-error';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -25,9 +26,7 @@ export function PasoEnviar({
     fetchConToken<SolicitudChecklist>(`/solicitudes/${solicitudId}/checklist`)
       .then(setChecklist)
       .catch((e) =>
-        onError(
-          e instanceof Error ? e.message : 'No se pudo cargar el resumen',
-        ),
+        onError(traducirError(e, 'No se pudo cargar el resumen de la postulación')),
       );
   }, [solicitudId]);
 
@@ -40,7 +39,7 @@ export function PasoEnviar({
       });
       onEnviado();
     } catch (e) {
-      onError(e instanceof Error ? e.message : 'No se pudo enviar la solicitud');
+      onError(traducirError(e, 'No se pudo enviar la postulación'));
     } finally {
       setEnviando(false);
     }
@@ -132,7 +131,7 @@ export function PasoEnviar({
       </Card>
 
       {checklist.pendientes.length > 0 && (
-        <p className="mb-4 rounded-brutal border-[3px] border-brutal-naranja bg-brutal-naranja/15 p-3 font-mono text-sm font-bold text-brutal-naranja">
+        <p className="mb-4 rounded-brutal border-[3px] border-brutal-naranja bg-brutal-naranja/15 p-3 font-mono text-sm font-bold text-brutal-tinta">
           Falta completar: {checklist.pendientes.join(', ')}
         </p>
       )}

@@ -39,6 +39,11 @@ existe un hito lineal** en `sigeb-prod` que sea "portal + login sin sistema inte
    | WEB portal público (US-41..48) | `986fc89` |
    | WEB login/registro + dashboard postulante (US-49/50) | `3dfa19a` |
 
+   > **Nota sobre auth:** `4b0795f` (`feat(seguridad): complete Sprint 1`) es el commit puro de auth y
+   > `85122d2` (`feat(convocatorias): complete Sprint 2`) ya contiene ese mismo estado de `auth/`. Para
+   > verificar el backend de seguridad sirve cualquiera de los dos; la tabla usa `85122d2` porque es el
+   > estado completo de cimientos (auth + catálogos/convocatorias).
+
 2. Al cierre del S3, **David crea un hito personalizado**: el tag `v0.1-prototipo-demo` en el repo del equipo,
    que junta solo los módulos del prototipo y **excluye** `evaluaciones/`, `sesiones/`, `comites/`,
    `decisiones/`, `reportes/`, `asistente/`, `audit/` (y sus registros en `app.module.ts` y `prisma`),

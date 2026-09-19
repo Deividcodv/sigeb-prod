@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { EvaluacionesService } from './evaluaciones.service';
+import { NotificacionesService } from '../notificaciones/notificaciones.service';
 import { AuthenticatedUser } from '../common/interfaces/authenticated-user.interface';
 import { AuthzService } from '../common/services/authz.service';
 
@@ -38,12 +39,30 @@ describe('EvaluacionesService', () => {
         create: jest.fn(),
         createMany: jest.fn(),
         update: jest.fn(),
+        updateMany: jest.fn(),
+        deleteMany: jest.fn(),
       },
       solicitud: { findUnique: jest.fn() },
       usuario: { findMany: jest.fn(), findUnique: jest.fn() },
+      notificacion: {
+        create: jest.fn().mockResolvedValue({
+          id: 'n1',
+          usuarioId: 'u-evaluador',
+          tipo: 'EVALUACION_REMOVIDA',
+          titulo: 'Evaluación removida',
+          cuerpo: null,
+          createdAt: new Date(),
+        }),
+        createMany: jest.fn().mockResolvedValue({ count: 0 }),
+      },
     };
     audit = { log: jest.fn() };
-    service = new EvaluacionesService(prisma, audit, new AuthzService());
+    service = new EvaluacionesService(
+      prisma,
+      audit,
+      new AuthzService(),
+      new NotificacionesService(prisma),
+    );
   });
 
   describe('misEvaluaciones (US-26)', () => {
@@ -225,9 +244,23 @@ describe('EvaluacionesService', () => {
       ).rejects.toThrow(ForbiddenException);
     });
 
+    it('rechaza si el evaluador no confirmó su imparcialidad', async () => {
+      prisma.solicitud.findUnique.mockResolvedValue({ id: 's1', estado: 'EN_REVISION' });
+      prisma.evaluacion.findFirst.mockResolvedValue({
+        id: 'ev1',
+        confirmImparcialidad: false,
+      });
+      await expect(
+        service.registrarPuntaje('s1', 'c1', { puntaje: 85 }, evaluador),
+      ).rejects.toThrow('confirmar la declaración de imparcialidad');
+    });
+
     it('guarda puntaje, observaciones y marca completada', async () => {
       prisma.solicitud.findUnique.mockResolvedValue({ id: 's1', estado: 'EN_REVISION' });
-      prisma.evaluacion.findFirst.mockResolvedValue({ id: 'ev1' });
+      prisma.evaluacion.findFirst.mockResolvedValue({
+        id: 'ev1',
+        confirmImparcialidad: true,
+      });
       prisma.evaluacion.update.mockResolvedValue({
         id: 'ev1',
         puntaje: 85,
@@ -248,6 +281,104 @@ describe('EvaluacionesService', () => {
         where: { id: 'ev1' },
         data: { puntaje: 85, observaciones: 'Buen perfil', completada: true },
         include: { criterioEvaluacion: true },
+      });
+    });
+  });
+
+  describe('confirmarImparcialidad', () => {
+    it('exige confirma=true', async () => {
+      await expect(
+        service.confirmarImparcialidad('s1', { confirma: false }, evaluador),
+      ).rejects.toThrow('Debes aceptar la declaración de imparcialidad');
+    });
+
+    it('rechaza solicitud inexistente', async () => {
+      prisma.solicitud.findUnique.mockResolvedValue(null);
+      await expect(
+        service.confirmarImparcialidad('s1', { confirma: true }, evaluador),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('rechaza a un evaluador no asignado', async () => {
+      prisma.solicitud.findUnique.mockResolvedValue({ id: 's1', estado: 'EN_REVISION' });
+      prisma.evaluacion.findMany.mockResolvedValue([]);
+      await expect(
+        service.confirmarImparcialidad('s1', { confirma: true }, evaluador),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it('rechaza si ya registró puntajes', async () => {
+      prisma.solicitud.findUnique.mockResolvedValue({ id: 's1', estado: 'EN_REVISION' });
+      prisma.evaluacion.findMany.mockResolvedValue([{ completada: true }]);
+      await expect(
+        service.confirmarImparcialidad('s1', { confirma: true }, evaluador),
+      ).rejects.toThrow('ya no se puede modificar');
+    });
+
+    it('marca todas las filas del evaluador como confirmadas', async () => {
+      prisma.solicitud.findUnique.mockResolvedValue({ id: 's1', estado: 'EN_REVISION' });
+      prisma.evaluacion.findMany.mockResolvedValue([{ completada: false }]);
+      prisma.evaluacion.updateMany.mockResolvedValue({ count: 2 });
+
+      const result = await service.confirmarImparcialidad(
+        's1',
+        { confirma: true },
+        evaluador,
+      );
+
+      expect(result).toEqual({ solicitudId: 's1', confirmada: true });
+      expect(prisma.evaluacion.updateMany).toHaveBeenCalledWith({
+        where: { solicitudId: 's1', evaluadorId: 'u-evaluador' },
+        data: { confirmImparcialidad: true },
+      });
+      expect(audit.log).toHaveBeenCalled();
+    });
+  });
+
+  describe('quitarEvaluador', () => {
+    it('rechaza a un usuario que no es admin', async () => {
+      await expect(
+        service.quitarEvaluador('s1', 'u-evaluador', evaluador),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it('rechaza solicitud fuera de EN_REVISION', async () => {
+      prisma.solicitud.findUnique.mockResolvedValue({ id: 's1', estado: 'EVALUADA' });
+      await expect(
+        service.quitarEvaluador('s1', 'u-evaluador', admin),
+      ).rejects.toThrow('EN_REVISION');
+    });
+
+    it('rechaza si el evaluador no está asignado', async () => {
+      prisma.solicitud.findUnique.mockResolvedValue({ id: 's1', estado: 'EN_REVISION' });
+      prisma.evaluacion.findMany.mockResolvedValue([]);
+      await expect(
+        service.quitarEvaluador('s1', 'u-evaluador', admin),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('rechaza si el evaluador ya registró puntajes', async () => {
+      prisma.solicitud.findUnique.mockResolvedValue({ id: 's1', estado: 'EN_REVISION' });
+      prisma.evaluacion.findMany.mockResolvedValue([{ id: 'ev1', completada: true }]);
+      await expect(
+        service.quitarEvaluador('s1', 'u-evaluador', admin),
+      ).rejects.toThrow('ya registró puntajes');
+    });
+
+    it('elimina las filas del evaluador', async () => {
+      prisma.solicitud.findUnique.mockResolvedValue({ id: 's1', estado: 'EN_REVISION' });
+      prisma.evaluacion.findMany.mockResolvedValue([{ id: 'ev1', completada: false }]);
+      prisma.evaluacion.deleteMany.mockResolvedValue({ count: 2 });
+
+      const result = await service.quitarEvaluador('s1', 'u-evaluador', admin);
+
+      expect(result).toEqual({
+        solicitudId: 's1',
+        evaluadorId: 'u-evaluador',
+        removido: true,
+      });
+      expect(prisma.evaluacion.deleteMany).toHaveBeenCalledWith({
+        where: { solicitudId: 's1', evaluadorId: 'u-evaluador' },
       });
     });
   });

@@ -27,9 +27,11 @@ import { ConstanciasService } from './constancias.service';
 import {
   CreateSolicitudDto,
   TransicionSolicitudDto,
+  SolicitarCorreccionDto,
   PerfilAcademicoDto,
   PerfilFinancieroDto,
   MarcarEstadoDocumentoDto,
+  GuardarRespuestasDto,
 } from './dto';
 import { Permisos } from '../common/decorators/permisos.decorator';
 import { Public } from '../common/decorators/public.decorator';
@@ -127,6 +129,20 @@ export class SolicitudesController {
     return this.solicitudesService.transicion(id, dto, usuario);
   }
 
+  @Post(':id/solicitar-correccion')
+  @Permisos('solicitud:editar')
+  @ApiOperation({
+    summary: 'Solicitar una corrección (comité) respetando maxCorrecciones',
+  })
+  @ApiResponse({ status: 400, description: 'Se agotaron las subsanaciones' })
+  solicitarCorreccion(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: SolicitarCorreccionDto,
+    @CurrentUser() usuario: AuthenticatedUser,
+  ) {
+    return this.solicitudesService.solicitarCorreccion(id, dto, usuario);
+  }
+
   @Put(':id/perfil-academico')
   @Permisos('solicitud:editar')
   @ApiOperation({ summary: 'Guardar perfil académico (con campos "otro")' })
@@ -147,6 +163,19 @@ export class SolicitudesController {
     @CurrentUser() usuario: AuthenticatedUser,
   ) {
     return this.solicitudesService.guardarPerfilFinanciero(id, dto, usuario);
+  }
+
+  @Put(':id/respuestas')
+  @Permisos('solicitud:editar')
+  @ApiOperation({
+    summary: 'Guardar respuestas del formulario dinámico de la convocatoria',
+  })
+  respuestas(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: GuardarRespuestasDto,
+    @CurrentUser() usuario: AuthenticatedUser,
+  ) {
+    return this.solicitudesService.guardarRespuestas(id, dto, usuario);
   }
 
   @Post(':id/documentos/:tipoId')

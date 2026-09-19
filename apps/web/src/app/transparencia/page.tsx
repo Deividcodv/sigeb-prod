@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Container } from '@/components/ui/Container';
+import { Icon, type IconName } from '@/components/ui/Icon';
 
 export const metadata: Metadata = {
   title: 'Transparencia | EDUVIAGT',
@@ -7,27 +8,31 @@ export const metadata: Metadata = {
     'EDUVIAGT garantiza un proceso de gestión de becas transparente y auditable: cada acción queda documentada y verificable.',
 };
 
-const principios = [
+const principios: {
+  icono: IconName;
+  titulo: string;
+  texto: string;
+}[] = [
   {
-    icono: '◉',
+    icono: 'escudo',
     titulo: 'Equidad',
     texto:
       'Todos los postulantes son evaluados bajo los mismos criterios, pesos y procedimientos, sin excepciones discrecionales.',
   },
   {
-    icono: '✓',
+    icono: 'check',
     titulo: 'Objetividad',
     texto:
       'Las evaluaciones se basan en puntajes y evidencias documentales, no en apreciaciones subjetivas.',
   },
   {
-    icono: '⚲',
+    icono: 'reloj',
     titulo: 'Trazabilidad',
     texto:
       'Cada mutación del sistema queda registrada en un historial de auditoría con autor, fecha, entidad e IP.',
   },
   {
-    icono: '★',
+    icono: 'estrella',
     titulo: 'Publicación',
     texto:
       'Los resultados de cada convocatoria se publican y notifican a los postulantes a través de la plataforma.',
@@ -69,8 +74,8 @@ export default function TransparenciaPage() {
                   key={p.titulo}
                   className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-blanco p-6 shadow-brutal-sm"
                 >
-                  <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-brutal border-2 border-brutal-tinta bg-brutal-gold">
-                    {p.icono}
+                  <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-brutal border-2 border-brutal-tinta bg-brutal-gold text-brutal-tinta">
+                    <Icon name={p.icono} className="h-5 w-5" />
                   </div>
                   <h3 className="font-brut text-lg font-black uppercase">{p.titulo}</h3>
                   <p className="mt-1 text-sm text-brutal-tinta/70">{p.texto}</p>

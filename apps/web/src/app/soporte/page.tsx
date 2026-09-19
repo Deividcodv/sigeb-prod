@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Container } from '@/components/ui/Container';
+import { Icon, type IconName } from '@/components/ui/Icon';
 import { MiniAsistente } from '@/components/soporte/MiniAsistente';
 
 export const metadata: Metadata = {
@@ -8,24 +9,29 @@ export const metadata: Metadata = {
     'Soporte y asistente virtual de EDUVIAGT: resuelve tus dudas sobre becas, convocatorias y tu solicitud.',
 };
 
-const canales = [
+const canales: {
+  icono: IconName;
+  titulo: string;
+  texto: string;
+  href?: string;
+}[] = [
   {
-    icono: '✉',
+    icono: 'correo',
     titulo: 'Correo',
     texto: 'mesadeayuda@mineduc.gob.gt',
   },
   {
-    icono: '☎',
+    icono: 'telefono',
     titulo: 'Teléfono',
     texto: '+502 2411-9595',
   },
   {
-    icono: '⚲',
+    icono: 'reloj',
     titulo: 'Horario',
     texto: 'Lun a vie · 8:00 a 16:00',
   },
   {
-    icono: '?',
+    icono: 'info',
     titulo: 'FAQ',
     texto: 'Respuestas a dudas frecuentes',
     href: '/faq',
@@ -65,8 +71,8 @@ export default function SoportePage() {
                   {canales.map((c) => {
                     const Contenido = (
                       <>
-                        <div className="mb-2 inline-flex h-9 w-9 items-center justify-center rounded-brutal border-2 border-brutal-tinta bg-brutal-gold">
-                          {c.icono}
+                        <div className="mb-2 inline-flex h-9 w-9 items-center justify-center rounded-brutal border-2 border-brutal-tinta bg-brutal-gold text-brutal-tinta">
+                          <Icon name={c.icono} className="h-4 w-4" />
                         </div>
                         <h3 className="font-brut font-black uppercase tracking-wide text-brutal-tinta">
                           {c.titulo}

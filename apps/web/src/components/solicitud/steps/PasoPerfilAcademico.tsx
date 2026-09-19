@@ -8,9 +8,8 @@ import { Spinner } from '@/components/ui/Spinner';
 import { CatalogoOtro } from '@/components/solicitud/CatalogoOtro';
 import {
   fetcher,
-  type Genero,
   type NivelAcademico,
-  type Departamento,
+  type InstitucionEducativa,
   type SolicitudDetalle,
 } from '@/lib/api';
 
@@ -25,34 +24,33 @@ export function PasoPerfilAcademico({
 }) {
   const [enviando, setEnviando] = useState(false);
   const [cargandoPrevia, setCargandoPrevia] = useState(true);
-  const [generos, setGeneros] = useState<Genero[]>([]);
   const [niveles, setNiveles] = useState<NivelAcademico[]>([]);
-  const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
+  const [instituciones, setInstituciones] = useState<InstitucionEducativa[]>([]);
+  const [busquedaInstitucion, setBusquedaInstitucion] = useState('');
   const [form, setForm] = useState({
-    generoId: '',
-    generoOtro: '',
     nivelId: '',
     nivelOtro: '',
-    departamentoId: '',
-    departamentoOtro: '',
-    municipioId: '',
-    municipioOtro: '',
     institucion: '',
     carrera: '',
     promedio: '',
   });
 
   useEffect(() => {
-    fetcher<{ data: Genero[] }>('/catalogos/generos').then((r) =>
-      setGeneros(r.data ?? []),
-    );
     fetcher<{ data: NivelAcademico[] }>('/catalogos/niveles-academicos').then(
       (r) => setNiveles(r.data ?? []),
     );
-    fetcher<{ data: Departamento[] }>('/catalogos/departamentos').then((r) =>
-      setDepartamentos(r.data ?? []),
-    );
   }, []);
+
+  useEffect(() => {
+    const termino = busquedaInstitucion.trim();
+    const timer = setTimeout(() => {
+      const query = termino ? `?busqueda=${encodeURIComponent(termino)}` : '';
+      fetcher<{ data: InstitucionEducativa[] }>(
+        `/catalogos/instituciones${query}`,
+      ).then((r) => setInstituciones(r.data ?? []));
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [busquedaInstitucion]);
 
   useEffect(() => {
     let activo = true;
@@ -63,16 +61,9 @@ export function PasoPerfilAcademico({
         const perfil = solicitud.perfilAcademico;
         if (!perfil) return;
         setForm(() => ({
-          generoId: perfil.generoId ?? (perfil.generoOtro ? '__otro__' : ''),
-          generoOtro: perfil.generoOtro ?? '',
           nivelId:
             perfil.nivelAcademicoId ?? (perfil.nivelAcademicoOtro ? '__otro__' : ''),
           nivelOtro: perfil.nivelAcademicoOtro ?? '',
-          departamentoId:
-            perfil.departamentoId ?? (perfil.departamentoOtro ? '__otro__' : ''),
-          departamentoOtro: perfil.departamentoOtro ?? '',
-          municipioId: perfil.municipioId ?? (perfil.municipioOtro ? '__otro__' : ''),
-          municipioOtro: perfil.municipioOtro ?? '',
           institucion: perfil.institucion ?? '',
           carrera: perfil.carrera ?? '',
           promedio: perfil.promedio === null ? '' : String(perfil.promedio),
@@ -89,23 +80,13 @@ export function PasoPerfilAcademico({
     };
   }, [solicitudId, onError]);
 
-  const departamento = departamentos.find(
-    (d) => d.id === form.departamentoId,
+  const institucionEnCatalogo = instituciones.some(
+    (i) => i.nombre === form.institucion,
   );
-  const municipios = departamento?.municipios ?? [];
 
   const validar = (): string | null => {
-    if (form.generoId === '__otro__' && !form.generoOtro.trim()) {
-      return 'Escribe una opción en «Género (otro)».';
-    }
     if (form.nivelId === '__otro__' && !form.nivelOtro.trim()) {
       return 'Escribe una opción en «Nivel académico (otro)».';
-    }
-    if (form.departamentoId === '__otro__' && !form.departamentoOtro.trim()) {
-      return 'Escribe una opción en «Departamento (otro)».';
-    }
-    if (form.municipioId === '__otro__' && !form.municipioOtro.trim()) {
-      return 'Escribe una opción en «Municipio (otro)».';
     }
     if (form.promedio !== '') {
       const promedio = Number(form.promedio);
@@ -129,32 +110,11 @@ export function PasoPerfilAcademico({
         carrera: form.carrera || undefined,
         promedio:
           form.promedio === '' ? undefined : Number(form.promedio),
-        generoId: form.generoId === '__otro__' ? undefined : form.generoId || undefined,
-        generoOtro:
-          form.generoId === '__otro__' && form.generoOtro
-            ? form.generoOtro
-            : undefined,
         nivelAcademicoId:
           form.nivelId === '__otro__' ? undefined : form.nivelId || undefined,
         nivelAcademicoOtro:
           form.nivelId === '__otro__' && form.nivelOtro
             ? form.nivelOtro
-            : undefined,
-        departamentoId:
-          form.departamentoId === '__otro__'
-            ? undefined
-            : form.departamentoId || undefined,
-        departamentoOtro:
-          form.departamentoId === '__otro__' && form.departamentoOtro
-            ? form.departamentoOtro
-            : undefined,
-        municipioId:
-          form.municipioId === '__otro__'
-            ? undefined
-            : form.municipioId || undefined,
-        municipioOtro:
-          form.municipioId === '__otro__' && form.municipioOtro
-            ? form.municipioOtro
             : undefined,
       };
       await fetchConToken(`/solicitudes/${solicitudId}/perfil-academico`, {
@@ -181,22 +141,15 @@ export function PasoPerfilAcademico({
 
   return (
     <div>
-      <h2 className="mb-5 text-xl font-bold text-brutal-tinta">
+      <h2 className="mb-1 text-xl font-bold text-brutal-tinta">
         Perfil académico
       </h2>
+      <p className="mb-5 max-w-2xl text-sm text-brutal-tinta/70">
+        Cuéntanos sobre tu formación actual. Usa la búsqueda para elegir tu
+        institución del catálogo o escribe «otro» para indicar una que no esté
+        listada.
+      </p>
       <div className="grid gap-4 md:grid-cols-2">
-        <CatalogoOtro
-          nombre="Género"
-          opciones={generos.map((g) => ({ value: g.id, label: g.nombre }))}
-          value={form.generoId}
-          otroValue={form.generoOtro}
-          onChange={(id) =>
-            setForm((f) => ({ ...f, generoId: id, generoOtro: '' }))
-          }
-          onOtroChange={(t) =>
-            setForm((f) => ({ ...f, generoOtro: t }))
-          }
-        />
         <CatalogoOtro
           nombre="Nivel académico"
           opciones={niveles.map((n) => ({ value: n.id, label: n.nombre }))}
@@ -207,36 +160,41 @@ export function PasoPerfilAcademico({
           }
           onOtroChange={(t) => setForm((f) => ({ ...f, nivelOtro: t }))}
         />
-        <CatalogoOtro
-          nombre="Departamento"
-          opciones={departamentos.map((d) => ({ value: d.id, label: d.nombre }))}
-          value={form.departamentoId}
-          otroValue={form.departamentoOtro}
-          onChange={(id) =>
-            setForm((f) => ({
-              ...f,
-              departamentoId: id,
-              departamentoOtro: '',
-              municipioId: '',
-            }))
-          }
-          onOtroChange={(t) => setForm((f) => ({ ...f, departamentoOtro: t }))}
-        />
-        <CatalogoOtro
-          nombre="Municipio"
-          opciones={municipios.map((m) => ({ value: m.id, label: m.nombre }))}
-          value={form.municipioId}
-          otroValue={form.municipioOtro}
-          onChange={(id) =>
-            setForm((f) => ({ ...f, municipioId: id, municipioOtro: '' }))
-          }
-          onOtroChange={(t) => setForm((f) => ({ ...f, municipioOtro: t }))}
-        />
-        <Input
-          label="Institución"
-          value={form.institucion}
-          onChange={(e) => setForm((f) => ({ ...f, institucion: e.target.value }))}
-        />
+        <div>
+          <Input
+            label="Buscar institución"
+            value={busquedaInstitucion}
+            onChange={(e) => setBusquedaInstitucion(e.target.value)}
+            placeholder="Escribe para filtrar el catálogo"
+          />
+          <div className="mt-3">
+            <CatalogoOtro
+              nombre="Institución"
+              opciones={instituciones.map((i) => ({
+                value: i.nombre,
+                label: i.nombre,
+              }))}
+              value={
+                form.institucion === ''
+                  ? ''
+                  : institucionEnCatalogo
+                    ? form.institucion
+                    : '__otro__'
+              }
+              otroValue={institucionEnCatalogo ? '' : form.institucion}
+              onChange={(nombre) =>
+                setForm((f) => ({
+                  ...f,
+                  institucion: nombre === '__otro__' ? '' : nombre,
+                }))
+              }
+              onOtroChange={(texto) =>
+                setForm((f) => ({ ...f, institucion: texto }))
+              }
+              placeholder="Seleccionar institución..."
+            />
+          </div>
+        </div>
         <Input
           label="Carrera"
           value={form.carrera}

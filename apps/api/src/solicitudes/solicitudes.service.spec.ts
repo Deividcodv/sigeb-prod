@@ -3,6 +3,7 @@ import { SolicitudesService } from './solicitudes.service';
 import { SolicitudPerfilService } from './solicitud-perfil.service';
 import { SolicitudDocumentoService } from './solicitud-documento.service';
 import { SolicitudChecklistService } from './solicitud-checklist.service';
+import { NotificacionesService } from '../notificaciones/notificaciones.service';
 import { AuthenticatedUser } from '../common/interfaces/authenticated-user.interface';
 import { AuthzService } from '../common/services/authz.service';
 
@@ -33,6 +34,11 @@ describe('SolicitudesService', () => {
       solicitudPerfilAcademico: { upsert: jest.fn() },
       historialEstado: { create: jest.fn() },
       genero: { findUnique: jest.fn() },
+      usuario: { findMany: jest.fn().mockResolvedValue([]) },
+      notificacion: {
+        create: jest.fn(),
+        createMany: jest.fn().mockResolvedValue({ count: 0 }),
+      },
     };
     /* eslint-disable @typescript-eslint/no-explicit-any */
     prisma.$transaction = jest.fn(async (fn: (tx: any) => Promise<unknown>) =>
@@ -54,6 +60,7 @@ describe('SolicitudesService', () => {
       new SolicitudPerfilService(prisma, authz),
       new SolicitudDocumentoService(prisma, storage, audit, authz),
       new SolicitudChecklistService(prisma, authz),
+      new NotificacionesService(prisma),
     );
   });
 
@@ -469,6 +476,32 @@ describe('SolicitudesService', () => {
       );
       expect(result.completo).toBe(false);
     });
+
+    it('el checklist exige los campos requeridos del formulario dinámico', async () => {
+      prisma.solicitud.findUnique.mockResolvedValue({
+        ...base,
+        perfilAcademico: { generoId: 'g1', nivelAcademicoId: 'n1' },
+        perfilFinanciero: { ingresoFamiliar: 2500 },
+        documentos: [],
+        respuestas: null,
+        formularioSnapshot: [
+          {
+            id: 'tipoVivienda',
+            seccion: 'adicional',
+            etiqueta: 'Tipo de vivienda',
+            tipo: 'seleccion',
+            requerido: true,
+          },
+        ],
+      });
+
+      const result = await service.obtenerChecklist('s1', postulante);
+      expect(result.camposExtra).toHaveLength(1);
+      expect(result.pendientes).toEqual(
+        expect.arrayContaining(['Campo "Tipo de vivienda" pendiente']),
+      );
+      expect(result.completo).toBe(false);
+    });
   });
 
   describe('consultaPublica (US-46)', () => {
@@ -513,6 +546,94 @@ describe('SolicitudesService', () => {
       await expect(service.consultaPublica('no-existe')).rejects.toThrow(
         'No se encontr',
       );
+    });
+  });
+
+  describe('guardarRespuestas (formulario dinámico)', () => {
+    const snapshot = [
+      {
+        id: 'tipoVivienda',
+        seccion: 'adicional',
+        etiqueta: 'Tipo de vivienda',
+        tipo: 'seleccion',
+        requerido: true,
+        opciones: ['Propia', 'Rentada'],
+      },
+      {
+        id: 'ingresoMensual',
+        seccion: 'socioeconomico',
+        etiqueta: 'Ingreso mensual',
+        tipo: 'numero',
+        requerido: true,
+      },
+    ];
+
+    it('guarda las respuestas de la seccion y convierte numeros', async () => {
+      prisma.solicitud.findUnique.mockResolvedValue({
+        id: 's1',
+        usuarioId: 'u-postulante',
+        estado: 'BORRADOR',
+        respuestas: null,
+        formularioSnapshot: snapshot,
+      });
+      prisma.solicitud.update.mockResolvedValue({
+        id: 's1',
+        respuestas: { socioeconomico: { ingresoMensual: 2500 } },
+      });
+
+      const result = await service.guardarRespuestas(
+        's1',
+        { seccion: 'socioeconomico', valores: { ingresoMensual: '2500' } },
+        postulante,
+      );
+
+      expect(prisma.solicitud.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 's1' },
+          data: expect.objectContaining({
+            respuestas: { socioeconomico: { ingresoMensual: 2500 } },
+          }),
+        }),
+      );
+      expect(result.respuestas).toEqual({
+        socioeconomico: { ingresoMensual: 2500 },
+      });
+    });
+
+    it('rechaza si falta un campo requerido de la seccion', async () => {
+      prisma.solicitud.findUnique.mockResolvedValue({
+        id: 's1',
+        usuarioId: 'u-postulante',
+        estado: 'BORRADOR',
+        respuestas: null,
+        formularioSnapshot: snapshot,
+      });
+
+      await expect(
+        service.guardarRespuestas(
+          's1',
+          { seccion: 'adicional', valores: {} },
+          postulante,
+        ),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('rechaza editar respuestas fuera de BORRADOR/CORRECCION', async () => {
+      prisma.solicitud.findUnique.mockResolvedValue({
+        id: 's1',
+        usuarioId: 'u-postulante',
+        estado: 'ENVIADA',
+        respuestas: null,
+        formularioSnapshot: snapshot,
+      });
+
+      await expect(
+        service.guardarRespuestas(
+          's1',
+          { seccion: 'adicional', valores: { tipoVivienda: 'Propia' } },
+          postulante,
+        ),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 });

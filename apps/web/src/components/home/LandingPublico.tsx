@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
+import { Icon, type IconName } from '@/components/ui/Icon';
 import { Convocatorias } from '@/components/home/Convocatorias';
 
 const ESTADISTICAS = [
@@ -145,16 +146,16 @@ export function LandingPublico() {
             </p>
             <div className="mt-10 grid gap-6 md:grid-cols-3">
               {[
-                { icona: 'ℹ', titulo: 'Información clara', texto: 'Acceso sencillo a todos los programas de becas disponibles.' },
-                { icona: '✓', titulo: 'Seguimiento en vivo', texto: 'Consulta el estado de tu postulación en tiempo real.' },
-                { icona: '★', titulo: 'Proceso transparente', texto: 'Evaluación justa y decisiones documentadas.' },
+                { icono: 'info' as IconName, titulo: 'Información clara', texto: 'Acceso sencillo a todos los programas de becas disponibles.' },
+                { icono: 'check' as IconName, titulo: 'Seguimiento en vivo', texto: 'Consulta el estado de tu postulación en tiempo real.' },
+                { icono: 'estrella' as IconName, titulo: 'Proceso transparente', texto: 'Evaluación justa y decisiones documentadas.' },
               ].map((item) => (
                 <div
                   key={item.titulo}
                   className="rounded-brutal border-[3px] border-brutal-tinta bg-brutal-papel p-6 text-brutal-tinta shadow-brutal-sm"
                 >
                   <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-brutal border-2 border-brutal-tinta bg-brutal-gold text-2xl">
-                    {item.icona}
+                    <Icon name={item.icono} className="h-6 w-6" />
                   </div>
                   <h3 className="font-brut text-lg font-black uppercase">{item.titulo}</h3>
                   <p className="mt-1 text-sm text-brutal-tinta/70">{item.texto}</p>
@@ -210,8 +211,8 @@ export function LandingPublico() {
               <ul className="space-y-3">
                 {REQUISITOS.map((req) => (
                   <li key={req} className="flex items-start gap-3">
-                    <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-brutal border-2 border-brutal-tinta bg-brutal-gold text-xs font-black text-brutal-tinta">
-                      ✓
+                    <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-brutal border-2 border-brutal-tinta bg-brutal-gold text-brutal-tinta">
+                      <Icon name="check" className="h-3.5 w-3.5" />
                     </span>
                     <span className="font-mono text-sm leading-relaxed text-brutal-tinta/80">
                       {req}

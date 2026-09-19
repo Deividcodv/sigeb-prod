@@ -36,7 +36,7 @@ export function BotonPostular({
     return (
       <>
         <Button
-          href={`/solicitudes/nueva?convocatoriaId=${convocatoriaId}`}
+          href={`/convocatorias/${convocatoriaId}/aplicar`}
           className="w-full text-center"
         >
           Postularme ahora

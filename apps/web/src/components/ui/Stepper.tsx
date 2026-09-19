@@ -1,16 +1,19 @@
+import { Icon } from '@/components/ui/Icon';
+
 interface StepperProps {
   pasos: string[];
   actual: number;
+  completados?: boolean[];
   className?: string;
 }
 
-export function Stepper({ pasos, actual, className = '' }: StepperProps) {
+export function Stepper({ pasos, actual, completados, className = '' }: StepperProps) {
   return (
     <ol className={`flex flex-wrap items-center gap-2 ${className}`}>
       {pasos.map((paso, index) => {
         const numero = index + 1;
         const activo = numero === actual;
-        const completado = numero < actual;
+        const completado = completados ? (completados[index] ?? false) : numero < actual;
         return (
           <li key={paso} className="flex items-center gap-2">
             <div className="flex items-center gap-2">
@@ -23,7 +26,7 @@ export function Stepper({ pasos, actual, className = '' }: StepperProps) {
                       : 'bg-brutal-papel text-brutal-tinta'
                 }`}
               >
-                {completado ? '✓' : numero}
+                {completado ? <Icon name="check" className="h-4 w-4" /> : numero}
               </span>
               <span
                 className={`font-brut text-sm font-bold uppercase ${activo ? 'text-brutal-tinta' : 'text-brutal-tinta/80'}`}

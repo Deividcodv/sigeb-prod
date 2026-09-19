@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { httpData } from '@/lib/api';
+import { Icon } from '@/components/ui/Icon';
 import { useAuth } from '@/context/AuthContext';
 
 interface Mensaje {
@@ -100,9 +101,9 @@ export function ChatWidget() {
       <button
         onClick={() => setAbierto((a) => !a)}
         aria-label="Abrir chat con el asistente"
-        className="fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-sigeb-blue text-2xl text-white shadow-lg transition-transform hover:scale-105"
+        className="fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-sigeb-blue text-white shadow-lg transition-transform hover:scale-105"
       >
-        {abierto ? '✕' : '💬'}
+        <Icon name={abierto ? 'cerrar' : 'chat'} className="h-6 w-6" />
       </button>
 
       {abierto && (
@@ -119,7 +120,7 @@ export function ChatWidget() {
               className="rounded p-1 hover:bg-white/20"
               aria-label="Cerrar chat"
             >
-              ✕
+              <Icon name="cerrar" className="h-4 w-4" />
             </button>
           </div>
 

@@ -3,6 +3,7 @@
 import { Fragment, useCallback, useEffect, useState } from 'react';
 import { fetchConToken } from '@/lib/api-auth';
 import { Button } from '@/components/ui/Button';
+import { Icon } from '@/components/ui/Icon';
 import { Spinner } from '@/components/ui/Spinner';
 
 interface Permiso {
@@ -116,7 +117,10 @@ export function MatrizRoles() {
                     colSpan={roles.length + 1}
                     className="px-4 py-2 font-brut text-xs font-black uppercase tracking-wide text-brutal-tinta"
                   >
-                    ▸ {modulo}
+                    <span className="inline-flex items-center gap-1">
+                      <Icon name="chevron" className="h-3 w-3 -rotate-90" />
+                      {modulo}
+                    </span>
                   </td>
                 </tr>
                 {permisos

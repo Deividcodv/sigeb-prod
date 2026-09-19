@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { accionesPorRol } from '@/lib/acciones';
+import { Icon } from '@/components/ui/Icon';
 
 export function MenuAcciones() {
   const { usuario } = useAuth();
@@ -39,7 +40,7 @@ export function MenuAcciones() {
         aria-haspopup="menu"
         className="flex items-center gap-2 rounded-brutal border-2 border-brutal-cyan bg-brutal-cyan px-3 py-1.5 font-brut text-xs font-black uppercase tracking-wide text-brutal-tinta transition-colors hover:-translate-y-0.5 hover:bg-brutal-papel"
       >
-        <span className="text-base">≡</span>
+        <Icon name="panel" className="h-4 w-4" />
         Acciones
         <span className="text-[10px]">{abierto ? '▲' : '▼'}</span>
       </button>
@@ -63,7 +64,7 @@ export function MenuAcciones() {
                 <span
                   className={`flex h-8 w-8 shrink-0 items-center justify-center border-2 border-brutal-tinta text-base text-brutal-tinta ${accion.acento}`}
                 >
-                  {accion.icono}
+                  <Icon name={accion.icono} className="h-4 w-4" />
                 </span>
                 <span className="font-brut text-xs font-bold uppercase tracking-wide">
                   {accion.titulo}

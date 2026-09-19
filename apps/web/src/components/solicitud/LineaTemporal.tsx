@@ -1,16 +1,17 @@
 'use client';
 
 import { Badge } from '@/components/ui/Badge';
+import { Icon, type IconName } from '@/components/ui/Icon';
 import { formatearFecha, type HistorialEstado } from '@/lib/api';
 
-const ICONO_ESTADO: Record<string, string> = {
-  BORRADOR: '✎',
-  ENVIADA: '➤',
-  EN_REVISION: '🔍',
-  CORRECCION: '⚠',
-  EVALUADA: '✓',
-  APROBADA: '★',
-  RECHAZADA: '✕',
+const ICONO_ESTADO: Record<string, IconName> = {
+  BORRADOR: 'editar',
+  ENVIADA: 'subir',
+  EN_REVISION: 'buscar',
+  CORRECCION: 'alerta',
+  EVALUADA: 'check',
+  APROBADA: 'check',
+  RECHAZADA: 'cerrar',
 };
 
 const COLOR_NODO: Record<string, string> = {
@@ -34,7 +35,7 @@ export function LineaTemporal({ historial }: { historial: HistorialEstado[] }) {
     <ol className="space-y-0">
       {historial.map((h, index) => {
         const esActual = index === ultimo;
-        const icono = ICONO_ESTADO[h.estado] ?? '•';
+        const icono = ICONO_ESTADO[h.estado] ?? 'info';
         const tono = COLOR_NODO[h.estado] ?? 'bg-gray-300 text-brutal-tinta';
         return (
           <li key={index} className="relative flex gap-4 pb-6 last:pb-0">
@@ -42,7 +43,9 @@ export function LineaTemporal({ historial }: { historial: HistorialEstado[] }) {
               <div
                 className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-brutal border-[3px] border-brutal-tinta shadow-brutal-sm ${tono}`}
               >
-                <span className="font-brut text-sm font-black leading-none">{icono}</span>
+                <span className="font-brut text-sm font-black leading-none">
+                  <Icon name={icono} className="h-4 w-4" />
+                </span>
               </div>
               {index < ultimo && (
                 <div className="w-[3px] flex-1 border-l-[3px] border-dashed border-brutal-tinta/40" />
