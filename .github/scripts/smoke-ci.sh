@@ -59,7 +59,7 @@ ADMIN_ID=$(curl -sf "$BASE/auth/perfil" -H "Authorization: Bearer $TOKEN_ADMIN" 
 # ---- Sprint 3: solicitud completa contra beca 2 (con criterios) ----
 CONV_ID=$(curl -sf -X POST "$BASE/convocatorias" -H "Authorization: Bearer $TOKEN_ADMIN" \
   -H 'Content-Type: application/json' \
-  -d '{"nombre":"Beca CI","becaId":"00000000-0000-4000-8000-000000000002"}' | jq -r '.data.id')
+  -d '{"nombre":"Beca CI","becaId":"00000000-0000-4000-8000-000000000002","evaluadoresMinimos":1}' | jq -r '.data.id')
 [ -z "$CONV_ID" ] && { echo "Fallo la creacion de convocatoria"; exit 1; }
 
 PUBLICADA_ID=$(curl -sf -X POST "$BASE/convocatorias/$CONV_ID/transicion" -H "Authorization: Bearer $TOKEN_ADMIN" \
