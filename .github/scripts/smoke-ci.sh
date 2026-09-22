@@ -135,6 +135,10 @@ EVAL_GRP=$(curl -sf "$BASE/evaluaciones/mias" -H "Authorization: Bearer $TOKEN_E
   | jq -c ".data[] | select(.solicitudId==\"$SOL_ID\")")
 [ -z "$EVAL_GRP" ] && { echo "El evaluador no ve la solicitud asignada"; exit 1; }
 
+curl -sf -X PATCH "$BASE/solicitudes/$SOL_ID/imparcialidad" \
+  -H "Authorization: Bearer $TOKEN_EVAL" -H 'Content-Type: application/json' \
+  -d '{"confirma":true}' > /dev/null
+
 for CRITERIO in $(echo "$EVAL_GRP" | jq -r '.criterios[].id'); do
   curl -sf -X PUT "$BASE/solicitudes/$SOL_ID/criterios/$CRITERIO" \
     -H "Authorization: Bearer $TOKEN_EVAL" -H 'Content-Type: application/json' \
