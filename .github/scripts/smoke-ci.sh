@@ -140,9 +140,13 @@ curl -sf -X PATCH "$BASE/solicitudes/$SOL_ID/imparcialidad" \
   -d '{"confirma":true}' > /dev/null
 
 for CRITERIO in $(echo "$EVAL_GRP" | jq -r '.criterios[].id'); do
-  curl -sf -X PUT "$BASE/solicitudes/$SOL_ID/criterios/$CRITERIO" \
+  RESP=$(curl -s -X PUT "$BASE/solicitudes/$SOL_ID/criterios/$CRITERIO" \
     -H "Authorization: Bearer $TOKEN_EVAL" -H 'Content-Type: application/json' \
-    -d '{"puntaje":80}' > /dev/null
+    -d '{"puntaje":80}' -w $'\nSTATUS:%{http_code}')
+  MSG=${RESP##*STATUS:}
+  STATUS=${MSG%%$'\n'*}
+  BODY=$(echo "$RESP" | sed '$d')
+  [ "$STATUS" = "200" ] || { echo "PUT criterio $CRITERIO -> HTTP $STATUS :: $BODY"; exit 1; }
 done
 
 SCORE=$(curl -sf "$BASE/solicitudes/$SOL_ID/score" -H "Authorization: Bearer $TOKEN_ADMIN" | jq -r '.data.score')
