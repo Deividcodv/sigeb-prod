@@ -83,9 +83,20 @@ jobs:
           npx prisma db seed
           node dist/main.js > /tmp/api.log 2>&1 &
           API_PID=$!
+          trap 'kill "$API_PID" || true' EXIT
           cd ../..
-          bash .github/scripts/smoke-ci.sh
-          kill "$API_PID" || true
+          set +e
+          bash -x .github/scripts/smoke-ci.sh > /tmp/smoke-trace.log 2>&1
+          SMOKE_CODE=$?
+          set -e
+          if [ "$SMOKE_CODE" -ne 0 ]; then
+            echo "===== smoke-trace.log (ultimas 200 lineas) ====="
+            tail -n 200 /tmp/smoke-trace.log || true
+            echo "===== api.log (ultimas 150 lineas) ====="
+            tail -n 150 /tmp/api.log || true
+            exit "$SMOKE_CODE"
+          fi
+          tail -n 5 /tmp/smoke-trace.log
 
   docker-build:
     runs-on: ubuntu-latest
@@ -120,6 +131,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Verificar secretos de deploy
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+        run: |
+          [ -n "${DEPLOY_HOST}" ] || { echo "Falta el secreto DEPLOY_HOST en el entorno ${{ github.environment }}"; exit 1; }
+          [ -n "${DEPLOY_USER}" ] || { echo "Falta el secreto DEPLOY_USER en el entorno ${{ github.environment }}"; exit 1; }
+
       - name: Deploy to staging (PM2)
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -149,6 +168,14 @@ jobs:
     environment: production
     steps:
       - uses: actions/checkout@v4
+
+      - name: Verificar secretos de deploy
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+        run: |
+          [ -n "${DEPLOY_HOST}" ] || { echo "Falta el secreto DEPLOY_HOST en el entorno ${{ github.environment }}"; exit 1; }
+          [ -n "${DEPLOY_USER}" ] || { echo "Falta el secreto DEPLOY_USER en el entorno ${{ github.environment }}"; exit 1; }
 
       - name: Deploy to production (PM2)
         uses: appleboy/ssh-action@v1.2.0

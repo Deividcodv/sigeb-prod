@@ -3,27 +3,50 @@ set -euo pipefail
 
 BASE="${BASE_URL:-http://127.0.0.1:3000/api}"
 
+http_request() {
+  local method="$1" url="$2" body="${3:-}" resp code
+  if [ -n "$body" ]; then
+    resp=$(curl -s -w '\n%{http_code}' -X "$method" "$url" \
+      -H 'Content-Type: application/json' -d "$body")
+  else
+    resp=$(curl -s -w '\n%{http_code}' -X "$method" "$url")
+  fi
+  code=$(printf '%s' "$resp" | tail -n 1)
+  printf '%s' "$resp" | sed '$d' > /tmp/smoke-http-body.json
+  printf '%s' "$code"
+}
+
+login_token() {
+  local email="$1" pass="$2" code body
+  body=$(http_request POST "$BASE/auth/login" "{\"email\":\"$email\",\"password\":\"$pass\"}")
+  code="$body"
+  body=$(cat /tmp/smoke-http-body.json)
+  [ "$code" = "200" ] || { echo "Login $email -> HTTP $code: $body" >&2; return 1; }
+  printf '%s' "$body" | jq -r '.data.accessToken'
+}
+
 for i in $(seq 1 30); do
-  if curl -sf "$BASE/catalogos/generos" > /dev/null; then
+  code=$(http_request GET "$BASE/catalogos/generos")
+  if [ "$code" = "200" ]; then
     break
   fi
   sleep 2
   if [ "$i" -eq 30 ]; then
-    echo "La API no responde despues de 60s"
+    echo "La API no responde despues de 60s (ultimo HTTP: $code)" >&2
     exit 1
   fi
 done
 
-TOKEN_ADMIN=$(curl -sf -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
-  -d '{"email":"admin@sigeb.gov.gt","password":"Admin123!"}' | jq -r '.data.accessToken')
-TOKEN_POST=$(curl -sf -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
-  -d '{"email":"postulante@demo.gt","password":"Admin123!"}' | jq -r '.data.accessToken')
-TOKEN_EVAL=$(curl -sf -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
-  -d '{"email":"evaluador@demo.gt","password":"Admin123!"}' | jq -r '.data.accessToken')
-TOKEN_COORD=$(curl -sf -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
-  -d '{"email":"coordinador@demo.gt","password":"Admin123!"}' | jq -r '.data.accessToken')
-TOKEN_MIEMBRO=$(curl -sf -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
-  -d '{"email":"miembro@demo.gt","password":"Admin123!"}' | jq -r '.data.accessToken')
+TOKEN_ADMIN=$(login_token "admin@sigeb.gov.gt" "Admin123!") \
+  || { echo "Fallo login admin" >&2; exit 1; }
+TOKEN_POST=$(login_token "postulante@demo.gt" "Admin123!") \
+  || { echo "Fallo login postulante" >&2; exit 1; }
+TOKEN_EVAL=$(login_token "evaluador@demo.gt" "Admin123!") \
+  || { echo "Fallo login evaluador" >&2; exit 1; }
+TOKEN_COORD=$(login_token "coordinador@demo.gt" "Admin123!") \
+  || { echo "Fallo login coordinador" >&2; exit 1; }
+TOKEN_MIEMBRO=$(login_token "miembro@demo.gt" "Admin123!") \
+  || { echo "Fallo login miembro" >&2; exit 1; }
 
 for T in "$TOKEN_ADMIN" "$TOKEN_POST" "$TOKEN_EVAL" "$TOKEN_COORD" "$TOKEN_MIEMBRO"; do
   [ -z "$T" ] && { echo "Fallo algun login"; exit 1; }
