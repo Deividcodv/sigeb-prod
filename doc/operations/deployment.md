@@ -94,8 +94,8 @@ lugares es la forma más fácil de que se desincronicen.
 
 Hoy el servidor se actualiza desde `sigeb-prod`. Cuando el repositorio del
 equipo (`proyecto-analisis-Eduviagt`) tenga ya la réplica completa —la guía
-está en `Docs/README-JOSE-REPLICA-SIGEB-PROD.md` de ese repositorio—, se
-añade la variable `DEPLOY_REPO_URL` en el entorno `staging` de GitHub:
+está en `docs/06-jose-replica-sigeb-prod.md`—, se añade la variable
+`DEPLOY_REPO_URL` en el entorno `staging` de GitHub:
 
 ```text
 DEPLOY_REPO_URL = https://github.com/Deividcodv/proyecto-analisis-Eduviagt.git
@@ -115,8 +115,10 @@ AVISO: el remoto .../proyecto-analisis-Eduviagt.git todavía no tiene
        Se despliega desde .../sigeb-prod.git hasta que la réplica esté lista.
 ```
 
-En cuanto la réplica esté mergeada, el despliegue pasa a EDUVIAGT sin tocar
-nada más.
+En ese caso el remoto del servidor **se queda en el repositorio del que se
+desplegó**: forzar el principal cuando todavía no tiene la réplica haría que
+el siguiente despliegue bajara un código antiguo. En cuanto la réplica esté
+hecha, el remoto pasa a EDUVIAGT solo, sin tocar nada.
 
 ---
 
