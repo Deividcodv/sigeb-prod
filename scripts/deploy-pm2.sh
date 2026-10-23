@@ -139,11 +139,11 @@ fi
 echo "    CSS $CSS_RELATIVO -> $CODIGO"
 
 if [ "$RESPALDO_ACTIVO" = "1" ]; then
-  # El despliegue salió del respaldo, pero la VM queda apuntando al
-  # repositorio principal: en cuanto la réplica exista, el siguiente
-  # despliegue traerá el código de EDUVIAGT.
-  git remote set-url origin "$DEPLOY_REPO_URL"
-  echo "    Repositorio principal restablecido: $DEPLOY_REPO_URL"
+  # El remoto se queda en el repositorio del que se ha desplegado. Forzar el
+  # principal cuando aún no tiene la réplica haría que el siguiente despliegue
+  # bajara un código antiguo.
+  echo "    Se desplegó desde el respaldo: $DEPLOY_REPO_URL_FALLBACK"
+  echo "    EDUVIAGT será el origen en cuanto tenga la réplica."
 fi
 
 echo "==> Despliegue completado"
