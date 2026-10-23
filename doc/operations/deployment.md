@@ -186,6 +186,52 @@ Puntos a tener en cuenta:
 
 ---
 
+## Copias de seguridad
+
+`scripts/backup.sh` copia la base de datos, los documentos subidos y la
+configuración de PM2 en `/home/davi/backups`, conservando las últimas
+`BACKUP_RETENTION` copias (14 por defecto).
+
+```bash
+bash scripts/backup.sh                # copia del día
+bash scripts/backup.sh --list         # qué copias hay
+bash scripts/backup.sh --restore <archivo>   # restaurar una copia
+```
+
+Está programado en el `crontab` del usuario `davi` a las 3:07 de la mañana:
+
+```text
+7 3 * * * /bin/bash /home/davi/sigeb/scripts/backup.sh >> /home/davi/backups/backup.log 2>&1
+```
+
+**Una copia que nunca se restaura no está verificada.** La restauración se
+probó sobre una base temporal: 37 tablas y 5 usuarios restaurados sin
+errores. Conviene repetir la prueba cada pocos meses.
+
+> El volcado incluye los `DROP TABLE` (`pg_dump --clean --if-exists`), así
+> que se restaura sobre la base actual sin necesidad de borrarla antes.
+
+---
+
+## Cabeceras de seguridad
+
+`scripts/nginx/sigeb.conf` (copiado a `/etc/nginx/sites-available/sigeb`) añade
+a todas las respuestas:
+
+```text
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=()
+Cross-Origin-Opener-Policy: same-origin
+Content-Security-Policy: default-src 'self'; ...
+```
+
+`Strict-Transport-Security` está comentado a propósito: solo tiene sentido
+con HTTPS, y activarlo sin certificado deja el sitio inaccesible.
+
+---
+
 ## Deploy manual
 
 Los mismos pasos que ejecuta el workflow, por SSH. El script vive en el
