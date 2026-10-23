@@ -4,7 +4,7 @@ import {
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
-import { randomUUID } from 'node:crypto';
+import { randomUUID, createHash } from 'node:crypto';
 import { Observable, tap } from 'rxjs';
 
 /**
@@ -27,6 +27,17 @@ export class LoggingInterceptor implements NestInterceptor {
     '/auth/refresh',
     '/auth/eliminar-cuenta',
   ];
+
+  /**
+   * Huella del correo de la peticion.
+   *
+   * Permite saber quantas veces se intentó el acceso a una misma cuenta sin
+   * dejar el correo en claro en el log.
+   */
+  private static huella(correo: unknown): string | null {
+    if (typeof correo !== 'string' || !correo.includes('@')) return null;
+    return createHash('sha256').update(correo.toLowerCase()).digest('hex').slice(0, 10);
+  }
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const inicio = Date.now();
@@ -64,6 +75,13 @@ export class LoggingInterceptor implements NestInterceptor {
           );
         },
         error: (error) => {
+          // El filtro de excepciones todavía no ha aplicado el codigo de
+          // estado, asi que se toma del propio error: una `HttpException`
+          // lo trae en `getStatus()`.
+          const estado =
+            typeof error?.getStatus === 'function'
+              ? error.getStatus()
+              : (response.statusCode ?? 500);
           console.error(
             JSON.stringify({
               tipo: 'peticion',
@@ -71,9 +89,14 @@ export class LoggingInterceptor implements NestInterceptor {
               requestId,
               metodo,
               ruta,
-              estado: response.statusCode ?? 500,
+              estado,
               duracionMs: Date.now() - inicio,
               usuarioId: request.user?.id ?? null,
+              // Huella del correo, no el correo: permite seguir los intentos
+              // de acceso a una cuenta sin dejar el dato en claro.
+              cuenta: LoggingInterceptor.huella(
+                (request.body as Record<string, unknown> | undefined)?.email,
+              ),
               error: error?.message ?? String(error),
             }),
           );
