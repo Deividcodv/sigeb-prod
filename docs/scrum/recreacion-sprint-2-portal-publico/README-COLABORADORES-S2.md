@@ -160,24 +160,24 @@ git diff 986fc89 -- apps/web/src   # debe quedar VACÍO
 
 ## §4 HAMILTON — Documentación scrum (S1→S2→S3)
 
-Entregable: solo **`doc/scrum/`** (NO toca `apps/*`). Alinear (no crear desde cero) lo
+Entregable: solo **`docs/scrum/`** (NO toca `apps/*`). Alinear (no crear desde cero) lo
 que ya está commiteado en `develop` (commit `116b153`):
 
-- `doc/scrum/recreacion-sprint-1-cimientos/*` → fechas, participantes y puntos reales.
-- `doc/scrum/recreacion-sprint-2-portal-publico/{goal,backlog,daily-log,review,retrospective}.md`
+- `docs/scrum/recreacion-sprint-1-cimientos/*` → fechas, participantes y puntos reales.
+- `docs/scrum/recreacion-sprint-2-portal-publico/{goal,backlog,daily-log,review,retrospective}.md`
   → puntos 40/40; convocatorias US-44/45; solicitudes **entregada completa** (US-46).
-- `doc/scrum/recreacion-sprint-3-login-dashboard/` → planning S3 (US-49/50).
+- `docs/scrum/recreacion-sprint-3-login-dashboard/` → planning S3 (US-49/50).
 
 ```bash
 git checkout develop && git pull origin develop
 git checkout -b docs/scrum-s2
 
-# alinear/editar los .md de doc/scrum/ (sin apps/*)
+# alinear/editar los .md de docs/scrum/ (sin apps/*)
 
-git add doc/scrum/
+git add docs/scrum/
 git commit -m "docs(scrum): alinear artefactos S1-S2 y planning S3"
 git push -u origin docs/scrum-s2
-gh pr create --base develop --title "docs(scrum): S2" --body "solo doc/scrum/"
+gh pr create --base develop --title "docs(scrum): S2" --body "solo docs/scrum/"
 ```
 
 Tu PR no toca `apps/*`, así que no choca con nadie: puede mergearse en cualquier momento.

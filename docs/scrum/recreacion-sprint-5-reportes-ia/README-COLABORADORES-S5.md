@@ -511,5 +511,5 @@ grep -n "Sprint 5" .github/scripts/smoke-ci.sh
 ### C. Donde queda cada cosa
 
 - Espejos de referencia (solo lectura): `recreacion/sprint-5/{jose,marcos,hamilton,yemerson}/`.
-- Artefactos Scrum del sprint: `doc/scrum/recreacion-sprint-5-reportes-ia/`.
-- Artefactos del producto real (referencia, no copiar): `doc/scrum/sprint-5-reportes-ia/`.
+- Artefactos Scrum del sprint: `docs/scrum/recreacion-sprint-5-reportes-ia/`.
+- Artefactos del producto real (referencia, no copiar): `docs/scrum/sprint-5-reportes-ia/`.

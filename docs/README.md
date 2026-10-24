@@ -30,9 +30,11 @@ Esta carpeta contiene toda la documentación administrativa, técnica y de proce
 ### Arquitectura
 - [Decisiones arquitectónicas (ADR)](architecture/decisions.md)
 - [Principios SOLID](architecture/solid-principles.md)
+- [Patrones de diseño](architecture/design-patterns.md)
 - [Contratos de API](architecture/api-contracts.md)
 - [Diagramas](architecture/diagrams.md)
 - [Schema de base de datos](architecture/database-schema.md)
+- [Diagramas interactivos](architecture/interactive/)
 
 ### Estándares
 - [Convenciones de código](standards/code-conventions.md)

@@ -99,7 +99,7 @@ git switch -c <rama-del-PR>
 **Por qué este orden**
 
 - **PR 1, PR 2 y PR 4** son independientes y pueden ir en paralelo (rutas disjuntas).
-- **PR 3** toca `Docs/scrum/`; va después de PR 1 para no chocar con `doc/`.
+- **PR 3** toca `Docs/scrum/`; va después de PR 1 para no chocar con `docs/`.
 - **PR 5** va al final: son los artefactos Scrum del S7, que cierran el sprint.
 - **David (SM/admin)** aprueba cada merge (squash) tras la review cruzada.
 
@@ -122,21 +122,21 @@ git pull --ff-only equipo develop
 git switch -c docs/s7-arquitectura-standards
 
 git checkout b62070b -- \
-  doc/README.md \
-  doc/architecture \
-  doc/standards \
-  doc/operations \
-  doc/team \
-  doc/changelog.md \
-  doc/glossary.md
+  docs/README.md \
+  docs/architecture \
+  docs/standards \
+  docs/operations \
+  docs/team \
+  docs/changelog.md \
+  docs/glossary.md
 ```
 
 Verifica (debe salir vacío):
 
 ```bash
 git diff --name-only b62070b -- \
-  doc/README.md doc/architecture doc/standards doc/operations doc/team \
-  doc/changelog.md doc/glossary.md
+  docs/README.md docs/architecture docs/standards docs/operations docs/team \
+  docs/changelog.md docs/glossary.md
 ```
 
 Publica:
@@ -147,7 +147,7 @@ git commit -m "docs(s7): portar documentacion tecnica (arquitectura, estandares,
 git push -u equipo docs/s7-arquitectura-standards
 gh pr create --base develop --head docs/s7-arquitectura-standards \
   --title "docs(s7): documentacion tecnica" \
-  --body "Restauracion literal desde b62070b. Alcance: doc/README.md, doc/architecture, doc/standards, doc/operations, doc/team, doc/changelog.md, doc/glossary.md. Verificado con git diff vacio." \
+  --body "Restauracion literal desde b62070b. Alcance: docs/README.md, docs/architecture, docs/standards, docs/operations, docs/team, docs/changelog.md, docs/glossary.md. Verificado con git diff vacio." \
   --reviewer <handle-Yemerson>
 ```
 
@@ -160,16 +160,16 @@ git switch develop
 git pull --ff-only equipo develop
 git switch -c docs/s7-scrum-s9
 
-git checkout b62070b -- doc/scrum/sprint-9-mejoras-transversales
+git checkout b62070b -- docs/scrum/sprint-9-mejoras-transversales
 mkdir -p Docs/scrum/sprint-9-mejoras-transversales
-git mv doc/scrum/sprint-9-mejoras-transversales/* Docs/scrum/sprint-9-mejoras-transversales/
+git mv docs/scrum/sprint-9-mejoras-transversales/* Docs/scrum/sprint-9-mejoras-transversales/
 ```
 
 Verifica (contenido idéntico por blob):
 
 ```bash
 for f in goal backlog review retrospective; do
-  test "$(git rev-parse b62070b:doc/scrum/sprint-9-mejoras-transversales/$f.md)" \
+  test "$(git rev-parse b62070b:docs/scrum/sprint-9-mejoras-transversales/$f.md)" \
      = "$(git rev-parse HEAD:Docs/scrum/sprint-9-mejoras-transversales/$f.md)" \
     && echo "OK $f" || echo "DIF $f"
 done
@@ -183,7 +183,7 @@ git commit -m "docs(s7): portar artefactos Scrum del Sprint 9 (mejoras transvers
 git push -u equipo docs/s7-scrum-s9
 gh pr create --base develop --head docs/s7-scrum-s9 \
   --title "docs(s7): scrum sprint 9" \
-  --body "Contenido literal de doc/scrum/sprint-9-mejoras-transversales desde b62070b, reubicado a Docs/scrum/sprint-9-mejoras-transversales (layout del equipo). Verificado por igualdad de blob." \
+  --body "Contenido literal de docs/scrum/sprint-9-mejoras-transversales desde b62070b, reubicado a Docs/scrum/sprint-9-mejoras-transversales (layout del equipo). Verificado por igualdad de blob." \
   --reviewer <handle-Yemerson>
 ```
 
@@ -331,7 +331,7 @@ A  SECURITY.md
 ### 5.3 Documentación portada (muestra)
 
 ```bash
-test -f doc/architecture/decisions.md && echo OK doc/architecture
+test -f docs/architecture/decisions.md && echo OK docs/architecture
 test -f docs/guia-recreacion-6-personas.md && echo OK docs
 test -f Docs/scrum/sprint-9-mejoras-transversales/goal.md && echo OK scrum-s9
 test -f Docs/scrum/sprint-7-unificacion/goal.md && echo OK scrum-s7
@@ -349,7 +349,7 @@ test -f Docs/scrum/sprint-7-unificacion/goal.md && echo OK scrum-s7
 |---|---|
 | `README.md` (`# EDUVIA-gt`) | identidad del repositorio del equipo |
 | `.github/CODEOWNERS`, `LICENSE`, `SECURITY.md` | aportes propios del equipo; no existen en el producto |
-| `Docs/` (scrum del equipo + fichas por persona) | layout propio del equipo, en lugar de `doc/scrum` + `docs/` |
+| `Docs/` (scrum del equipo + fichas por persona) | layout propio del equipo, en lugar de `docs/scrum` + `docs/` |
 | PR 4 omitido (opcional) | si se conserva el salto de línea final; irrelevante funcionalmente |
 
 ---
@@ -371,6 +371,6 @@ test -f Docs/scrum/sprint-7-unificacion/goal.md && echo OK scrum-s7
 | `fatal: invalid object name 'b62070b'` | falta `git fetch EDUVIAGT-prod`; confirma `git cat-file -t b62070b` |
 | `pathspec ... did not match` | ruta inexistente en `b62070b`; revisa la ruta exacta |
 | `git diff` global muestra archivos de código extra | un PR cubrió de más; vuelve a correr solo sus `git checkout` |
-| El PR 3 deja `doc/scrum` vacío | es correcto: se movió a `Docs/scrum/sprint-9-mejoras-transversales` |
+| El PR 3 deja `docs/scrum` vacío | es correcto: se movió a `Docs/scrum/sprint-9-mejoras-transversales` |
 | `git diff` global muestra solo las 4 líneas esperadas | **correcto**: la unificación quedó bien |
 | `git fetch` no trae `b62070b` | confirma que el remoto `EDUVIAGT-prod` apunta a `Deividcodv/EDUVIAGT-prod` |

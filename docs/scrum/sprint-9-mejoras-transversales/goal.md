@@ -3,7 +3,7 @@
 **Proyecto:** EDUVIAGT GT (antes EDUVIAGT)
 **Tipo de sprint:** Estabilización / Unplanned Work (trabajo no planificado)
 **Periodo:** Consolidación de entregas de la sesión (sin afectar S0–S8)
-**Ruta scrum:** `doc/scrum/sprint-9-mejoras-transversales/`
+**Ruta scrum:** `docs/scrum/sprint-9-mejoras-transversales/`
 
 ## Objetivo
 
@@ -27,7 +27,7 @@ cerrados S0–S8.
 
 ## Compromiso del Sprint
 
-- Crear únicamente archivos nuevos (este directorio `doc/scrum/sprint-9-*`).
+- Crear únicamente archivos nuevos (este directorio `docs/scrum/sprint-9-*`).
 - No tocar ningún archivo existente de S0–S8 ni del producto.
 - Entregar un único commit y push a `origin/develop` (`EDUVIAGT-prod`).
 

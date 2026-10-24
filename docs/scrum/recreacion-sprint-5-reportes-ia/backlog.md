@@ -1,8 +1,8 @@
-# Sprint 5 Recreacion - Backlog
+﻿# Sprint 5 Recreacion - Backlog
 
 ## User Stories Asignadas
 
-Estimaciones alineadas al `doc/scrum/product-backlog.md` (S5 del producto real). El equipo sostiene
+Estimaciones alineadas al `docs/scrum/product-backlog.md` (S5 del producto real). El equipo sostiene
 ~40+ pts por sprint (S4 cerro en 44). Total: **44 puntos**.
 
 | ID | Historia | Prioridad | Puntos | Asignado | Hito | Estado |

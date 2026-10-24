@@ -41,7 +41,7 @@ Estudiantes **desde niños de primaria hasta adultos** (postulantes a becas), ad
 
 - Idioma: **español (Guatemala)**.
 - Stack: `apps/api` NestJS 10 + Prisma 5 + PostgreSQL 16; `apps/web` Next.js 14 (App Router) + React 18 + Tailwind.
-- Convenciones del repo (`doc/standards/testing-strategy.md`): unit `.spec.ts` junto al código; integración `*.integration-spec.ts` (Supertest); E2E frontend con **Playwright** en `apps/web/e2e/`; cobertura mínima líneas/funciones/statements **70%**, branches **60%**.
+- Convenciones del repo (`docs/standards/testing-strategy.md`): unit `.spec.ts` junto al código; integración `*.integration-spec.ts` (Supertest); E2E frontend con **Playwright** en `apps/web/e2e/`; cobertura mínima líneas/funciones/statements **70%**, branches **60%**.
 - Pruebas funcionales contra la BD **`EDUVIAGT_test`** (ya migrada en el contenedor `EDUVIAGT-postgres`), **nunca** contra datos de desarrollo/producción.
 - El árbol de trabajo tiene ruido LF→CRLF; trabajar en **rama nueva** y committear solo archivos relevantes.
 

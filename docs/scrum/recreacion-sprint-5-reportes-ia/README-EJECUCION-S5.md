@@ -876,7 +876,7 @@ git diff 2e52a69 -- apps/web/src/components/chat/ChatWidget.tsx  # 2 líneas
 ### 14.2 No colaste nada de otras etapas
 
 ```bash
-git diff --name-only origin/develop...HEAD | grep -vE '^\.github|^doc/|^recreacion/' | sort
+git diff --name-only origin/develop...HEAD | grep -vE '^\.github|^docs/|^recreacion/' | sort
 # Debe listar SOLO rutas de S5 + los 2 archivos de auth de C1
 git diff --stat origin/develop...HEAD -- apps/api/prisma | cat
 # VACÍO: la capa de datos vino del PR #22

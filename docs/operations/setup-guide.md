@@ -160,7 +160,7 @@ EDUVIAGT-v1.1/
 │   └── web/
 │       ├── src/
 │       └── package.json
-├── doc/
+├── docs/
 ├── docker-compose.yml
 ├── package.json
 └── README.md

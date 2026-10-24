@@ -43,16 +43,16 @@ Regla de oro: **cada módulo tiene un solo dueño**. Nadie toca el módulo de ot
 
 | Ceremonia | Cuándo | Duración | Quién | Qué se logra / salida |
 |---|---|---|---|---|
-| **Sprint Planning** | Lunes al inicio | 1–2 horas | Todos con David | Elegir las historias del sprint y quién hace cada una. Salida: `doc/scrum/sprint-N/sprint-planning.md` |
-| **Daily Standup** | Cada día | 15 minutos | Cada persona | Responder 3 preguntas: ¿qué hice ayer?, ¿qué haré hoy?, ¿tengo algún bloqueo?. Salida: `doc/scrum/sprint-N/daily-log.md` |
-| **Sprint Review** | Viernes al cierre | 1 hora | Todos | David prueba y demuestra lo hecho en el sprint. Salida: `doc/scrum/sprint-N/review.md` |
-| **Sprint Retrospective** | Viernes después del review | 1 hora | Solo equipo | ¿Qué salió bien, qué mejorar, con qué me quedo? Salida: `doc/scrum/sprint-N/retrospective.md` |
+| **Sprint Planning** | Lunes al inicio | 1–2 horas | Todos con David | Elegir las historias del sprint y quién hace cada una. Salida: `docs/scrum/sprint-N/sprint-planning.md` |
+| **Daily Standup** | Cada día | 15 minutos | Cada persona | Responder 3 preguntas: ¿qué hice ayer?, ¿qué haré hoy?, ¿tengo algún bloqueo?. Salida: `docs/scrum/sprint-N/daily-log.md` |
+| **Sprint Review** | Viernes al cierre | 1 hora | Todos | David prueba y demuestra lo hecho en el sprint. Salida: `docs/scrum/sprint-N/review.md` |
+| **Sprint Retrospective** | Viernes después del review | 1 hora | Solo equipo | ¿Qué salió bien, qué mejorar, con qué me quedo? Salida: `docs/scrum/sprint-N/retrospective.md` |
 
 > Todas las salidas (archivos) las prepara/revisa David. El código lo entregan los devs vía PRs.
 >
-> Para la simulación, los sprints 1-3 y el 5 se archivan como `doc/scrum/recreacion-sprint-1-cimientos/`,
-> `doc/scrum/recreacion-sprint-2-portal-publico/`, `doc/scrum/recreacion-sprint-3-login-dashboard/` y
-> `doc/scrum/recreacion-sprint-5-reportes-ia/`
+> Para la simulación, los sprints 1-3 y el 5 se archivan como `docs/scrum/recreacion-sprint-1-cimientos/`,
+> `docs/scrum/recreacion-sprint-2-portal-publico/`, `docs/scrum/recreacion-sprint-3-login-dashboard/` y
+> `docs/scrum/recreacion-sprint-5-reportes-ia/`
 > (con los mismos archivos: `goal.md`, `backlog.md`, `daily-log.md`, `review.md`, `retrospective.md`).
 > A partir de S2 cada carpeta añade además un `README-COLABORADORES-SN.md` con los comandos exactos de
 > copia (`git checkout <fuente> -- <rutas>`) y verificación (`git diff` vacío) de cada dev.
@@ -63,8 +63,8 @@ Regla de oro: **cada módulo tiene un solo dueño**. Nadie toca el módulo de ot
 
 | Artefacto | Qué es | Dónde se guarda |
 |---|---|---|
-| **Product Backlog** | Lista de todas las funcionalidades que debe tener EDUVIAGT. Ya existe | `doc/scrum/product-backlog.md` |
-| **Sprint Backlog** | Historias elegidas para este sprint, con puntos y dueño | `doc/scrum/sprint-N/sprint-planning.md` |
+| **Product Backlog** | Lista de todas las funcionalidades que debe tener EDUVIAGT. Ya existe | `docs/scrum/product-backlog.md` |
+| **Sprint Backlog** | Historias elegidas para este sprint, con puntos y dueño | `docs/scrum/sprint-N/sprint-planning.md` |
 | **Incremento** | El código que funciona al terminar el sprint (lo que queda en `develop` tras merges) | Repositorio nuevo, rama `develop` |
 
 ### Las historias (US)

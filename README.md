@@ -41,7 +41,7 @@ EDUVIAGT-v1.1/
 ├── apps/
 │   ├── api/     → Backend NestJS, expone REST en /api
 │   └── web/     → Frontend Next.js (App Router), consume la API
-├── doc/         → Documentación del proyecto
+├── docs/         → Documentación del proyecto
 ├── docs/        → Superpowers y pruebas
 ├── .github/     → CI/CD workflows
 ├── prisma/      → (en apps/api/prisma/)
@@ -187,19 +187,19 @@ cd apps/web && npx tsc --noEmit
 
 ## Documentación
 
-Toda la documentación detallada está en la carpeta `doc/`:
+Toda la documentación detallada está en la carpeta `docs/`:
 
 | Sección | Carpeta |
 |---|---|
-| Arquitectura (ADR, diagramas, SOLID, schema DB) | `doc/architecture/` |
-| Estándares (código, Git, testing, seguridad) | `doc/standards/` |
-| Operaciones (setup, deployment, troubleshooting) | `doc/operations/` |
-| Manuales de usuario por rol | `doc/manual-usuario/` |
-| Scrum (sprints, backlog, ceremonias) | `doc/scrum/` |
-| Equipo (miembros, roles) | `doc/team/` |
-| Marca (logos, colores, tipografías) | `doc/marca/` |
-| Glosario | `doc/glossary.md` |
-| Changelog | `doc/changelog.md` |
+| Arquitectura (ADR, diagramas, SOLID, schema DB) | `docs/architecture/` |
+| Estándares (código, Git, testing, seguridad) | `docs/standards/` |
+| Operaciones (setup, deployment, troubleshooting) | `docs/operations/` |
+| Manuales de usuario por rol | `docs/manual-usuario/` |
+| Scrum (sprints, backlog, ceremonias) | `docs/scrum/` |
+| Equipo (miembros, roles) | `docs/team/` |
+| Marca (logos, colores, tipografías) | `docs/marca/` |
+| Glosario | `docs/glossary.md` |
+| Changelog | `docs/changelog.md` |
 
 ---
 

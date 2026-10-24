@@ -1,4 +1,4 @@
-# Sprint 6 — Retrospectiva
+﻿# Sprint 6 — Retrospectiva
 
 ## Datos del Sprint
 
@@ -29,7 +29,7 @@
 
 | Acción | Responsable | Fecha límite |
 |--------|-------------|--------------|
-| Documentar convención de encoding UTF-8 en `/doc/standards` | David | Inicio S7 |
+| Documentar convención de encoding UTF-8 en `/docs/standards` | David | Inicio S7 |
 | Ejecutar smoke test HTTP de los endpoints públicos cuando Docker esté disponible | Yemerson | Fin S7 M1 |
 | Evaluar migración para agregar nivel/departamento a `Beca` si el Product Owner lo requiere | Héctor | Planning S7 |
 
