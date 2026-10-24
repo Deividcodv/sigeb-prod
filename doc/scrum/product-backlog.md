@@ -1,4 +1,4 @@
-# Product Backlog — SIGEB
+﻿# Product Backlog — EDUVIAGT
 
 > Todas las historias de usuario del proyecto, priorizadas con MoSCoW y estimadas en Fibonacci.
 
@@ -113,8 +113,8 @@
 
 | ID | Historia | Pts | Prioridad | Asignado |
 |---|---|---|---|---|
-| US-41 | Como visitante, quiero ver el Hero con "Oportunidades que transforman vidas" + CTAs, para entender el propósito de SIGEB | 3 | Must | Yemerson |
-| US-42 | Como visitante, quiero ver la sección "Sobre SIGEB" con misión, visión, objetivos, para conocer el sistema | 3 | Must | Yemerson |
+| US-41 | Como visitante, quiero ver el Hero con "Oportunidades que transforman vidas" + CTAs, para entender el propósito de EDUVIAGT | 3 | Must | Yemerson |
+| US-42 | Como visitante, quiero ver la sección "Sobre EDUVIAGT" con misión, visión, objetivos, para conocer el sistema | 3 | Must | Yemerson |
 | US-43 | Como visitante, quiero ver "Cómo funciona" con los 6 pasos (Registrarse → Postularse → Documentar → Evaluación → Comité → Resultado), para entender el proceso | 3 | Must | Yemerson |
 | US-44 | Como visitante, quiero ver las convocatorias abiertas con filtros (nivel, departamento, tipo, estado), para encontrar becas relevantes | 5 | Must | Yemerson |
 | US-45 | Como visitante, quiero ver la página individual de una convocatoria con información, requisitos y botón "Postularme", para decidir si aplico | 3 | Must | Yemerson |

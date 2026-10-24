@@ -1,4 +1,4 @@
-# Diagramas — SIGEB
+﻿# Diagramas — EDUVIAGT
 
 > Diagramas Mermaid de arquitectura, despliegue y flujos. Última actualización: Sprint 8.
 

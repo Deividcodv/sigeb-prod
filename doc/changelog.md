@@ -1,4 +1,4 @@
-# Changelog — SIGEB
+﻿# Changelog — EDUVIAGT
 
 > Historial de releases y cambios del proyecto.
 
@@ -163,7 +163,7 @@ Las categorías son:
 
 ### Added
 - [x] Hero con "Oportunidades que transforman vidas" (parte del home, completado)
-- [x] Sección "Sobre SIGEB"
+- [x] Sección "Sobre EDUVIAGT"
 - [x] "Cómo funciona" con 6 pasos
 - [x] Página `/convocatorias` con filtros (búsqueda de texto + tipo de beca)
 - [x] Página individual de convocatoria `/convocatorias/[id]` (documentos requeridos y criterios)
@@ -211,7 +211,7 @@ Las categorías son:
 ### Added (US-F7: constancia de beca en PDF)
 - [x] Dependencia `puppeteer` en `apps/api` (Chromium headless)
 - [x] Adaptador `PdfRenderer` con implementación `PuppeteerPdfRenderer` (patrón Adapter, runtime usa Chromium del sistema vía `CHROME_EXECUTABLE_PATH`)
-- [x] `ConstanciasService` que construye el HTML institucional (MINEDUC/SIGEB) con escape de valores
+- [x] `ConstanciasService` que construye el HTML institucional (MINEDUC/EDUVIAGT) con escape de valores
 - [x] `GET /solicitudes/:id/constancia` (solo `APROBADA`; dueño, admin o coordinador) → `application/pdf` adjunto
 - [x] Tests unitarios de `ConstanciasService` (6 casos) + smoke CI del PDF real
 - [x] Frontend: botón "Descargar constancia" en el dashboard y en el detalle de la solicitud (helper `descargarConstancia` con Bearer token)
@@ -265,7 +265,7 @@ Las categorías son:
 ## [v1.0.0] — 2026-XX-XX
 
 ### Added
-- Primera versión completa del sistema SIGEB
+- Primera versión completa del sistema EDUVIAGT
 - Todas las funcionalidades del alcance definido
 - Documentación completa del proyecto
 

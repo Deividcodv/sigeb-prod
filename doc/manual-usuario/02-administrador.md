@@ -1,6 +1,6 @@
-# Manual del Administrador
+﻿# Manual del Administrador
 
-Rol: **administrador**. Correo demo: `admin@sigeb.gov.gt` (contraseña `Admin123!`).
+Rol: **administrador**. Correo demo: `admin@EDUVIAGT.gov.gt` (contraseña `Admin123!`).
 
 ## 1. Convocatorias
 

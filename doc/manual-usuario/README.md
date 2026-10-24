@@ -1,6 +1,6 @@
-# Manuales de usuario — SIGEB / EDUVIAGT
+﻿# Manuales de usuario — EDUVIAGT / EDUVIAGT
 
-Guías de uso por rol para la plataforma EDUVIAGT (SIGEB). Cada manual describe el flujo completo del rol y las pantallas/acciones disponibles.
+Guías de uso por rol para la plataforma EDUVIAGT (EDUVIAGT). Cada manual describe el flujo completo del rol y las pantallas/acciones disponibles.
 
 | Rol | Manual |
 | --- | --- |
@@ -25,7 +25,7 @@ Contraseña común: `Admin123!`
 
 | Rol | Correo |
 | --- | --- |
-| Administrador | `admin@sigeb.gov.gt` |
+| Administrador | `admin@EDUVIAGT.gov.gt` |
 | Postulante | `postulante@demo.gt` |
 | Evaluador | `evaluador@demo.gt` |
 | Coordinador de comité | `coordinador@demo.gt` |

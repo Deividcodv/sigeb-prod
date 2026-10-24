@@ -1,4 +1,4 @@
-# 02 · Git y GitHub desde cero (para principiantes totales)
+﻿# 02 · Git y GitHub desde cero (para principiantes totales)
 
 > Este documento explica, sin asumir ningún conocimiento previo, qué son Git y GitHub, cómo instalarlos
 > en Windows, el vocabulario mínimo y los primeros comandos. Al final sabrás clonar un repositorio,
@@ -105,14 +105,14 @@ gh auth login
 
 ---
 
-## 6. Tu primer clon (ejemplo con el repo del equipo `proyecto-analisis-Sigeb`)
+## 6. Tu primer clon (ejemplo con el repo del equipo `proyecto-analisis-EDUVIAGT`)
 
 Abre **Git Bash** donde quieras trabajar (crea una carpeta `C:\proyectos`):
 
 ```bash
 cd /c/proyectos
-git clone https://github.com/Deividcodv/proyecto-analisis-Sigeb.git
-cd proyecto-analisis-Sigeb
+git clone https://github.com/Deividcodv/proyecto-analisis-EDUVIAGT.git
+cd proyecto-analisis-EDUVIAGT
 git branch -a          # verás develop y main (integración y producción)
 git remote -v          # verás: origin → el repo del equipo
 ```
@@ -122,11 +122,11 @@ git remote -v          # verás: origin → el repo del equipo
 Si en algún momento necesitas *ver* el código del proyecto original (solo lectura), agrega un segundo remote:
 
 ```bash
-git remote add sigeb-prod https://github.com/Deividcodv/sigeb-prod.git
-git fetch sigeb-prod        # baja todo el historial original a tu PC (no lo mezcla)
+git remote add EDUVIAGT-prod https://github.com/Deividcodv/EDUVIAGT-prod.git
+git fetch EDUVIAGT-prod        # baja todo el historial original a tu PC (no lo mezcla)
 ```
 
-> Con `sigeb-prod` agregado y actualizado (`git fetch sigeb-prod`), puedes "descargar" la versión exacta
+> Con `EDUVIAGT-prod` agregado y actualizado (`git fetch EDUVIAGT-prod`), puedes "descargar" la versión exacta
 > de código que te toca. Cómo hacerlo: `05-versiones-asignadas-por-persona.md`.
 
 ---

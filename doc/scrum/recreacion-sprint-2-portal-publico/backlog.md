@@ -1,12 +1,12 @@
-# Sprint 2 Recreacion - Backlog
+﻿# Sprint 2 Recreacion - Backlog
 
 ## User Stories Asignadas
 
 | ID | Historia | Prioridad | Puntos | Asignado | Estado |
 |----|----------|-----------|--------|----------|--------|
 | US-40 | Como dev quiero layout base y Design System para construir paginas consistentes | Alta | 5 | Yemerson | Hecho |
-| US-41 | Como visitante quiero ver un Hero atractivo para entender SIGEB | Alta | 3 | Yemerson | Hecho |
-| US-42 | Como visitante quiero ver "Sobre SIGEB" para conocer el sistema | Alta | 3 | Yemerson | Hecho |
+| US-41 | Como visitante quiero ver un Hero atractivo para entender EDUVIAGT | Alta | 3 | Yemerson | Hecho |
+| US-42 | Como visitante quiero ver "Sobre EDUVIAGT" para conocer el sistema | Alta | 3 | Yemerson | Hecho |
 | US-43 | Como visitante quiero ver "Como funciona" para entender el flujo | Alta | 5 | Yemerson | Hecho |
 | US-44 | Como visitante quiero ver convocatorias con filtros para encontrar becas | Alta | 8 | Yemerson + Hector (API) | Hecho |
 | US-45 | Como visitante quiero ver detalle de convocatoria para informarme | Alta | 5 | Yemerson + Hector (API) | Hecho |

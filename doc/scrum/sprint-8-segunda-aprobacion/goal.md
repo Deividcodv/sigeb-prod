@@ -1,4 +1,4 @@
-# Goal - Sprint 8: Segunda aprobación, montos flexibles, notificaciones con sonido, bitácora y auditoría comprensible
+﻿# Goal - Sprint 8: Segunda aprobación, montos flexibles, notificaciones con sonido, bitácora y auditoría comprensible
 
 **Sprint:** 8  
 **Rama:** `feature/sprint-8-segunda-aprobacion` (o sobre rama actual según workflow)  
@@ -6,7 +6,7 @@
 **Fecha inicio:** Pendiente  
 **Fecha fin:** Pendiente  
 **Estado:** **Completado**  
-**Responsable:** Equipo SIGEB
+**Responsable:** Equipo EDUVIAGT
 
 ## Objetivo del Sprint
 

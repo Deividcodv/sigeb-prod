@@ -1,4 +1,4 @@
-# Sprint 2 Recreacion - Portal Publico
+﻿# Sprint 2 Recreacion - Portal Publico
 
 ## Meta del Sprint
 
@@ -14,7 +14,7 @@
 - [x] Convocatorias publicas con filtro de busqueda (US-44) consumiendo `GET /convocatorias?busqueda=`
 - [x] Detalle de convocatoria publica (US-45) con `GET /convocatorias/:id` publico
 - [x] Consulta de beca por codigo (US-46) con `GET /solicitudes/consulta/:codigo` (endpoint publico + pagina)
-- [x] Paginas institucionales: sobre SIGEB (US-42), como funciona (US-43), nosotros (US-47) y footer (US-48)
+- [x] Paginas institucionales: sobre EDUVIAGT (US-42), como funciona (US-43), nosotros (US-47) y footer (US-48)
 - [x] Endpoints publicos de convocatorias y consulta verificados por modulo contra `986fc89`
 
 ## Criterios de Aceptacion

@@ -1,4 +1,4 @@
-# Convenciones de Código — SIGEB
+﻿# Convenciones de Código — EDUVIAGT
 
 ---
 

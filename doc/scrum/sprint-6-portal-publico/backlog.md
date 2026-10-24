@@ -1,11 +1,11 @@
-# Sprint 6 — Backlog
+﻿# Sprint 6 — Backlog
 
 ## User Stories Asignadas
 
 | ID | Historia | Prioridad | Puntos | Asignado | Estado |
 |----|----------|-----------|--------|----------|--------|
-| US-41 | Como visitante quiero ver un Hero atractivo para entender SIGEB | Alta | 3 | Yemerson | Completado |
-| US-42 | Como visitante quiero ver "Sobre SIGEB" para conocer el sistema | Alta | 3 | Yemerson | Completado |
+| US-41 | Como visitante quiero ver un Hero atractivo para entender EDUVIAGT | Alta | 3 | Yemerson | Completado |
+| US-42 | Como visitante quiero ver "Sobre EDUVIAGT" para conocer el sistema | Alta | 3 | Yemerson | Completado |
 | US-43 | Como visitante quiero ver "Cómo funciona" para entender el flujo | Alta | 5 | Yemerson | Completado |
 | US-44 | Como visitante quiero ver convocatorias con filtros para encontrar becas | Alta | 8 | Yemerson | Completado |
 | US-45 | Como visitante quiero ver detalle de convocatoria para informarme | Alta | 5 | Yemerson | Completado |

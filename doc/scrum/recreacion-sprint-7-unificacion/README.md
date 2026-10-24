@@ -1,7 +1,7 @@
-# README — Colaboradores · Sprint 7
+﻿# README — Colaboradores · Sprint 7
 
 > **Unificación de documentación y paridad (NO definitivo)**
-> Referencia: `sigeb-prod@b62070b` · Repo de trabajo: `proyecto-analisis-Eduviagt`
+> Referencia: `EDUVIAGT-prod@b62070b` · Repo de trabajo: `proyecto-analisis-Eduviagt`
 > **~37 archivos** · **5 PRs** · **2 responsables: José y Yemerson**
 >
 > Documento autocontenido. Cada persona tiene su sección con los comandos exactos.
@@ -26,7 +26,7 @@
 
 El **Sprint 6 (cierre de equivalencia)** ya está mergeado en `develop`: el **código** del repo
 del equipo (**252/252 archivos de `apps/`, 10/10 migraciones, config y CI**) es equivalente a
-`sigeb-prod@b62070b`. **No falta nada funcional.**
+`EDUVIAGT-prod@b62070b`. **No falta nada funcional.**
 
 El **Sprint 7** solo cierra la brecha de **documentación** (que el S6 dejó fuera de alcance) y
 normaliza 5 archivos cosméticos. **Nada de código de negocio.** Este sprint **no es el cierre
@@ -44,21 +44,21 @@ Esperado:
 
 ```
 equipo      https://github.com/Deividcodv/proyecto-analisis-Eduviagt.git
-sigeb-prod  https://github.com/Deividcodv/sigeb-prod.git
+EDUVIAGT-prod  https://github.com/Deividcodv/EDUVIAGT-prod.git
 ```
 
 Si faltan:
 
 ```bash
 git remote add equipo     https://github.com/Deividcodv/proyecto-analisis-Eduviagt.git
-git remote add sigeb-prod https://github.com/Deividcodv/sigeb-prod.git
+git remote add EDUVIAGT-prod https://github.com/Deividcodv/EDUVIAGT-prod.git
 ```
 
 ### 1.2 Traer la referencia
 
 ```bash
 git fetch equipo
-git fetch sigeb-prod
+git fetch EDUVIAGT-prod
 git cat-file -t b62070b
 # debe imprimir exactamente: commit
 ```
@@ -368,9 +368,9 @@ test -f Docs/scrum/sprint-7-unificacion/goal.md && echo OK scrum-s7
 
 | Síntoma | Causa / solución |
 |---|---|
-| `fatal: invalid object name 'b62070b'` | falta `git fetch sigeb-prod`; confirma `git cat-file -t b62070b` |
+| `fatal: invalid object name 'b62070b'` | falta `git fetch EDUVIAGT-prod`; confirma `git cat-file -t b62070b` |
 | `pathspec ... did not match` | ruta inexistente en `b62070b`; revisa la ruta exacta |
 | `git diff` global muestra archivos de código extra | un PR cubrió de más; vuelve a correr solo sus `git checkout` |
 | El PR 3 deja `doc/scrum` vacío | es correcto: se movió a `Docs/scrum/sprint-9-mejoras-transversales` |
 | `git diff` global muestra solo las 4 líneas esperadas | **correcto**: la unificación quedó bien |
-| `git fetch` no trae `b62070b` | confirma que el remoto `sigeb-prod` apunta a `Deividcodv/sigeb-prod` |
+| `git fetch` no trae `b62070b` | confirma que el remoto `EDUVIAGT-prod` apunta a `Deividcodv/EDUVIAGT-prod` |

@@ -1,4 +1,4 @@
-# Backlog — Sprint 9 · Mejoras Transversales
+﻿# Backlog — Sprint 9 · Mejoras Transversales
 
 > Tipo: **Unplanned Work**. Ítems agrupados por bloques funcionales para
 > organización y trazabilidad. No corresponden a US nuevas; referencian US existentes
@@ -14,4 +14,4 @@
 | S9-06 | Evaluaciones ponderadas (P4) | `876d56e` | suma ponderada, progreso |
 | S9-07 | Comité/sesión quórum (P4) | `876d56e` | votación APROBAR/RECHAZAR/ABSTENCIÓN |
 | S9-08 | Portal público (P1/P2) | `484cc78`, `a0cc7a3` | landing, explorer, wizard CTA |
-| S9-09 | Branding EDUVIAGT | `a0cc7a3` | rebrand SIGEB→EDUVIAGT (UI, PDF, seed) |
+| S9-09 | Branding EDUVIAGT | `a0cc7a3` | rebrand EDUVIAGT→EDUVIAGT (UI, PDF, seed) |

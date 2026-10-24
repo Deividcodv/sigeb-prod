@@ -1,6 +1,6 @@
-# Principios SOLID — SIGEB
+﻿# Principios SOLID — EDUVIAGT
 
-> Cómo se aplican los principios SOLID en el código de SIGEB, con ejemplos reales del repositorio.
+> Cómo se aplican los principios SOLID en el código de EDUVIAGT, con ejemplos reales del repositorio.
 
 ---
 
@@ -8,7 +8,7 @@
 
 > Una clase/módulo debe tener un solo motivo para cambiar.
 
-### Ejemplos en SIGEB
+### Ejemplos en EDUVIAGT
 
 | Clase | Responsabilidad única | Archivo |
 |---|---|---|
@@ -32,7 +32,7 @@ Un servicio que maneje login **y** registro **y** eliminación de cuenta habría
 
 > Abierto para extensión, cerrado para modificación.
 
-### Ejemplos en SIGEB
+### Ejemplos en EDUVIAGT
 
 | Extensión | Cómo se aplica | Archivo |
 |---|---|---|
@@ -65,7 +65,7 @@ export class S3StorageAdapter implements DocumentStorage { ... }
 
 > Los subtipos deben ser sustituibles por sus tipos base.
 
-### Ejemplos en SIGEB
+### Ejemplos en EDUVIAGT
 
 | Interfaz | Implementaciones sustituibles | Archivo |
 |---|---|---|
@@ -82,7 +82,7 @@ El servicio `ConstanciasService` depende de `PdfRenderer` (interfaz), no de `Pup
 
 > Los clientes no deben depender de interfaces que no usan.
 
-### Ejemplos en SIGEB
+### Ejemplos en EDUVIAGT
 
 | Interfaz | Métodos | Por qué segregada |
 |---|---|---|
@@ -99,7 +99,7 @@ Una interfaz monolítica `ServicioCompleto` con todos los métodos habría oblig
 
 > Los módulos de alto nivel no deben depender de módulos de bajo nivel. Ambos deben depender de abstracciones.
 
-### Ejemplos en SIGEB
+### Ejemplos en EDUVIAGT
 
 | Servicio (alto nivel) | Depende de | Abstracción | Archivo |
 |---|---|---|---|

@@ -1,4 +1,4 @@
-# Sprint 5 — Backlog
+﻿# Sprint 5 — Backlog
 
 ## User Stories Asignadas
 
@@ -29,7 +29,7 @@ Estimaciones alineadas al product-backlog. Total: **29 puntos** (S4 medía 44 �
 - [x] Prisma `groupBy`/agregados para reportes; `csv` por streaming con BOM.
 - [x] Modelos `audit_log`, `asistente_base_conocimiento`, `asistente_conversacion`, `asistente_mensaje` ya modelados (Sprint 0).
 - [ ] Columna generada `tsvector` + índice GIN (migración raw SQL).
-- [ ] Tokens de diseño (colores SIGEB, tipografía, espaciado, radios, sombras) en Tailwind.
+- [ ] Tokens de diseño (colores EDUVIAGT, tipografía, espaciado, radios, sombras) en Tailwind.
 
 ## Notas
 

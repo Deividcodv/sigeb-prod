@@ -1,4 +1,4 @@
-# Directrices de Seguridad — SIGEB
+﻿# Directrices de Seguridad — EDUVIAGT
 
 ---
 
@@ -211,7 +211,7 @@ const filename = `${uuid()}.${file.originalname.split('.').pop()}`;
 
 ```env
 # Base de datos
-DATABASE_URL=postgresql://user:pass@localhost:5432/sigeb
+DATABASE_URL=postgresql://user:pass@localhost:5432/EDUVIAGT
 
 # JWT
 JWT_SECRET=tu-secreto-aqui

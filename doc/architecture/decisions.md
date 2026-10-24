@@ -1,4 +1,4 @@
-# Decisiones Arquitectónicas (ADR) — SIGEB
+﻿# Decisiones Arquitectónicas (ADR) — EDUVIAGT
 
 > Architecture Decision Records: documentan decisiones técnicas importantes y su contexto.
 
@@ -285,7 +285,7 @@ incluidas las tablas y matrices de seguridad.
   y el chrome se reescriben una única vez y las páginas los heredan.
 - Bootstrap del estado visual sin depender de degradados: la identidad es legible incluso en
   texto plano (listas, tablas, alertas).
-- La marca SIGEB (azules) se conserva como acento documental sobre la paleta brutal.
+- La marca EDUVIAGT (azules) se conserva como acento documental sobre la paleta brutal.
 
 ---
 

@@ -1,4 +1,4 @@
-# Schema de Base de Datos — SIGEB
+﻿# Schema de Base de Datos — EDUVIAGT
 
 > Documentación completa del schema Prisma. Última actualización: Sprint 8.
 

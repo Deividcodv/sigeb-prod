@@ -1,7 +1,7 @@
-# README — Colaboradores · Sprint 6
+﻿# README — Colaboradores · Sprint 6
 
 > **Cierre de equivalencia con el producto**
-> Referencia: `sigeb-prod@b62070b` · Repo de trabajo: `proyecto-analisis-Eduviagt`
+> Referencia: `EDUVIAGT-prod@b62070b` · Repo de trabajo: `proyecto-analisis-Eduviagt`
 > **199 archivos** · **8 PRs de código** · **3 responsables**
 >
 > Documento autocontenido. Cada persona tiene su sección con los comandos exactos.
@@ -26,7 +26,7 @@
 ## 1. Contexto y reglas generales
 
 El equipo rehizo el **Sprint 6** en el repositorio `proyecto-analisis-Eduviagt`.
-Para cerrarlo, el código debe quedar **idéntico** al del producto `sigeb-prod` en el
+Para cerrarlo, el código debe quedar **idéntico** al del producto `EDUVIAGT-prod` en el
 commit **`b62070b`** (rama `develop` del producto en el momento de la medición).
 
 No hay que re-implementar nada: los archivos correctos ya existen en `b62070b`.
@@ -44,21 +44,21 @@ Esperado:
 
 ```
 equipo      https://github.com/Deividcodv/proyecto-analisis-Eduviagt.git
-sigeb-prod  https://github.com/Deividcodv/sigeb-prod.git
+EDUVIAGT-prod  https://github.com/Deividcodv/EDUVIAGT-prod.git
 ```
 
 Si faltan:
 
 ```bash
 git remote add equipo     https://github.com/Deividcodv/proyecto-analisis-Eduviagt.git
-git remote add sigeb-prod https://github.com/Deividcodv/sigeb-prod.git
+git remote add EDUVIAGT-prod https://github.com/Deividcodv/EDUVIAGT-prod.git
 ```
 
 ### 1.2 Traer la referencia
 
 ```bash
 git fetch equipo
-git fetch sigeb-prod
+git fetch EDUVIAGT-prod
 git cat-file -t b62070b
 # debe imprimir exactamente: commit
 ```
@@ -468,7 +468,7 @@ git checkout b62070b -- \
 
 ```bash
 # en README.md, reemplazar la primera linea:
-#   # SIGEB
+#   # EDUVIAGT
 # por:
 #   # EDUVIA-gt
 ```
@@ -735,11 +735,11 @@ Interpretación:
 
 | Síntoma | Causa / solución |
 |---|---|
-| `fatal: invalid object name 'b62070b'` | falta el fetch del producto: `git fetch sigeb-prod` y confirma `git cat-file -t b62070b` |
+| `fatal: invalid object name 'b62070b'` | falta el fetch del producto: `git fetch EDUVIAGT-prod` y confirma `git cat-file -t b62070b` |
 | `error: pathspec ... did not match` | escribiste una ruta que no existe en `b62070b`; revisa la ruta exacta |
-| El `README.md` queda `# SIGEB` | olvidaste la acción manual del PR 1: cambiarlo a `# EDUVIA-gt` |
+| El `README.md` queda `# EDUVIAGT` | olvidaste la acción manual del PR 1: cambiarlo a `# EDUVIA-gt` |
 | Tras el PR 2 la API no arranca | revisa `apps/api/.env.example` (nombres `JWT_ACCESS_EXPIRATION` / `JWT_REFRESH_EXPIRATION`) y que las 6 migraciones estén presentes |
 | El PR 5 tiene conflictos | se hicieron PR 3 y PR 4 primero; rebasa el PR 5 sobre `develop` actualizado |
 | `git diff` global muestra archivos de código de más | algún PR no cubrió su carpeta; vuelve a correr el `git checkout` de esa sección |
 | `git diff` global muestra solo los 5 cosméticos + README + CODEOWNERS | **correcto**: el cierre quedó completo |
-| `git fetch` no trae `b62070b` | confirma que el remoto `sigeb-prod` apunta a `Deividcodv/sigeb-prod` |
+| `git fetch` no trae `b62070b` | confirma que el remoto `EDUVIAGT-prod` apunta a `Deividcodv/EDUVIAGT-prod` |

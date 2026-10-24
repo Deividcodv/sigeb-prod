@@ -1,4 +1,4 @@
-# Troubleshooting — SIGEB
+﻿# Troubleshooting — EDUVIAGT
 
 > Errores comunes y soluciones.
 
@@ -195,7 +195,7 @@ npm install
 **Solución:**
 - Verificar que `CORS_ORIGIN` en el backend incluya el origen del frontend
 - En desarrollo: `http://localhost:3001`
-- En producción: `https://sigeb.gov.gt`
+- En producción: `https://EDUVIAGT.gov.gt`
 
 ---
 

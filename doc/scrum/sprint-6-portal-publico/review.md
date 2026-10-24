@@ -1,4 +1,4 @@
-# Sprint 6 — Review
+﻿# Sprint 6 — Review
 
 ## Resumen del Sprint
 
@@ -8,7 +8,7 @@
 ## Lo que se completó
 
 - [x] US-41 — Hero con "Oportunidades que transforman vidas" (ya existía en home)
-- [x] US-42 — Sección "Sobre SIGEB" en home
+- [x] US-42 — Sección "Sobre EDUVIAGT" en home
 - [x] US-43 — Sección "Cómo funciona" con 6 pasos en home
 - [x] US-44 — Página `/convocatorias` con filtros y listado de convocatorias
 - [x] US-45 — Página `/convocatorias/[id]` con detalle, documentos y criterios

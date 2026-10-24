@@ -1,4 +1,4 @@
-# AUDITORÍA — Instrucciones del Sprint 5
+﻿# AUDITORÍA — Instrucciones del Sprint 5
 
 > Alcance: verificar que los comandos de `README-COLABORADORES-S5.md` son ejecutables y que cada
 > collaborator puede producir su PR. Ejecutado contra `equipo/develop` (`proyecto-analisis-Eduviagt`).
@@ -8,7 +8,7 @@
 
 ## §0 Resumen ejecutivo
 
-La guía se validó contra el **estado del producto terminado** (`origin/develop` = `sigeb-prod`, Sprint 9)
+La guía se validó contra el **estado del producto terminado** (`origin/develop` = `EDUVIAGT-prod`, Sprint 9)
 pero se ejecuta contra el `develop` del repo de trabajo, que está **77 commits atrás** (S1–S4):
 
 ```
@@ -77,7 +77,7 @@ Infraestructura:
 
 ### H1 — Dos nombres para el remoto del producto
 
-- §0 (`:16-22`): `git remote add sigeb-prod …` / `git fetch sigeb-prod`
+- §0 (`:16-22`): `git remote add EDUVIAGT-prod …` / `git fetch EDUVIAGT-prod`
 - §5 (`:335`): `git fetch equipo`
 
 En el clon del simulador el remoto del producto es `origin` y el del equipo es `equipo`. Quien copie §0

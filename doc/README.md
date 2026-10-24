@@ -1,8 +1,8 @@
-# SIGEB — Documentación del Proyecto
+﻿# EDUVIAGT — Documentación del Proyecto
 
 > Sistema Integral de Gestión de Becas — Ministerio de Educación de Guatemala
 
-Esta carpeta contiene toda la documentación administrativa, técnica y de proceso del proyecto SIGEB v1.1.
+Esta carpeta contiene toda la documentación administrativa, técnica y de proceso del proyecto EDUVIAGT v1.1.
 
 ---
 
@@ -63,9 +63,9 @@ Esta carpeta contiene toda la documentación administrativa, técnica y de proce
 
 | Campo | Valor |
 |---|---|
-| Proyecto | SIGEB v1.1 |
+| Proyecto | EDUVIAGT v1.1 |
 | Equipo | 6 personas |
 | Metodología | Scrum (2 semanas/sprint) |
 | Stack | NestJS + Next.js + PostgreSQL + Prisma |
-| Repo | `github.com/<org>/Sigeb-v1.1` |
+| Repo | `github.com/<org>/EDUVIAGT-v1.1` |
 | Última actualización | 2026-10-23 (Sprint 8 completo) |

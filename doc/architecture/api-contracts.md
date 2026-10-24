@@ -1,4 +1,4 @@
-# Contratos de API — SIGEB
+﻿# Contratos de API — EDUVIAGT
 
 > Especificación de endpoints REST. Todas las rutas bajo `/api`.
 
@@ -454,7 +454,7 @@ Response 200:
         "detalle": null,
         "ip": "127.0.0.1",
         "createdAt": "2026-08-29T03:00:00.000Z",
-        "usuario": { "nombres": "Administrador SIGEB", "email": "admin@sigeb.gov.gt", "rol": { "nombre": "ADMIN" } }
+        "usuario": { "nombres": "Administrador EDUVIAGT", "email": "admin@EDUVIAGT.gov.gt", "rol": { "nombre": "ADMIN" } }
       }
     ]
   }
@@ -485,9 +485,9 @@ Response 200:
       {
         "id": "uuid",
         "fechaHora": "2026-10-22T10:30:00.000Z",
-        "actorNombre": "Administrador SIGEB",
+        "actorNombre": "Administrador EDUVIAGT",
         "actorRol": "ADMIN",
-        "actorCorreo": "admin@sigeb.gov.gt",
+        "actorCorreo": "admin@EDUVIAGT.gov.gt",
         "modulo": "solicitudes",
         "entidad": "solicitud",
         "entidadId": "uuid",
@@ -515,7 +515,7 @@ Detalle completo de un registro de bitácora, incluyendo `datosRelevantes` y `ca
 ### POST `/asistente/preguntar`
 **Público** (respuesta acotada).
 
-El endpoint responde preguntas sobre becas, postulaciones, documentos, convocatorias y evaluación. La respuesta se genera a partir de la base de conocimiento de SIGEB (tabla `asistente_base_conocimiento`) con búsqueda de texto completo en español (PostgreSQL `tsvector`), y cada pregunta se persiste como conversación anónima o vinculada al usuario (token JWT) para trazabilidad.
+El endpoint responde preguntas sobre becas, postulaciones, documentos, convocatorias y evaluación. La respuesta se genera a partir de la base de conocimiento de EDUVIAGT (tabla `asistente_base_conocimiento`) con búsqueda de texto completo en español (PostgreSQL `tsvector`), y cada pregunta se persiste como conversación anónima o vinculada al usuario (token JWT) para trazabilidad.
 
 Request:
 ```json

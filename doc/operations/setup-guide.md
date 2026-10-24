@@ -1,4 +1,4 @@
-# Guía de Setup — SIGEB
+﻿# Guía de Setup — EDUVIAGT
 
 > Cómo levantar el proyecto desde cero.
 
@@ -29,8 +29,8 @@ Extensiones:
 ## 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/<org>/Sigeb-v1.1.git
-cd Sigeb-v1.1
+git clone https://github.com/<org>/EDUVIAGT-v1.1.git
+cd EDUVIAGT-v1.1
 ```
 
 ---
@@ -66,7 +66,7 @@ cp apps/api/.env.example apps/api/.env
 Editar `apps/api/.env`:
 
 ```env
-DATABASE_URL=postgresql://sigeb:sigeb123@localhost:5432/sigeb
+DATABASE_URL=postgresql://EDUVIAGT:EDUVIAGT123@localhost:5432/EDUVIAGT
 JWT_SECRET=tu-secreto-aqui
 JWT_EXPIRATION=15m
 JWT_REFRESH_EXPIRATION=7d
@@ -150,7 +150,7 @@ npm run lint
 ## Estructura después del setup
 
 ```
-Sigeb-v1.1/
+EDUVIAGT-v1.1/
 ├── apps/
 │   ├── api/
 │   │   ├── src/

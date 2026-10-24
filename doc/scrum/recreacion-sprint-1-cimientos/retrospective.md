@@ -1,4 +1,4 @@
-# Sprint 1 Recreacion - Retrospectiva
+﻿# Sprint 1 Recreacion - Retrospectiva
 
 ## Datos del Sprint
 
@@ -22,7 +22,7 @@
 
 1. Definir el `app.module.ts` del prototipo al inicio del sprint (lista explicita de modulos)
 2. Configurar la CI base del prototipo antes del primer merge de codigo
-3. Reutilizar el seed de `sigeb-prod` adaptado al prototipo para datos de demo
+3. Reutilizar el seed de `EDUVIAGT-prod` adaptado al prototipo para datos de demo
 
 ## Acciones de mejora
 

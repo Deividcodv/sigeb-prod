@@ -1,4 +1,4 @@
-# Deuda técnica conocida — SIGEB
+﻿# Deuda técnica conocida — EDUVIAGT
 
 > Registro de los problemas conocidos que **no** están resueltos en el código,
 > con su motivo y la forma de resolverlos. Sirve para que nadie los descubra
@@ -69,7 +69,7 @@ HTTPS. Es el punto de mayor riesgo abierto del proyecto.
 
 ## 4. Estado de la réplica (completada en Sprint 8)
 
-La réplica de `sigeb-prod` en `proyecto-analisis-Eduviagt` se completó en Sprint 8. El repositorio
+La réplica de `EDUVIAGT-prod` en `proyecto-analisis-Eduviagt` se completó en Sprint 8. El repositorio
 del equipo ahora incluye el código de la segunda aprobación por monto, la
 privacidad, la accesibilidad y la eliminación de cuenta.
 

@@ -1,4 +1,4 @@
-# README — Ejecución del Sprint 5 (ejecutor único)
+﻿# README — Ejecución del Sprint 5 (ejecutor único)
 
 > **Sprint 5 · Reportes, Auditoría, Asistente IA y Paneles**
 > Repo de trabajo: `proyecto-analisis-Eduviagt` · 44 pts · US-34/35/36/37/38/39 + US-54/55/56
@@ -40,7 +40,7 @@ artefacto para ejecutar el sprint. Si vienes de esa guía, lee primero el [§0.2
 | Repo | Remoto | Rol |
 |---|---|---|
 | **`proyecto-analisis-Eduviagt`** | `equipo` | **Destino.** Aquí trabajas. Rama `develop` = estado S1–S4. |
-| `sigeb-prod` | `origin` (en el clon del simulador) | **Referencia.** De aquí sale el código de S5. No se mergea nada de aquí. |
+| `EDUVIAGT-prod` | `origin` (en el clon del simulador) | **Referencia.** De aquí sale el código de S5. No se mergea nada de aquí. |
 
 Commits fuente (viven en el remoto del producto):
 
@@ -53,8 +53,8 @@ Commits fuente (viven en el remoto del producto):
 Si tu clon no tiene el remoto del producto:
 
 ```bash
-git remote add sigeb-prod https://github.com/Deividcodv/sigeb-prod.git
-git fetch sigeb-prod
+git remote add EDUVIAGT-prod https://github.com/Deividcodv/EDUVIAGT-prod.git
+git fetch EDUVIAGT-prod
 git cat-file -t ab66393   # debe imprimir: commit
 ```
 
@@ -65,7 +65,7 @@ git cat-file -t ab66393   # debe imprimir: commit
 
 | # | Qué dice la guía anterior | Realidad en tu `develop` |
 |---|---|---|
-| 1 | `git fetch sigeb-prod` (§0) y `git fetch equipo` (§5) | Dos nombres para lo mismo según la sección |
+| 1 | `git fetch EDUVIAGT-prod` (§0) y `git fetch equipo` (§5) | Dos nombres para lo mismo según la sección |
 | 2 | "El seed ya va mergeado" (§2, §3) | Falso: faltan `.gitattributes`, la migración `tsvector`, el permiso `auditoria:ver` y las 33 entradas de la KB |
 | 3 | `git checkout 1436e41 -- apps/web/src/app/layout.tsx` (§4) | Ese archivo trae el diseño de S8 con tokens `brutal` que **no existen** en tu repo: rompe el portal |
 | 4 | Los espejos de `recreacion/sprint-5/*/repo/` | Al `jose/` le falta el interceptor y al `yemerson/` le falta `layout.tsx` |
@@ -83,7 +83,7 @@ git remote -v                      # debe listar 'equipo' (o 'origin') -> proyec
 git checkout develop && git pull
 
 npm install
-docker compose up -d              # postgres:16-alpine en 5432 (sigeb / sigeb123 / sigeb)
+docker compose up -d              # postgres:16-alpine en 5432 (EDUVIAGT / EDUVIAGT123 / EDUVIAGT)
 
 cd apps/api
 cp .env.example .env              # ya trae las variables AI_*; no hay que agregar nada
@@ -98,7 +98,7 @@ npx prisma db seed                # usuarios admin/postulante + 33 entradas de K
 | Web | 3001 | `npm run dev:web` |
 | Todo | — | `npm run dev` |
 
-Usuarios del seed: `admin@sigeb.gov.gt` / `Admin123!` y `postulante@demo.gt` / `Admin123!`.
+Usuarios del seed: `admin@EDUVIAGT.gov.gt` / `Admin123!` y `postulante@demo.gt` / `Admin123!`.
 
 > ⚠️ **`npm run lint` en `apps/api` ejecuta `eslint --fix`**: modifica tus archivos. Revisa el
 > `git diff` después de correrlo.
@@ -332,7 +332,7 @@ npm run build -w apps/api && npm run test -w apps/api
 npm run dev:api           # en otra terminal
 npx prisma db seed        # en otra: asegura el usuario admin
 curl -s -X POST localhost:3000/api/auth/login -H 'Content-Type: application/json' \
-  -d '{"email":"admin@sigeb.gov.gt","password":"Admin123!"}' > /dev/null
+  -d '{"email":"admin@EDUVIAGT.gov.gt","password":"Admin123!"}' > /dev/null
 curl -s "localhost:3000/api/audit?accion=login" -H "Authorization: Bearer $TOKEN" | jq '.data.total'
 # esperado: 1 o más
 ```
@@ -549,7 +549,7 @@ Agrega **solo estas dos líneas**:
      <html lang="es">
        <body className={inter.className}>
          <AuthProvider>
-           <div className="flex min-h-screen flex-col bg-sigeb-gray">
+           <div className="flex min-h-screen flex-col bg-EDUVIAGT-gray">
              <Header />
              <main className="flex-1">{children}</main>
              <Footer />
@@ -628,7 +628,7 @@ for i in $(seq 1 30); do
   sleep 2
 done
 
-TOKEN_ADMIN=$(login_token "admin@sigeb.gov.gt" "Admin123!") \
+TOKEN_ADMIN=$(login_token "admin@EDUVIAGT.gov.gt" "Admin123!") \
   || { echo "Fallo login admin" >&2; exit 1; }
 TOKEN_POST=$(login_token "postulante@demo.gt" "Admin123!") \
   || { echo "Fallo login postulante" >&2; exit 1; }
@@ -780,7 +780,7 @@ no un renombre:
 ```yaml
       - name: Smoke CI (S5)
         env:
-          DATABASE_URL: postgresql://sigeb:sigeb123@localhost:5432/sigeb_test
+          DATABASE_URL: postgresql://EDUVIAGT:EDUVIAGT123@localhost:5432/EDUVIAGT_test
           JWT_SECRET: test-secret-key
           JWT_REFRESH_SECRET: test-refresh-secret-key
         run: |
@@ -897,7 +897,7 @@ bash .github/scripts/smoke-ci.sh
 # API en :3000, web en :3001
 # 0) Preparacion: convierte la respuesta en token (el login devuelve { data: { accessToken } })
 ADMIN=$(curl -s -X POST localhost:3000/api/auth/login -H 'Content-Type: application/json' \
-  -d '{"email":"admin@sigeb.gov.gt","password":"Admin123!"}' | jq -r '.data.accessToken')
+  -d '{"email":"admin@EDUVIAGT.gov.gt","password":"Admin123!"}' | jq -r '.data.accessToken')
 
 # 1) Reportes: 200 con admin, 403 con postulante
 curl -s -o /dev/null -w '%{http_code}\n' -H "Authorization: Bearer $ADMIN" \

@@ -1,4 +1,4 @@
-# Deployment — SIGEB
+﻿# Deployment — EDUVIAGT
 
 ---
 
@@ -20,13 +20,13 @@
 
 | Pieza | Detalle |
 |---|---|
-| Clone del repositorio | `/home/davi/sigeb` (rama `develop`, remoto `sigeb-prod`) |
-| Gestor de procesos | PM2 — `sigeb-api` (`:3000`) y `sigeb-web` (`:3002`) |
+| Clone del repositorio | `/home/davi/EDUVIAGT` (rama `develop`, remoto `EDUVIAGT-prod`) |
+| Gestor de procesos | PM2 — `EDUVIAGT-api` (`:3000`) y `EDUVIAGT-web` (`:3002`) |
 | Proxy inverso | nginx en `:3001` → web en `127.0.0.1:3002` |
-| Configuración de PM2 | `/home/davi/sigeb.pm2.config.cjs` (fuera del repositorio) |
-| Configuración de la API | `/home/davi/sigeb/apps/api/.env` (fuera del repositorio, permisos `600`) |
+| Configuración de PM2 | `/home/davi/EDUVIAGT.pm2.config.cjs` (fuera del repositorio) |
+| Configuración de la API | `/home/davi/EDUVIAGT/apps/api/.env` (fuera del repositorio, permisos `600`) |
 | Base de datos | PostgreSQL local, escuchando solo en `127.0.0.1:5432` |
-| Documentos subidos | `/home/davi/sigeb/storage` |
+| Documentos subidos | `/home/davi/EDUVIAGT/storage` |
 | Cortafuegos | `ufw` activo, entrada por defecto denegada |
 
 Solo queda expuesto a internet el puerto **3001**, que atiende nginx. La web
@@ -38,7 +38,7 @@ El cortafuegos del sistema (`ufw`) cierra el 3000, pero **el NSG de Azure es
 la primera barrera** y hay que mantenerlo alineado: por ahora permite 22, 21,
 3001 y el rango pasivo de FTP (40000-40100). Cuando exista un dominio propio
 hay que **abrir el 80 y el 443** en el NSG y añadir esos *listeners* en
-`/etc/nginx/sites-available/sigeb`.
+`/etc/nginx/sites-available/EDUVIAGT`.
 
 La API lee su configuración con `ConfigModule.forRoot({ isGlobal: true })`
 de NestJS, es decir del `.env` del directorio de trabajo del proceso
@@ -76,15 +76,15 @@ Entorno `staging` (Settings → Environments → staging):
 | `DEPLOY_USER` | `davi` | usuario SSH |
 | `DEPLOY_KEY` | clave privada en PEM | autenticación SSH |
 | `DEPLOY_PORT` | `22` | puerto SSH (opcional, por defecto 22) |
-| `DEPLOY_PATH` | `/home/davi/sigeb` | ruta del clone en el servidor |
+| `DEPLOY_PATH` | `/home/davi/EDUVIAGT` | ruta del clone en el servidor |
 
 Variable de repositorio (opcional):
 
 | Variable | Por defecto | Uso |
 |---|---|---|
-| `PM2_CONFIG_PATH` | `/home/davi/sigeb.pm2.config.cjs` | archivo de configuración de PM2 |
-| `DEPLOY_REPO_URL` | `https://github.com/Deividcodv/sigeb-prod.git` | repositorio del que se despliega |
-| `DEPLOY_REPO_URL_FALLBACK` | `https://github.com/Deividcodv/sigeb-prod.git` | repositorio de respaldo |
+| `PM2_CONFIG_PATH` | `/home/davi/EDUVIAGT.pm2.config.cjs` | archivo de configuración de PM2 |
+| `DEPLOY_REPO_URL` | `https://github.com/Deividcodv/EDUVIAGT-prod.git` | repositorio del que se despliega |
+| `DEPLOY_REPO_URL_FALLBACK` | `https://github.com/Deividcodv/EDUVIAGT-prod.git` | repositorio de respaldo |
 
 `DEPLOY_DATABASE_URL` y `DEPLOY_JWT_SECRET` **ya no se usan**: la API y las
 migraciones leen el `.env` del servidor, y duplicar esos valores en dos
@@ -92,7 +92,7 @@ lugares es la forma más fácil de que se desincronicen.
 
 ### Cambiar el origen del despliegue a EDUVIAGT
 
-Hoy el servidor se actualiza desde `sigeb-prod`. Cuando el repositorio del
+Hoy el servidor se actualiza desde `EDUVIAGT-prod`. Cuando el repositorio del
 equipo (`proyecto-analisis-Eduviagt`) tenga ya la réplica completa —la guía
 , se añade la variable
 `DEPLOY_REPO_URL` en el entorno `staging` de GitHub:
@@ -112,7 +112,7 @@ avisa:
 ```text
 AVISO: el remoto .../proyecto-analisis-Eduviagt.git todavía no tiene
        apps/api/src/auth/eliminar-cuenta.service.ts en la rama develop.
-       Se despliega desde .../sigeb-prod.git hasta que la réplica esté lista.
+       Se despliega desde .../EDUVIAGT-prod.git hasta que la réplica esté lista.
 ```
 
 En ese caso el remoto del servidor **se queda en el repositorio del que se
@@ -124,26 +124,26 @@ hecha, el remoto pasa a EDUVIAGT solo, sin tocar nada.
 
 ## Variables de entorno del servidor
 
-`/home/davi/sigeb/apps/api/.env` (modo `600`):
+`/home/davi/EDUVIAGT/apps/api/.env` (modo `600`):
 
 ```env
-DATABASE_URL=postgresql://sigeb:<password>@localhost:5432/sigeb
-POSTGRES_DB=sigeb
-POSTGRES_USER=sigeb
+DATABASE_URL=postgresql://EDUVIAGT:<password>@localhost:5432/EDUVIAGT
+POSTGRES_DB=EDUVIAGT
+POSTGRES_USER=EDUVIAGT
 DB_PASSWORD=<password>
 JWT_SECRET=<secreto largo>
 JWT_REFRESH_SECRET=<otro secreto largo>
 JWT_REFRESH_EXPIRATION=7d
 PORT=3000
 CORS_ORIGIN=http://57.156.58.111:3001
-STORAGE_PATH=/home/davi/sigeb/storage
+STORAGE_PATH=/home/davi/EDUVIAGT/storage
 AI_API_KEY=
 AI_BASE_URL=https://api.openai.com/v1
 CHROME_EXECUTABLE_PATH=
 ```
 
 > `HOST`, `CORS_ORIGIN`, `PORT` y `STORAGE_PATH` también están en
-> `/home/davi/sigeb.pm2.config.cjs`. El entorno del proceso tiene prioridad
+> `/home/davi/EDUVIAGT.pm2.config.cjs`. El entorno del proceso tiene prioridad
 > sobre el `.env`, así que ambos archivos deben coincidir.
 >
 > `CHROME_EXECUTABLE_PATH` apunta a un Chromium/Chrome del sistema para generar
@@ -168,7 +168,7 @@ docker compose -f docker-compose.prod.yml run --rm api npx prisma migrate deploy
 
 ## Proxy inverso (nginx)
 
-`/etc/nginx/sites-available/sigeb` (habilitado por symlink en
+`/etc/nginx/sites-available/EDUVIAGT` (habilitado por symlink en
 `sites-enabled`). Es la única entrada pública: escucha en el 3001 y reenvía a
 la web en `127.0.0.1:3002`.
 
@@ -203,7 +203,7 @@ bash scripts/backup.sh --restore <archivo>   # restaurar una copia
 Está programado en el `crontab` del usuario `davi` a las 3:07 de la mañana:
 
 ```text
-7 3 * * * /bin/bash /home/davi/sigeb/scripts/backup.sh >> /home/davi/backups/backup.log 2>&1
+7 3 * * * /bin/bash /home/davi/EDUVIAGT/scripts/backup.sh >> /home/davi/backups/backup.log 2>&1
 ```
 
 **Una copia que nunca se restaura no está verificada.** La restauración se
@@ -217,7 +217,7 @@ errores. Conviene repetir la prueba cada pocos meses.
 
 ## Cabeceras de seguridad
 
-`scripts/nginx/sigeb.conf` (copiado a `/etc/nginx/sites-available/sigeb`) añade
+`scripts/nginx/EDUVIAGT.conf` (copiado a `/etc/nginx/sites-available/EDUVIAGT`) añade
 a todas las respuestas:
 
 ```text
@@ -242,7 +242,7 @@ mismo:
 
 ```bash
 ssh -i ~/.ssh/ssh-ubuntu.pem davi@57.156.58.111
-cd /home/davi/sigeb
+cd /home/davi/EDUVIAGT
 bash scripts/deploy-pm2.sh
 ```
 
@@ -261,7 +261,7 @@ Qué hace, en orden:
    `standalone` de Next.js no los incluye: sin este paso el servidor responde
    404 a cada CSS, cada chunk de JavaScript y cada SVG, y el portal se sirve
    sin estilos y sin funcionar. Es el mismo paso que hace el `Dockerfile`.
-6. `pm2 startOrRestart` de `sigeb-api` y `sigeb-web`, y `pm2 save`.
+6. `pm2 startOrRestart` de `EDUVIAGT-api` y `EDUVIAGT-web`, y `pm2 save`.
 7. Comprobación: el script pide el CSS al servidor y **falla si no responde
    200**, para que un despliegue roto no pase inadvertido.
 

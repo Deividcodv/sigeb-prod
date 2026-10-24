@@ -1,4 +1,4 @@
-# Sprint 2 Recreacion - Review
+﻿# Sprint 2 Recreacion - Review
 
 ## Resumen del Sprint
 
@@ -9,7 +9,7 @@
 
 - [x] US-40 - Layout base y Design System + home conectada al API
 - [x] US-41 - Hero atractivo
-- [x] US-42 - Pagina "Sobre SIGEB"
+- [x] US-42 - Pagina "Sobre EDUVIAGT"
 - [x] US-43 - Pagina "Como funciona"
 - [x] US-44 - Convocatorias publicas con filtro de busqueda (API + web)
 - [x] US-45 - Detalle de convocatoria publica (API + web)
@@ -28,7 +28,7 @@
 2. Listado de convocatorias con filtro por texto (datos reales de la API)
 3. Detalle de una convocatoria
 4. Consulta de beca por codigo (pantalla y respuesta acotada)
-5. Paginas "Sobre SIGEB", "Como funciona", "Nosotros" y Footer
+5. Paginas "Sobre EDUVIAGT", "Como funciona", "Nosotros" y Footer
 
 **Feedback del Product Owner (David):**
 - Portal publico funcional con datos reales. Faltan pulidos visuales menores que se pueden absorber en S3 (responsive, empty states) sin puntos extra.

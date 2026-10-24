@@ -1,4 +1,4 @@
-# Miembros del Equipo — SIGEB
+﻿# Miembros del Equipo — EDUVIAGT
 
 ---
 
@@ -87,7 +87,7 @@
 
 ### Páginas a cargo
 - Layout base + Design System + Tailwind
-- Hero + "Sobre SIGEB"
+- Hero + "Sobre EDUVIAGT"
 - Convocatorias públicas + filtros
 - Página individual de convocatoria
 - "Consulta tu beca" (público)

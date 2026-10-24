@@ -1,6 +1,6 @@
-# 01 · Cómo se trabajará con Scrum
+﻿# 01 · Cómo se trabajará con Scrum
 
-> Este documento explica **qué es Scrum** y **cómo aplicaremos Scrum** en la recreación de SIGEB con las
+> Este documento explica **qué es Scrum** y **cómo aplicaremos Scrum** en la recreación de EDUVIAGT con las
 > 6 personas. No hace falta saber programar todavía: aquí se habla de *proceso y organización*.
 > La parte técnica (Git, GitHub, código) está en `02-git-github-conceptos-basicos.md` y
 > `05-versiones-asignadas-por-persona.md`.
@@ -63,16 +63,16 @@ Regla de oro: **cada módulo tiene un solo dueño**. Nadie toca el módulo de ot
 
 | Artefacto | Qué es | Dónde se guarda |
 |---|---|---|
-| **Product Backlog** | Lista de todas las funcionalidades que debe tener SIGEB. Ya existe | `doc/scrum/product-backlog.md` |
+| **Product Backlog** | Lista de todas las funcionalidades que debe tener EDUVIAGT. Ya existe | `doc/scrum/product-backlog.md` |
 | **Sprint Backlog** | Historias elegidas para este sprint, con puntos y dueño | `doc/scrum/sprint-N/sprint-planning.md` |
 | **Incremento** | El código que funciona al terminar el sprint (lo que queda en `develop` tras merges) | Repositorio nuevo, rama `develop` |
 
 ### Las historias (US)
 Las historias se escriben como *"Como [rol], quiero [acción], para [beneficio]"*.
-Ejemplo real de SIGEB:
+Ejemplo real de EDUVIAGT:
 > US-18: Como postulante, quiero crear una solicitud de beca, para poder postular a una convocatoria.
 
-El backlog de SIGEB tiene **58 historias** (US-1 … US-58). En cada planning, David elige las que
+El backlog de EDUVIAGT tiene **58 historias** (US-1 … US-58). En cada planning, David elige las que
 corresponden al tema del sprint (su número de US se indica en `05-versiones-asignadas-por-persona.md`).
 
 ---

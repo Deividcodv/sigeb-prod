@@ -1,8 +1,8 @@
-# README — Colaboradores Sprint 5 (Reportes + Auditoria + Asistente IA + Paneles)
+﻿# README — Colaboradores Sprint 5 (Reportes + Auditoria + Asistente IA + Paneles)
 
 > ## ⚠️ NO EJECUTAR ESTA GUÍA
 >
-> Se validó contra el estado del **producto terminado** (`sigeb-prod`), no contra el `develop` del repo
+> Se validó contra el estado del **producto terminado** (`EDUVIAGT-prod`), no contra el `develop` del repo
 > de trabajo (`equipo/develop` = `proyecto-analisis-Eduviagt`), que está 77 commits atrás. Por eso:
 >
 > - El módulo `audit/` **ya existe** en el destino, así que el PR de Marcos sale vacío (por diseño, §2).
@@ -24,7 +24,7 @@
 Guia paso a paso para David, Jose, Marcos, Hamilton y Yemerson. Contiene los comandos y los
 cambios de codigo exactos que debe hacer cada uno, con base en las fuentes `ab66393` (Jose, Marcos
 y Hamilton: API de `reportes`, `audit` y `asistente`), `2e52a69` (Hamilton: widget del chat) y
-`1436e41` (Yemerson: panel admin brutalista) del remote `sigeb-prod`, sobre `develop` del repo de
+`1436e41` (Yemerson: panel admin brutalista) del remote `EDUVIAGT-prod`, sobre `develop` del repo de
 trabajo del equipo.
 
 > Sprint de 5 dias: 28 sep - 02 oct. 44 puntos. Cierre de sprint el viernes 02 oct con review y
@@ -34,12 +34,12 @@ trabajo del equipo.
 
 ## §0 Precondiciones comunes (todos)
 
-Si el remote `sigeb-prod` no existe aun en tu clon:
+Si el remote `EDUVIAGT-prod` no existe aun en tu clon:
 
 ```bash
 cd /c/proyectos/<tu-repo-de-equipo>
-git remote add sigeb-prod https://github.com/Deividcodv/sigeb-prod.git
-git fetch sigeb-prod
+git remote add EDUVIAGT-prod https://github.com/Deividcodv/EDUVIAGT-prod.git
+git fetch EDUVIAGT-prod
 ```
 
 Antes de **crear tu rama**, siempre:
@@ -97,7 +97,7 @@ git diff ab66393^1 ab66393 -- apps/api/src/reportes   # debe quedar VACIO
 Entregable: el modulo `reportes` de `ab66393`.
 
 ```bash
-git fetch sigeb-prod
+git fetch EDUVIAGT-prod
 git checkout develop && git pull origin develop
 git checkout -b feature/reportes-csv
 
@@ -149,7 +149,7 @@ git log --oneline -3
 Entregable: el modulo `audit` de `ab66393`.
 
 ```bash
-git fetch sigeb-prod
+git fetch EDUVIAGT-prod
 git checkout develop && git pull origin develop
 git checkout -b feature/auditoria-registro
 
@@ -199,7 +199,7 @@ git diff ab66393^1 ab66393 -- apps/api/src/audit
 Entregable: el modulo `asistente` de `ab66393` y el widget de `2e52a69`.
 
 ```bash
-git fetch sigeb-prod
+git fetch EDUVIAGT-prod
 git checkout develop && git pull origin develop
 git checkout -b feature/asistente-ia
 
@@ -272,7 +272,7 @@ git diff 2e52a69 -- apps/web/src/components/chat/ChatWidget.tsx
 Entregable: 12 archivos de `1436e41`.
 
 ```bash
-git fetch sigeb-prod
+git fetch EDUVIAGT-prod
 git checkout develop && git pull origin develop
 git checkout -b feature/panel-admin
 
@@ -315,7 +315,7 @@ De `1436e41` existe mucho mas web, y todo lo demas ya es de S1-S4 o de etapas po
   es lo que activa `HomeShell`).
 - `tailwind.config.js` y `globals.css` → **no son de S5**. El bloque `brutal` viene de `1436e41`
   (sprint 8, redisenio brutalista) y `ab66393` no toca esos archivos. Si tu panel los necesita para
-  verse bien, su estilo va en clases de Tailwind ya existentes (`sigeb.*`) o se acuerda el bloque
+  verse bien, su estilo va en clases de Tailwind ya existentes (`EDUVIAGT.*`) o se acuerda el bloque
   brutal como parte del sprint de redisenio, no de S5.
 - `apps/web/src/components/ui/InternalPageHeader.tsx` → ya existe en `develop`, importalo tal cual.
 - Nada de `apps/api/`.
@@ -379,10 +379,10 @@ Los dos indices se confirman en `\di asistente_base_conocimiento*`.
 ```
 
 En `ci.yml` de `develop` **no existe ningun step de smoke** (a diferencia del linaje de
-`sigeb-prod`, donde es un renombre de `Sprints 3-4` a `Sprints 3-5`), asi que es una adicion
+`EDUVIAGT-prod`, donde es un renombre de `Sprints 3-4` a `Sprints 3-5`), asi que es una adicion
 completa del step, no un cambio de nombre.
 
-El `smoke-ci.sh` de la fuente se escribio contra el S3/S4 de `sigeb-prod`. El S4 de `develop` es una
+El `smoke-ci.sh` de la fuente se escribio contra el S3/S4 de `EDUVIAGT-prod`. El S4 de `develop` es una
 reimplementacion independiente, asi que hay que correrlo localmente contra Postgres antes de hacer
 push: si falla por una diferencia real de contrato (envoltorio `.data`, codigos de transicion,
 quorum), se ajusta el script y se documenta en la PR.

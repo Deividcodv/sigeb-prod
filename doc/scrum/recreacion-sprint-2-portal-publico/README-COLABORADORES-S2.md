@@ -1,20 +1,20 @@
-# README — Colaboradores Sprint 2 (Portal Público)
+﻿# README — Colaboradores Sprint 2 (Portal Público)
 
 Guía paso a paso para Héctor, José, Yemerson y Hamilton. Contiene los comandos y
 los cambios de código exactos que deben hacer cada uno, con base en la fuente
-`986fc89` (remote `sigeb-prod`) y `develop` del repo de trabajo
-`proyecto-analisis-Sigeb`.
+`986fc89` (remote `EDUVIAGT-prod`) y `develop` del repo de trabajo
+`proyecto-analisis-EDUVIAGT`.
 
 ---
 
 ## §0 Precondiciones comunes (todos)
 
-Si el remote `sigeb-prod` no existe aún en tu clon (cuando no lo configuraste en S1):
+Si el remote `EDUVIAGT-prod` no existe aún en tu clon (cuando no lo configuraste en S1):
 
 ```bash
-cd /c/proyectos/proyecto-analisis-Sigeb
-git remote add sigeb-prod https://github.com/Deividcodv/sigeb-prod.git
-git fetch sigeb-prod
+cd /c/proyectos/proyecto-analisis-EDUVIAGT
+git remote add EDUVIAGT-prod https://github.com/Deividcodv/EDUVIAGT-prod.git
+git fetch EDUVIAGT-prod
 ```
 
 Antes de **crear tu rama**, siempre:
@@ -41,7 +41,7 @@ Entregable: módulo `apps/api/src/convocatorias/` completo desde `986fc89`
 (**GET /convocatorias** con `?busqueda=` y **GET /convocatorias/:id** públicos).
 
 ```bash
-git fetch sigeb-prod
+git fetch EDUVIAGT-prod
 git checkout develop && git pull origin develop
 git checkout -b feature/convocatorias-publicas
 
@@ -89,7 +89,7 @@ Entregable: módulo `apps/api/src/solicitudes/` **completo** desde `986fc89`
 > `986fc89` (`git diff` vacío). El saldo funcional del módulo se completa en S6.
 
 ```bash
-git fetch sigeb-prod
+git fetch EDUVIAGT-prod
 git checkout develop && git pull origin develop
 git checkout -b feature/consulta-publica
 
@@ -132,7 +132,7 @@ Entregable: **todo** `apps/web/src` desde `986fc89` (layout/design system de
 nosotros y footer). **Sin** panel admin ni login.
 
 ```bash
-git fetch sigeb-prod
+git fetch EDUVIAGT-prod
 git checkout develop && git pull origin develop
 git checkout -b feature/portal-publico
 
@@ -517,14 +517,14 @@ async function main() {
     update: {},
     create: {
       cui: '1234567890123',
-      nombres: 'Administrador SIGEB',
-      email: 'admin@sigeb.gov.gt',
+      nombres: 'Administrador EDUVIAGT',
+      email: 'admin@EDUVIAGT.gov.gt',
       passwordHash: hashedPassword,
       rolId: adminRoleData!.id,
       estado: 'ACTIVO',
     },
   });
-  console.log('✅ Usuario admin creado (admin@sigeb.gov.gt / Admin123!)');
+  console.log('✅ Usuario admin creado (admin@EDUVIAGT.gov.gt / Admin123!)');
 
   // ==========================================
   // DEMO PORTAL PÚBLICO S2 (US-46) — cambios de David
@@ -596,4 +596,4 @@ main()
   consola `CODIGO_DEMO_PARA_CONSULTA=<uuid>` (siempre el mismo: el del bloque demo).
 - Para la demo guiada de cierre: `home → convocatorias (filtro) → detalle → consulta por
   ese UUID → nosotros/footer`. El resultado mostrará el estado `ENVIADA`.
-- Credenciales de seed: `admin@sigeb.gov.gt / Admin123!`, `postulante@demo.gt / Admin123!`.
+- Credenciales de seed: `admin@EDUVIAGT.gov.gt / Admin123!`, `postulante@demo.gt / Admin123!`.

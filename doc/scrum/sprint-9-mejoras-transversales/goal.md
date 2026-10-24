@@ -1,6 +1,6 @@
-# Sprint 9 — Mejoras Transversales y Documentación
+﻿# Sprint 9 — Mejoras Transversales y Documentación
 
-**Proyecto:** EDUVIAGT GT (antes SIGEB)
+**Proyecto:** EDUVIAGT GT (antes EDUVIAGT)
 **Tipo de sprint:** Estabilización / Unplanned Work (trabajo no planificado)
 **Periodo:** Consolidación de entregas de la sesión (sin afectar S0–S8)
 **Ruta scrum:** `doc/scrum/sprint-9-mejoras-transversales/`
@@ -29,7 +29,7 @@ cerrados S0–S8.
 
 - Crear únicamente archivos nuevos (este directorio `doc/scrum/sprint-9-*`).
 - No tocar ningún archivo existente de S0–S8 ni del producto.
-- Entregar un único commit y push a `origin/develop` (`sigeb-prod`).
+- Entregar un único commit y push a `origin/develop` (`EDUVIAGT-prod`).
 
 ## Criterios de cierre (DoD)
 

@@ -1,4 +1,4 @@
-# Convenciones de Git — SIGEB
+﻿# Convenciones de Git — EDUVIAGT
 
 ---
 

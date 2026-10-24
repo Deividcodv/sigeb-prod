@@ -1,4 +1,4 @@
-# Glosario — SIGEB
+﻿# Glosario — EDUVIAGT
 
 Términos del dominio utilizados en el proyecto.
 
@@ -8,7 +8,7 @@ Términos del dominio utilizados en el proyecto.
 
 | Término | Definición |
 |---|---|
-| **SIGEB** | Sistema Integral de Gestión de Becas — nombre del proyecto |
+| **EDUVIAGT** | Sistema Integral de Gestión de Becas — nombre del proyecto |
 | **MINEDUC** | Ministerio de Educación de Guatemala |
 | **CUI** | Código Único de Identificación — identificador único de ciudadano guatemalteco |
 | **DPI** | Documento Personal de Identificación — cédula de identidad guatemalteca |

@@ -1,4 +1,4 @@
-# Sprint 5 - Retrospectiva
+﻿# Sprint 5 - Retrospectiva
 
 ## Datos del Sprint
 
@@ -11,7 +11,7 @@
 1. Cierre por hitos M1-M5 con commit + CI verde cada uno (patrón consolidado de S4).
 2. Hallazgo temprano de la limitación de inmutabilidad de `concat_ws`/`array_to_string` en PG16 se resolvió con una expresión 100% inmutable, evitando bloquear la migración.
 3. La decisión de IA con fallback por KB permitió entregar US-37/US-39 sin depender de credenciales externas y verificar todo en CI.
-4. El frontend reutilizó la paleta SIGEB existente y conectó datos reales sin duplicar la lógica de la API.
+4. El frontend reutilizó la paleta EDUVIAGT existente y conectó datos reales sin duplicar la lógica de la API.
 
 ## ¿Qué salió mal?
 

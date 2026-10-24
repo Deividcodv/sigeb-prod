@@ -1,9 +1,9 @@
-# README — Colaboradores Sprint 3 (Login + Dashboard)
+﻿# README — Colaboradores Sprint 3 (Login + Dashboard)
 
 Guía paso a paso para David, Hamilton, Marcos y Yemerson. Contiene los comandos y
 los cambios de código exactos que debe hacer cada uno, con base en las fuentes
 `890c423` (David: arranque + CORS) y `3dfa19a` (Hamilton/Yemerson: web auth +
-dashboard, US-49/50) del remote `sigeb-prod`, sobre `develop` del repo de trabajo
+dashboard, US-49/50) del remote `EDUVIAGT-prod`, sobre `develop` del repo de trabajo
 `proyecto-analisis-Eduviagt`.
 
 > Cierre del prototipo: al terminar el sprint, David crea el hito personalizado
@@ -14,12 +14,12 @@ dashboard, US-49/50) del remote `sigeb-prod`, sobre `develop` del repo de trabaj
 
 ## §0 Precondiciones comunes (todos)
 
-Si el remote `sigeb-prod` no existe aún en tu clon:
+Si el remote `EDUVIAGT-prod` no existe aún en tu clon:
 
 ```bash
 cd /c/proyectos/proyecto-analisis-Eduviagt
-git remote add sigeb-prod https://github.com/Deividcodv/sigeb-prod.git
-git fetch sigeb-prod
+git remote add EDUVIAGT-prod https://github.com/Deividcodv/EDUVIAGT-prod.git
+git fetch EDUVIAGT-prod
 ```
 
 Antes de **crear tu rama**, siempre:
@@ -62,7 +62,7 @@ cambios en la misma ventana de merge buscando que el paquete de archivos final s
 Entregable: módulos de sesión del portal y el dashboard del postulante desde `3dfa19a`.
 
 ```bash
-git fetch sigeb-prod
+git fetch EDUVIAGT-prod
 git checkout develop && git pull origin develop
 git checkout -b feature/web-login
 
@@ -117,7 +117,7 @@ Entregable: `apps/web/src/components/layout/UserMenu.tsx` desde `3dfa19a` (menú
 nombre/rol, "Mi panel", cerrar sesión).
 
 ```bash
-git fetch sigeb-prod
+git fetch EDUVIAGT-prod
 git checkout develop && git pull origin develop
 git checkout -b feature/portal-usermenu
 
@@ -182,7 +182,7 @@ Entregables desde `890c423`:
   `credentials: true`) + prefijo `api` + Swagger.
 
 ```bash
-git fetch sigeb-prod
+git fetch EDUVIAGT-prod
 git checkout develop && git pull origin develop
 git checkout -b chore/arranque-dev
 

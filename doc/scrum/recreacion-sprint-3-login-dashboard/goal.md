@@ -1,4 +1,4 @@
-# Sprint 3 Recreacion - Login y Dashboard
+﻿# Sprint 3 Recreacion - Login y Dashboard
 
 ## Meta del Sprint
 
@@ -40,4 +40,4 @@
 ## Notas
 
 - Alcance del prototipo: portal publico + login/registro + dashboard. NO incluye panel admin ni evaluador ni sistema interno multi-step (van en S5/S6).
-- Al cierre: David crea el tag `v0.1-prototipo-demo` (hito personalizado) en `sigeb-equipo`.
+- Al cierre: David crea el tag `v0.1-prototipo-demo` (hito personalizado) en `EDUVIAGT-equipo`.

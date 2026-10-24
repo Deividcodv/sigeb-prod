@@ -1,4 +1,4 @@
-# Higiene administrativa del repositorio Eduviagt
+﻿# Higiene administrativa del repositorio Eduviagt
 
 Guía para limpiar y verificar la parte administrativa del repo `Deividcodv/proyecto-analisis-Eduviagt` (no toca código de la aplicación).
 
@@ -218,7 +218,7 @@ Reemplaza `SECURITY.md` (el actual es el placeholder por defecto de GitHub):
 
 ## Reportar una vulnerabilidad
 
-Escribe a `soporte@sigeb.gov.gt` con:
+Escribe a `soporte@EDUVIAGT.gov.gt` con:
 - Descripción del problema y pasos para reproducirlo.
 - Impacto potencial.
 - Versión o commit afectado.

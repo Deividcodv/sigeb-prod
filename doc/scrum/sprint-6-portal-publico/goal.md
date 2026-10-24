@@ -1,4 +1,4 @@
-# Sprint 6 — Portal Público
+﻿# Sprint 6 — Portal Público
 
 ## Meta del Sprint
 
@@ -11,7 +11,7 @@
 ## Resultado Esperado
 
 - Hero section atractiva
-- Página "Sobre SIGEB" completa
+- Página "Sobre EDUVIAGT" completa
 - Sección "Cómo funciona"
 - Listado de convocatorias con filtros
 - Página de detalle de convocatoria
@@ -21,7 +21,7 @@
 
 ## Criterios de Aceptación
 
-- [x] Hero muestra información principal de SIGEB
+- [x] Hero muestra información principal de EDUVIAGT
 - [x] Página sobre explica el propósito del sistema
 - [x] Cómo funciona muestra el flujo paso a paso
 - [x] Convocatorias se listan con filtros de búsqueda

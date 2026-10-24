@@ -1,4 +1,4 @@
-# SIGEB — Sistema Integral de Gestión de Becas
+﻿# EDUVIAGT — Sistema Integral de Gestión de Becas
 
 > Plataforma para administrar el ciclo completo de becas: publicación de convocatorias, postulación de estudiantes, carga y revisión de documentos, evaluación, decisión de comités evaluadores, y consulta de estado.
 
@@ -37,7 +37,7 @@
 **Monolito modular por capas**, dos aplicaciones independientes que hablan por HTTP/JSON.
 
 ```
-Sigeb-v1.1/
+EDUVIAGT-v1.1/
 ├── apps/
 │   ├── api/     → Backend NestJS, expone REST en /api
 │   └── web/     → Frontend Next.js (App Router), consume la API
@@ -142,7 +142,7 @@ npm ci
 
 ```bash
 # Crear base de datos
-createdb sigeb
+createdb EDUVIAGT
 
 # Configurar .env
 cp apps/api/.env.example apps/api/.env

@@ -1,6 +1,6 @@
-# Guía de inicio rápido
+﻿# Guía de inicio rápido
 
-Cómo levantar SIGEB (API + web + base de datos) en tu máquina en pocos minutos.
+Cómo levantar EDUVIAGT (API + web + base de datos) en tu máquina en pocos minutos.
 
 ## Prerrequisitos
 
@@ -31,7 +31,7 @@ Copia el ejemplo de la API:
 Copy-Item apps/api/.env.example apps/api/.env
 ```
 
-Si necesitas valores propios, edita `apps/api/.env` (por defecto ya apunta a `postgresql://sigeb:sigeb123@localhost:5432/sigeb`).
+Si necesitas valores propios, edita `apps/api/.env` (por defecto ya apunta a `postgresql://EDUVIAGT:EDUVIAGT123@localhost:5432/EDUVIAGT`).
 
 ## 3. Arrancar
 
@@ -87,7 +87,7 @@ Todas usan la contraseña `Admin123!`.
 
 | Rol | Correo |
 | --- | --- |
-| Administrador | `admin@sigeb.gov.gt` |
+| Administrador | `admin@EDUVIAGT.gov.gt` |
 | Postulante | `postulante@demo.gt` |
 | Evaluador | `evaluador@demo.gt` |
 | Coordinador de comité | `coordinador@demo.gt` |
